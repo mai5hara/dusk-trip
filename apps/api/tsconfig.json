@@ -1,8 +1,14 @@
 {
   "extends": "../../packages/config/typescript/node.json",
   "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "types": ["node"]
   },
   "include": ["src"]
 }
