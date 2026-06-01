@@ -1,0 +1,17 @@
+{
+  "name": "@mood-trip/mobile",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo \"@mood-trip/mobile: Expo は後からセットアップ\"",
+    "build": "echo \"@mood-trip/mobile: build (not configured yet)\"",
+    "lint": "echo \"@mood-trip/mobile: lint (not configured yet)\""
+  },
+  "dependencies": {
+    "@mood-trip/validators": "workspace:*"
+  },
+  "devDependencies": {
+    "@mood-trip/config": "workspace:*",
+    "typescript": "^5.8.3"
+  }
+}

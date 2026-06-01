@@ -1,0 +1,18 @@
+{
+  "name": "@mood-trip/admin",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo \"@mood-trip/admin: Next.js はこれからセットアップ\"",
+    "build": "echo \"@mood-trip/admin: build (not configured yet)\"",
+    "lint": "echo \"@mood-trip/admin: lint (not configured yet)\""
+  },
+  "dependencies": {
+    "@mood-trip/ui": "workspace:*",
+    "@mood-trip/validators": "workspace:*"
+  },
+  "devDependencies": {
+    "@mood-trip/config": "workspace:*",
+    "typescript": "^5.8.3"
+  }
+}

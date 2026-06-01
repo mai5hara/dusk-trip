@@ -1,0 +1,10 @@
+{
+  "name": "@mood-trip/config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./typescript/base.json": "./typescript/base.json",
+    "./typescript/node.json": "./typescript/node.json",
+    "./typescript/nextjs.json": "./typescript/nextjs.json"
+  }
+}

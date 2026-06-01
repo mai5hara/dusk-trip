@@ -1,0 +1,162 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .: {}
+
+  apps/admin:
+    dependencies:
+      '@mood-trip/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@mood-trip/validators':
+        specifier: workspace:*
+        version: link:../../packages/validators
+    devDependencies:
+      '@mood-trip/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  apps/api:
+    dependencies:
+      '@mood-trip/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@mood-trip/validators':
+        specifier: workspace:*
+        version: link:../../packages/validators
+    devDependencies:
+      '@mood-trip/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  apps/mobile:
+    dependencies:
+      '@mood-trip/validators':
+        specifier: workspace:*
+        version: link:../../packages/validators
+    devDependencies:
+      '@mood-trip/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  apps/web:
+    dependencies:
+      '@mood-trip/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@mood-trip/validators':
+        specifier: workspace:*
+        version: link:../../packages/validators
+    devDependencies:
+      '@mood-trip/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/config: {}
+
+  packages/database:
+    devDependencies:
+      '@mood-trip/config':
+        specifier: workspace:*
+        version: link:../config
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/ui:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.7
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.7(react@19.2.7)
+    devDependencies:
+      '@mood-trip/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/react':
+        specifier: ^19.1.2
+        version: 19.2.16
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/validators:
+    dependencies:
+      zod:
+        specifier: ^3.24.2
+        version: 3.25.76
+    devDependencies:
+      '@mood-trip/config':
+        specifier: workspace:*
+        version: link:../config
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+packages:
+
+  '@types/react@19.2.16':
+    resolution: {integrity: sha512-esJiCAnl0kfpNdE69f3So4WJUXy95dLZydX0KwK46riIHDzHM7O9Vtf9xCHW0PXIqvgqNrswl522kA/5yx+F4w==}
+
+  csstype@3.2.3:
+    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
+
+  react-dom@19.2.7:
+    resolution: {integrity: sha512-t0BRVXvbiE/o20Hfw669rLbMCDWtYZLvmJigy2f0MxsXF+71pxhR3xOkspmsO8h3ZlNzyibAmtCa3l4lYKk6gQ==}
+    peerDependencies:
+      react: ^19.2.7
+
+  react@19.2.7:
+    resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
+    engines: {node: '>=0.10.0'}
+
+  scheduler@0.27.0:
+    resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
+
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
+snapshots:
+
+  '@types/react@19.2.16':
+    dependencies:
+      csstype: 3.2.3
+
+  csstype@3.2.3: {}
+
+  react-dom@19.2.7(react@19.2.7):
+    dependencies:
+      react: 19.2.7
+      scheduler: 0.27.0
+
+  react@19.2.7: {}
+
+  scheduler@0.27.0: {}
+
+  typescript@5.9.3: {}
+
+  zod@3.25.76: {}
