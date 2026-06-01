@@ -1,2 +1,4 @@
-/** Prisma Client はこのパッケージに追加予定 */
-export const DATABASE_PACKAGE = "@mood-trip/database";
+import { PrismaClient } from "./generated/prisma/client";
+
+export const prisma = new PrismaClient();
+export type { User } from "./generated/prisma/client";

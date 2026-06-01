@@ -5,6 +5,9 @@
     "dev:api": "pnpm --filter @mood-trip/api dev",
     "dev:web": "pnpm --filter @mood-trip/web dev",
     "dev:admin": "pnpm --filter @mood-trip/admin dev",
+    "db:generate": "pnpm --filter @mood-trip/database db:generate",
+    "db:migrate": "pnpm --filter @mood-trip/database db:migrate",
+    "db:studio": "pnpm --filter @mood-trip/database db:studio",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint"
   },
