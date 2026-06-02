@@ -2,7 +2,7 @@
   "name": "mood-trip",
   "private": true,
   "scripts": {
-    "dev:api": "pnpm --filter @mood-trip/api dev",
+    "dev:api": "pnpm --filter @mood-trip/database build && pnpm --filter @mood-trip/api dev",
     "dev:web": "pnpm --filter @mood-trip/web dev",
     "dev:admin": "pnpm --filter @mood-trip/admin dev",
     "db:generate": "pnpm --filter @mood-trip/database db:generate",
