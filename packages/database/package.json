@@ -13,9 +13,11 @@
     "build": "tsc",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:seed": "prisma db seed"
   },
   "devDependencies": {
+    "tsx": "^4.24.0",
     "@mood-trip/config": "workspace:*",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",

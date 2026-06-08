@@ -4,11 +4,12 @@
   "private": true,
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
+    "build": "tsc",
     "lint": "echo \"@mood-trip/validators: lint (not configured yet)\""
   },
   "dependencies": {

@@ -2,12 +2,13 @@
   "name": "mood-trip",
   "private": true,
   "scripts": {
-    "dev:api": "pnpm --filter @mood-trip/database build && pnpm --filter @mood-trip/api dev",
+    "dev:api": "pnpm --filter @mood-trip/database build && pnpm --filter @mood-trip/validators build && pnpm --filter @mood-trip/api dev",
     "dev:web": "pnpm --filter @mood-trip/web dev",
     "dev:admin": "pnpm --filter @mood-trip/admin dev",
     "db:generate": "pnpm --filter @mood-trip/database db:generate",
     "db:migrate": "pnpm --filter @mood-trip/database db:migrate",
     "db:studio": "pnpm --filter @mood-trip/database db:studio",
+    "db:seed": "pnpm --filter @mood-trip/database db:seed",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint"
   },
