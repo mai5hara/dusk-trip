@@ -10,7 +10,9 @@
     "db:studio": "pnpm --filter @mood-trip/database db:studio",
     "db:seed": "pnpm --filter @mood-trip/database db:seed",
     "build": "pnpm -r build",
-    "lint": "pnpm -r lint"
+    "lint": "pnpm -r lint",
+    "test": "pnpm --filter @mood-trip/web test",
+    "test:watch": "pnpm --filter @mood-trip/web test:watch"
   },
   "engines": {
     "node": ">=20"
