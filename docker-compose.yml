@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: mood-trip-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: mood
+      POSTGRES_PASSWORD: mood
+      POSTGRES_DB: moodtrip
+    volumes:
+      - mood-trip-pgdata:/var/lib/postgresql/data
+
+volumes:
+  mood-trip-pgdata:

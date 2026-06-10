@@ -6,12 +6,19 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
-    }
+    },
+    "./styles.css": "./styles.css"
   },
   "scripts": {
+    "postinstall": "node ./scripts/sync-ds-styles.mjs",
     "lint": "echo \"@mood-trip/ui: lint (not configured yet)\""
   },
   "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "tokonoma-ui": "git+ssh://git@github.com/mai5hara/tokonoma-ui.git#v0.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

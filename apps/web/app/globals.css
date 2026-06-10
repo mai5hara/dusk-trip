@@ -1,0 +1,7 @@
+@import "@mood-trip/ui/styles.css";
+
+@import "tailwindcss";
+
+@source "../app/**/*.{js,ts,jsx,tsx}";
+@source "../components/**/*.{js,ts,jsx,tsx}";
+@source "../features/**/*.{js,ts,jsx,tsx}";
