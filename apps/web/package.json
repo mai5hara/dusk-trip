@@ -9,11 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@mood-trip/ui": "workspace:*",
+    "@mood-trip/validators": "workspace:*",
+    "lucide-react": "^1.17.0",
     "next": "16.2.7",
     "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "@mood-trip/ui": "workspace:*",
-    "@mood-trip/validators": "workspace:*"
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@mood-trip/config": "workspace:*",

@@ -17,7 +17,7 @@
     "db:seed": "prisma db seed"
   },
   "devDependencies": {
-    "tsx": "^4.24.0",
+    "tsx": "^4.22.4",
     "@mood-trip/config": "workspace:*",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",
