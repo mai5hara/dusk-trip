@@ -180,8 +180,8 @@ importers:
         specifier: ^19.0.0
         version: 19.2.7(react@19.2.7)
       tokonoma-ui:
-        specifier: git+ssh://git@github.com/mai5hara/tokonoma-ui.git#v0.1.0
-        version: git+https://git@github.com:mai5hara/tokonoma-ui.git#5f3c430c11702ae8c03f10260d79c3260e13ff8c(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: git+ssh://git@github.com/mai5hara/tokonoma-ui.git#v0.1.2
+        version: git+https://git@github.com:mai5hara/tokonoma-ui.git#dfc1a0a17a27c165be730a10aa5be0a045cd20f6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
     devDependencies:
       '@mood-trip/config':
         specifier: workspace:*
@@ -3750,9 +3750,9 @@ packages:
     resolution: {integrity: sha512-dRXchy+C0IgK8WPC6xvCHFRIWYUbqqdEIKPaKo/AcTUNzwLTK6AH7RjdLWsEZcAN/TBdtfUw3PYEgPr5VPr6ww==}
     engines: {node: '>=14.16'}
 
-  tokonoma-ui@git+https://git@github.com:mai5hara/tokonoma-ui.git#5f3c430c11702ae8c03f10260d79c3260e13ff8c:
-    resolution: {commit: 5f3c430c11702ae8c03f10260d79c3260e13ff8c, repo: git@github.com:mai5hara/tokonoma-ui.git, type: git}
-    version: 0.1.0
+  tokonoma-ui@git+https://git@github.com:mai5hara/tokonoma-ui.git#dfc1a0a17a27c165be730a10aa5be0a045cd20f6:
+    resolution: {commit: dfc1a0a17a27c165be730a10aa5be0a045cd20f6, repo: git@github.com:mai5hara/tokonoma-ui.git, type: git}
+    version: 0.1.2
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
@@ -7746,7 +7746,7 @@ snapshots:
       '@tokenizer/token': 0.3.0
       ieee754: 1.2.1
 
-  tokonoma-ui@git+https://git@github.com:mai5hara/tokonoma-ui.git#5f3c430c11702ae8c03f10260d79c3260e13ff8c(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+  tokonoma-ui@git+https://git@github.com:mai5hara/tokonoma-ui.git#dfc1a0a17a27c165be730a10aa5be0a045cd20f6(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
