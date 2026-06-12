@@ -5,13 +5,14 @@
   "scripts": {
     "dev": "echo \"@mood-trip/mobile: Expo は後からセットアップ\"",
     "build": "echo \"@mood-trip/mobile: build (not configured yet)\"",
-    "lint": "echo \"@mood-trip/mobile: lint (not configured yet)\""
+    "lint": "eslint ."
   },
   "dependencies": {
     "@mood-trip/validators": "workspace:*"
   },
   "devDependencies": {
     "@mood-trip/config": "workspace:*",
+    "eslint": "^9.28.0",
     "typescript": "^5.8.3"
   }
 }

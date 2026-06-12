@@ -11,7 +11,7 @@
   },
   "scripts": {
     "postinstall": "node ./scripts/sync-ds-styles.mjs",
-    "lint": "echo \"@mood-trip/ui: lint (not configured yet)\""
+    "lint": "eslint ."
   },
   "peerDependencies": {
     "react": "^19.0.0",
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@mood-trip/config": "workspace:*",
+    "eslint": "^9.28.0",
     "@types/react": "^19.1.2",
     "typescript": "^5.8.3"
   }

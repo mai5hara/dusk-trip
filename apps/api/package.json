@@ -6,7 +6,7 @@
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main.js",
-    "lint": "echo \"@mood-trip/api: lint (not configured yet)\""
+    "lint": "eslint ."
   },
   "dependencies": {
     "@mood-trip/database": "workspace:*",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@mood-trip/config": "workspace:*",
+    "eslint": "^9.28.0",
     "@nestjs/cli": "^11.0.21",
     "@nestjs/schematics": "^11.1.0",
     "@types/express": "^5.0.6",
