@@ -1,5 +1,6 @@
 import type { TripListItem } from "@mood-trip/validators";
 import type { TripSort } from "./trip-sort";
+import { type DateRangePickerValue } from "@mood-trip/ui";
 
 export function filterTripByQuery(
   trips: TripListItem[],
@@ -37,5 +38,25 @@ export function sortTrips(
         return _exhaustive;
       }
     }
+  });
+}
+
+export function filterTripsByDateRange(
+  trips: TripListItem[],
+  dateRange: DateRangePickerValue | undefined
+): TripListItem[] {
+  const from = dateRange?.from;
+  const to = dateRange?.to;
+
+  if(!from && !to) return trips;
+
+  return trips.filter((trip) => {
+    const tripStart = new Date(trip.startDate).getTime();
+    const tripEnd = new Date(trip.endDate).getTime();
+
+    if (from && tripEnd < from.getTime()) return false;
+    if (to && tripStart > to.getTime()) return false;
+
+    return true;
   });
 }

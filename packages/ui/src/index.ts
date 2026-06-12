@@ -14,6 +14,8 @@ export {
   ModalTrigger,
   ModalContent,
   Select,
+  type DateRangePickerValue,
+  DateRangePicker,
   initTheme,
   setTheme,
   THEME_IDS,
