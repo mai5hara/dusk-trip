@@ -22,12 +22,12 @@ const Header = () => {
           className="max-w-xs"
         />
       </div>
-      <div className="flex-1 flex gap-6 justify-end">
+      <div className="flex-1 flex gap-4 justify-end">
         <ButtonLink href="#" variant="accent" size="sm" rounded="full">
           <PlusIcon className="size-5" />
           Add Trip
         </ButtonLink>
-        <ButtonLink href="#" variant="flat" size="icon" rounded="full">
+        <ButtonLink href="#" variant="outline" size="icon" rounded="full">
           <UserIcon className="size-5"/>
         </ButtonLink>
       </div>

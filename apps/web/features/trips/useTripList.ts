@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import type { TripListItem } from "@mood-trip/validators";
-import { filterTripByQuery } from "./trip-list-utils";
+import { filterTripByQuery, sortTrips } from "./trip-list-utils";
 import { useTripListContext } from "./trip-list-context";
 
 type UseTripListProps = {
@@ -10,11 +10,12 @@ type UseTripListProps = {
 }
 
 export function useTripList({initialTrips}: UseTripListProps){
-  const { query } = useTripListContext();
+  const { query, sort } = useTripListContext();
 
-  const trips = useMemo(() => 
-    filterTripByQuery(initialTrips, query),
-  [initialTrips, query]);
+  const trips = useMemo(() => {
+    const filtered = filterTripByQuery(initialTrips, query);
+    return sortTrips(filtered, sort);
+  }, [initialTrips, query, sort]);
 
   return { trips };
 }

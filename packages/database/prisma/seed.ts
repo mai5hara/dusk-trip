@@ -30,11 +30,11 @@ async function main() {
   const trip1 = await prisma.trip.create({
     data: {
       userId: user.id,
-      title: 'Trip 1',
+      title: 'New York Trip',
       thumbnailUrl: 'https://fastly.picsum.photos/id/611/400/300.jpg?hmac=FIqzk_EUUapLnwbIlggz6eiEp5XDhMejt_Ch1P72KmI',
       location: 'New York',
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: new Date(new Date().setDate(new Date().getDate() - 3)),
+      endDate: new Date(new Date().setDate(new Date().getDate() + 3)),
       entries: {
         create: [
           {
@@ -59,11 +59,11 @@ async function main() {
   const trip2 = await prisma.trip.create({
     data: {
       userId: user.id,
-      title: 'Trip 2',
+      title: 'Paris Trip',
       thumbnailUrl: 'https://fastly.picsum.photos/id/611/400/300.jpg?hmac=FIqzk_EUUapLnwbIlggz6eiEp5XDhMejt_Ch1P72KmI',
       location: 'Paris',
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: new Date(new Date().setDate(new Date().getDate() - 6)),
+      endDate: new Date(new Date().setDate(new Date().getDate() + 6)),
       entries: {
         create: [
           {
