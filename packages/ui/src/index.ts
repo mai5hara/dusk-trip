@@ -19,4 +19,4 @@ export {
   initTheme,
   setTheme,
   THEME_IDS,
-} from "tokonoma-ui";
+} from 'tokonoma-ui';

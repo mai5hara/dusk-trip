@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { ButtonLink } from "@mood-trip/ui";
-import { Input } from "@mood-trip/ui";
-import { PlusIcon, UserIcon } from "lucide-react";
-import { useTripListContext } from "@/features/trips/trip-list-context";
+import { ButtonLink } from '@mood-trip/ui';
+import { Input } from '@mood-trip/ui';
+import { PlusIcon, UserIcon } from 'lucide-react';
+import { useTripListContext } from '@/features/trips/trip-list-context';
 
 const Header = () => {
   const { query, setQuery } = useTripListContext();
@@ -17,7 +17,9 @@ const Header = () => {
           rounded="full"
           variant="inset"
           value={query}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setQuery(e.target.value)
+          }
           placeholder="Search trips"
           className="max-w-xs"
         />
@@ -28,7 +30,7 @@ const Header = () => {
           Add Trip
         </ButtonLink>
         <ButtonLink href="#" variant="outline" size="icon" rounded="full">
-          <UserIcon className="size-5"/>
+          <UserIcon className="size-5" />
         </ButtonLink>
       </div>
     </header>

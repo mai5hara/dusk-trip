@@ -1,9 +1,9 @@
 'use client';
 
-import type { TripListItem } from "@mood-trip/validators";
-import TripCard from "./TripCard";
-import TripFilter from "./TripFilter";
-import { useTripList } from "./useTripList";
+import type { TripListItem } from '@mood-trip/validators';
+import TripCard from './TripCard';
+import TripFilter from './TripFilter';
+import { useTripList } from './useTripList';
 
 const TripList = ({ initialTrips }: { initialTrips: TripListItem[] }) => {
   const { trips } = useTripList({ initialTrips });

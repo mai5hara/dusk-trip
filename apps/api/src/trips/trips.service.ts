@@ -11,8 +11,8 @@ export class TripsService {
       where: { userId },
       orderBy: { startDate: 'desc' },
       include: {
-        _count: { select: { entries: true } }
-      }
+        _count: { select: { entries: true } },
+      },
     });
 
     return trips.map((trip) => ({
@@ -30,7 +30,7 @@ export class TripsService {
         },
       },
     });
-    
+
     if (!trip) {
       throw new NotFoundException(`Trip ${id} not found`);
     }
