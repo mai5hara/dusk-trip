@@ -8,6 +8,13 @@ export {
   type Trip,
   type TripListItem,
   type TripWithEntries,
-  type ListTripsQuery,
 } from './trip';
 export { entrySchema, type Entry } from './entry';
+export {
+  loginBodySchema,
+  loginResponseSchema,
+  authUserSchema,
+  type LoginBody,
+  type LoginResponse,
+  type AuthUser,
+} from './auth';

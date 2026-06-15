@@ -1,4 +1,9 @@
+import bcrypt from 'bcrypt';
 import { createPrismaClient } from '../src';
+
+const DEV_EMAIL = 'test@test.com';
+const DEV_PASSWORD = 'password';
+const DEV_NAME = 'Test User';
 
 const url = process.env.DATABASE_URL;
 
@@ -9,14 +14,19 @@ if (!url) {
 const prisma = createPrismaClient(url);
 
 async function main() {
+  const passwordHash = await bcrypt.hash(DEV_PASSWORD, 10);
   const user = await prisma.user.upsert({
     where: {
-      email: 'test@test.com',
+      email: DEV_EMAIL,
     },
-    update: {},
+    update: {
+      name: DEV_NAME,
+      passwordHash,
+    },
     create: {
-      email: 'test@test.com',
-      name: 'Test User',
+      email: DEV_EMAIL,
+      name: DEV_NAME,
+      passwordHash,
     },
   });
 

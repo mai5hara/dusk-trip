@@ -30,5 +30,3 @@ export type TripWithEntries = z.infer<typeof tripWithEntriesSchema>;
 export const listTripsQuerySchema = z.object({
   userId: z.string().uuid(),
 });
-
-export type ListTripsQuery = z.infer<typeof listTripsQuerySchema>;

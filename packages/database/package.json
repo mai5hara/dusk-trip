@@ -17,12 +17,14 @@
     "db:seed": "prisma db seed"
   },
   "devDependencies": {
-    "tsx": "^4.22.4",
     "@mood-trip/config": "workspace:*",
-    "eslint": "^9.28.0",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",
+    "bcrypt": "^6.0.0",
+    "eslint": "^9.28.0",
     "prisma": "^7.8.0",
+    "tsx": "^4.22.4",
     "typescript": "^5.8.3"
   },
   "dependencies": {
