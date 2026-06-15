@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "echo \"@mood-trip/admin: Next.js はこれからセットアップ\"",
     "build": "echo \"@mood-trip/admin: build (not configured yet)\"",
-    "lint": "echo \"@mood-trip/admin: lint (not configured yet)\""
+    "lint": "eslint ."
   },
   "dependencies": {
     "@mood-trip/ui": "workspace:*",
@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@mood-trip/config": "workspace:*",
+    "eslint": "^9.28.0",
     "typescript": "^5.8.3"
   }
 }

@@ -11,8 +11,8 @@ export class TripsService {
       where: { userId },
       orderBy: { startDate: 'desc' },
       include: {
-        _count: { select: { entries: true } }
-      }
+        _count: { select: { entries: true } },
+      },
     });
 
     return trips.map((trip) => ({
@@ -21,7 +21,7 @@ export class TripsService {
     }));
   }
 
-  async findOne(id: string): Promise<TripWithEntries> {
+  async findOne(id: string, userId: string): Promise<TripWithEntries> {
     const trip = await this.prisma.client.trip.findUnique({
       where: { id },
       include: {
@@ -30,8 +30,8 @@ export class TripsService {
         },
       },
     });
-    
-    if (!trip) {
+
+    if (!trip || trip.userId !== userId) {
       throw new NotFoundException(`Trip ${id} not found`);
     }
 

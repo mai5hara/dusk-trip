@@ -10,13 +10,14 @@
   },
   "scripts": {
     "build": "tsc",
-    "lint": "echo \"@mood-trip/validators: lint (not configured yet)\""
+    "lint": "eslint ."
   },
   "dependencies": {
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@mood-trip/config": "workspace:*",
+    "eslint": "^9.28.0",
     "typescript": "^5.8.3"
   }
 }

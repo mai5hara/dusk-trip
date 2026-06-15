@@ -12,11 +12,11 @@ This repository uses **pnpm workspaces**. Run all commands from the **repository
 
 Primary directories:
 
-| Path | Purpose |
-|------|---------|
-| `apps/web` | User-facing Next.js app |
-| `apps/admin` | Admin panel (Next.js, planned) |
-| `apps/mobile` | Expo app (planned) |
+| Path          | Purpose                                 |
+| ------------- | --------------------------------------- |
+| `apps/web`    | User-facing Next.js app                 |
+| `apps/admin`  | Admin panel (Next.js, planned)          |
+| `apps/mobile` | Expo app (planned)                      |
 | `packages/ui` | Shared UI / design system (Radix-based) |
 
 You will mostly work here. The web app talks to the API over HTTP (not directly to the database).
@@ -36,11 +36,11 @@ Environment variables for the web app will live under `apps/web` (e.g. `.env.loc
 
 Primary directories:
 
-| Path | Purpose |
-|------|---------|
-| `apps/api` | NestJS REST API |
-| `packages/database` | Prisma schema, migrations, DB client |
-| `packages/validators` | Shared validation schemas (Zod) |
+| Path                  | Purpose                              |
+| --------------------- | ------------------------------------ |
+| `apps/api`            | NestJS REST API                      |
+| `packages/database`   | Prisma schema, migrations, DB client |
+| `packages/validators` | Shared validation schemas (Zod)      |
 
 You own server logic, database schema, and migrations.
 
@@ -58,10 +58,10 @@ Database connection string: copy `.env.example` to `.env` at the repo root (see 
 
 ### Shared / everyone
 
-| Path | Purpose |
-|------|---------|
-| `packages/config` | Shared TypeScript config |
-| Root `package.json` | Workspace scripts |
+| Path                 | Purpose                          |
+| -------------------- | -------------------------------- |
+| `packages/config`    | Shared TypeScript config         |
+| Root `package.json`  | Workspace scripts                |
 | `docker-compose.yml` | Local PostgreSQL for development |
 
 All contributors should run `pnpm install` once at the root after cloning.
@@ -142,8 +142,8 @@ pnpm dev:web
 
 ## Environment variables
 
-| Variable | Where | Description |
-|----------|--------|-------------|
+| Variable       | Where       | Description                                   |
+| -------------- | ----------- | --------------------------------------------- |
 | `DATABASE_URL` | Root `.env` | PostgreSQL connection string (used by Prisma) |
 
 Do **not** commit `.env`. Only `.env.example` belongs in Git.
@@ -152,13 +152,13 @@ Do **not** commit `.env`. Only `.env.example` belongs in Git.
 
 ## Useful scripts (root)
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev:api` | Build `@mood-trip/database`, then start the API |
-| `pnpm dev:web` | Start the web app (when configured) |
-| `pnpm db:migrate` | Run Prisma migrations (development) |
-| `pnpm db:generate` | Regenerate Prisma Client |
-| `pnpm db:studio` | Open Prisma Studio (optional; UI may be flaky locally) |
+| Command            | Description                                            |
+| ------------------ | ------------------------------------------------------ |
+| `pnpm dev:api`     | Build `@mood-trip/database`, then start the API        |
+| `pnpm dev:web`     | Start the web app (when configured)                    |
+| `pnpm db:migrate`  | Run Prisma migrations (development)                    |
+| `pnpm db:generate` | Regenerate Prisma Client                               |
+| `pnpm db:studio`   | Open Prisma Studio (optional; UI may be flaky locally) |
 
 ---
 

@@ -1,6 +1,9 @@
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-export async function apiClient<T>(path: string, init?: RequestInit): Promise<T> {
+export async function apiClient<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
   if (!baseUrl) {
     throw new Error('NEXT_PUBLIC_API_URL is not set');
   }
@@ -18,4 +21,4 @@ export async function apiClient<T>(path: string, init?: RequestInit): Promise<T>
   }
 
   return res.json() as Promise<T>;
-};
+}

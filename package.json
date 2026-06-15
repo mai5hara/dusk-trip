@@ -11,11 +11,17 @@
     "db:seed": "pnpm --filter @mood-trip/database db:seed",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "pnpm --filter @mood-trip/web test",
     "test:watch": "pnpm --filter @mood-trip/web test:watch"
   },
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "pnpm@9.5.0"
+  "packageManager": "pnpm@9.5.0",
+  "devDependencies": {
+    "@mood-trip/config": "workspace:^",
+    "prettier": "^3.8.4"
+  }
 }

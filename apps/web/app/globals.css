@@ -1,6 +1,6 @@
-@import "@mood-trip/ui/styles.css";
+@import '@mood-trip/ui/styles.css';
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @source "../app/**/*.{js,ts,jsx,tsx}";
 @source "../components/**/*.{js,ts,jsx,tsx}";

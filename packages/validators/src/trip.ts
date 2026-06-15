@@ -15,7 +15,6 @@ export const tripSchema = z.object({
 
 export type Trip = z.infer<typeof tripSchema>;
 
-
 export const tripListItemSchema = tripSchema.extend({
   entryCount: z.number(),
 });
@@ -31,5 +30,3 @@ export type TripWithEntries = z.infer<typeof tripWithEntriesSchema>;
 export const listTripsQuerySchema = z.object({
   userId: z.string().uuid(),
 });
-
-export type ListTripsQuery = z.infer<typeof listTripsQuerySchema>;

@@ -11,19 +11,20 @@
   },
   "scripts": {
     "postinstall": "node ./scripts/sync-ds-styles.mjs",
-    "lint": "echo \"@mood-trip/ui: lint (not configured yet)\""
+    "lint": "eslint ."
   },
   "peerDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "tokonoma-ui": "git+ssh://git@github.com/mai5hara/tokonoma-ui.git#v0.1.0",
+    "tokonoma-ui": "git+ssh://git@github.com/mai5hara/tokonoma-ui.git#v0.2.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@mood-trip/config": "workspace:*",
+    "eslint": "^9.28.0",
     "@types/react": "^19.1.2",
     "typescript": "^5.8.3"
   }

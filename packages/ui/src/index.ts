@@ -14,7 +14,9 @@ export {
   ModalTrigger,
   ModalContent,
   Select,
+  type DateRangePickerValue,
+  DateRangePicker,
   initTheme,
   setTheme,
   THEME_IDS,
-} from "tokonoma-ui";
+} from 'tokonoma-ui';

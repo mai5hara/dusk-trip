@@ -5,6 +5,17 @@
   "exports": {
     "./typescript/base.json": "./typescript/base.json",
     "./typescript/node.json": "./typescript/node.json",
-    "./typescript/nextjs.json": "./typescript/nextjs.json"
+    "./typescript/nextjs.json": "./typescript/nextjs.json",
+    "./eslint/base.mjs": "./eslint/base.mjs",
+    "./eslint/node.mjs": "./eslint/node.mjs",
+    "./prettier/index.mjs": "./prettier/index.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.2.0",
+    "prettier": "^3.8.4",
+    "typescript-eslint": "^8.33.0"
   }
 }
