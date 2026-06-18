@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
-import { TripListProvider } from '@/features/trips/trip-list-context';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { AuthProvider } from '@/features/auth/auth-context';
 import './globals.css';
 
 const geistSans = Geist({
@@ -34,13 +32,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-screen w-full flex-col">
         <ThemeProvider>
-          <TripListProvider>
-            <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4">
-              <Header />
-              <div className="flex-1">{children}</div>
-              <Footer />
-            </div>
-          </TripListProvider>
+          <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
       </body>
     </html>
