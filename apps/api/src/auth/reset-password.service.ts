@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'node:crypto';
@@ -6,6 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
 
 const SUCCESS_MESSAGE = 'If that email exists, a reset link has been sent.';
+const RESET_SECCESS_MESSAGE = 'Password has been reset.';
 
 @Injectable()
 export class ResetPasswordService {
@@ -73,5 +74,48 @@ export class ResetPasswordService {
       default:
         return 60 * 60 * 1000;
     }
+  }
+
+  async resetPassword(
+    rawToken: string,
+    password: string,
+  ): Promise<{ message: string }> {
+    const now = new Date();
+
+    const candidates = await this.prisma.client.passwordResetToken.findMany({
+      where: {
+        usedAt: null,
+        expiresAt: { gt: now },
+      },
+    });
+
+    let matchedToken: (typeof candidates)[number] | null = null;
+
+    for (const candidate of candidates) {
+      const isMatch = await bcrypt.compare(rawToken, candidate.tokenHash);
+      if (isMatch) {
+        matchedToken = candidate;
+        break;
+      }
+    }
+
+    if (!matchedToken) {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    await this.prisma.client.$transaction([
+      this.prisma.client.user.update({
+        where: { id: matchedToken.userId },
+        data: { passwordHash },
+      }),
+      this.prisma.client.passwordResetToken.update({
+        where: { id: matchedToken.id },
+        data: { usedAt: now },
+      }),
+    ]);
+
+    return { message: RESET_SECCESS_MESSAGE };
   }
 }

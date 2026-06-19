@@ -45,3 +45,7 @@ export type ResetPasswordBody = z.infer<typeof resetPasswordBodySchema>;
 export const forgotPasswordResponseSchema = z.object({
   message: z.string(),
 });
+
+export type ResetPasswordResponse = z.infer<
+  typeof forgotPasswordResponseSchema
+>;

@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import {
   loginBodySchema,
   forgotPasswordBodySchema,
+  resetPasswordBodySchema,
 } from '@mood-trip/validators';
 import { AuthService } from './auth.service';
 import { ResetPasswordService } from './reset-password.service';
@@ -33,5 +34,19 @@ export class AuthController {
     }
 
     return this.resetPasswordService.requestPasswordReset(parsed.data.email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body: unknown) {
+    const parsed = resetPasswordBodySchema.safeParse(body);
+
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten());
+    }
+
+    return this.resetPasswordService.resetPassword(
+      parsed.data.token,
+      parsed.data.password,
+    );
   }
 }
