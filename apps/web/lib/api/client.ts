@@ -21,10 +21,10 @@ export async function apiClient<T>(
     headers: {
       ...headers,
       ...(init?.headers as Record<string, string> | undefined),
-    }
+    },
   });
 
-  if(res.status === 401) {
+  if (res.status === 401) {
     throw new Error('Unauthorized');
   }
 

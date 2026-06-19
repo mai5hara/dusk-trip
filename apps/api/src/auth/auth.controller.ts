@@ -1,13 +1,16 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
-import { loginBodySchema, forgotPasswordBodySchema } from '@mood-trip/validators';
+import {
+  loginBodySchema,
+  forgotPasswordBodySchema,
+} from '@mood-trip/validators';
 import { AuthService } from './auth.service';
-import { ResetPasswordService } from './reset-password.service'
+import { ResetPasswordService } from './reset-password.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly resetPasswordService: ResetPasswordService
+    private readonly resetPasswordService: ResetPasswordService,
   ) {}
 
   @Post('login')
@@ -23,7 +26,7 @@ export class AuthController {
 
   @Post('forgot-password')
   async forgotPassword(@Body() body: unknown) {
-    const parsed = forgotPasswordBodySchema.safeParse(body)
+    const parsed = forgotPasswordBodySchema.safeParse(body);
 
     if (!parsed.success) {
       throw new BadRequestException(parsed.error.flatten());

@@ -29,18 +29,19 @@ export const forgotPasswordBodySchema = z.object({
 
 export type ForgotPasswordBody = z.infer<typeof forgotPasswordBodySchema>;
 
-export const resetPasswordBodySchema = z.object({
-  token: z.string().min(1),
-  password: z.string().min(8),
-  confirmPassword: z.string().min(8),
-})
-.refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-})
+export const resetPasswordBodySchema = z
+  .object({
+    token: z.string().min(1),
+    password: z.string().min(8),
+    confirmPassword: z.string().min(8),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 export type ResetPasswordBody = z.infer<typeof resetPasswordBodySchema>;
 
 export const forgotPasswordResponseSchema = z.object({
-  message: z.string()
-})
+  message: z.string(),
+});

@@ -3,23 +3,23 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserService } from '../user/user.service'
+import { UserService } from '../user/user.service';
 
 const SUCCESS_MESSAGE = 'If that email exists, a reset link has been sent.';
 
 @Injectable()
 export class ResetPasswordService {
-  constructor (
+  constructor(
     private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
-  ){}
+  ) {}
 
-  async requestPasswordReset(email: string): Promise<{ message: string}> {
+  async requestPasswordReset(email: string): Promise<{ message: string }> {
     const user = await this.userService.findByEmailForAuth(email);
 
     // Even if the user doesn't exist send a success message
-    if(!user) {
+    if (!user) {
       return { message: SUCCESS_MESSAGE };
     }
 
@@ -29,24 +29,24 @@ export class ResetPasswordService {
     const expiresInMs = this.parseExpiresIn(
       this.configService.get<string>('PASSWORD_RESET_EXPIRES_IN') ?? '1h',
     );
-    const expiresAt = new Date(Date.now() + expiresInMs)
+    const expiresAt = new Date(Date.now() + expiresInMs);
 
     // Delete ald unused tokens
     await this.prisma.client.passwordResetToken.deleteMany({
-      where: { userId: user.id, usedAt: null }
-    })
+      where: { userId: user.id, usedAt: null },
+    });
 
     await this.prisma.client.passwordResetToken.create({
       data: {
         userId: user.id,
         tokenHash,
-        expiresAt
-      }
-    })
+        expiresAt,
+      },
+    });
 
-    const webOrigin = this.configService.getOrThrow<string>('WEB_ORIGIN')
-    const resetUrl = `${webOrigin}/reset-password?token=${rawToken}`
-    console.log('[dev] password reset link:', resetUrl)
+    const webOrigin = this.configService.getOrThrow<string>('WEB_ORIGIN');
+    const resetUrl = `${webOrigin}/reset-password?token=${rawToken}`;
+    console.log('[dev] password reset link:', resetUrl);
 
     return { message: SUCCESS_MESSAGE };
   }
@@ -54,19 +54,24 @@ export class ResetPasswordService {
   private parseExpiresIn(value: string): number {
     const match = /^(\d+)([smhd])$/.exec(value);
 
-    if(!match) {
+    if (!match) {
       return 60 * 60 * 1000;
     }
 
-    const amount = Number(match[1])
-    const unit = match[2]
+    const amount = Number(match[1]);
+    const unit = match[2];
 
     switch (unit) {
-      case 's': return amount * 1000
-      case 'm': return amount * 60 * 1000
-      case 'h': return amount * 60 * 60 * 1000
-      case 'd': return amount * 24 * 60 * 60 * 1000
-      default: return 60 * 60 * 1000
+      case 's':
+        return amount * 1000;
+      case 'm':
+        return amount * 60 * 1000;
+      case 'h':
+        return amount * 60 * 60 * 1000;
+      case 'd':
+        return amount * 24 * 60 * 60 * 1000;
+      default:
+        return 60 * 60 * 1000;
     }
   }
 }
