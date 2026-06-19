@@ -3,7 +3,7 @@ import { LoginBody, LoginResponse } from '@mood-trip/validators';
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export async function login(body: LoginBody): Promise<LoginResponse> {
-  if(!baseUrl) {
+  if (!baseUrl) {
     throw new Error('NEXT_PUBLIC_API_URL is not set');
   }
 
@@ -11,11 +11,27 @@ export async function login(body: LoginBody): Promise<LoginResponse> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
-  })
+  });
 
-  if(!res.ok) {
+  if (!res.ok) {
     throw new Error('Invalid email or password');
   }
 
   return res.json() as Promise<LoginResponse>;
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  if (!baseUrl) {
+    throw new Error('NEXT_PUBLIC_API_URL is not set');
+  }
+
+  const res = await fetch(`${baseUrl}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Invalid email or password');
+  }
 }

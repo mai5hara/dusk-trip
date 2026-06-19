@@ -74,21 +74,23 @@ export default function LoginPage() {
               </div>
             </div>
             {error && <p className="text-red-500">{error}</p>}
-            <Button
-              type="submit"
-              variant="accent"
-              rounded="full"
-              disabled={isLoading}
-              className="w-full max-w-[350px]"
-            >
-              {isLoading ? 'Loading...' : 'SIGN IN TO JOURNEY'}
-            </Button>
-            <p className="text-sm">
-              New to Mood Trip?
-              <Link href="/register" className="text-accent pl-2 font-bold">
-                Create an account
-              </Link>
-            </p>
+            <div className="flex flex-col gap-4">
+              <Button
+                type="submit"
+                variant="accent"
+                rounded="full"
+                disabled={isLoading}
+                className="w-full max-w-[350px]"
+              >
+                {isLoading ? 'Loading...' : 'SIGN IN TO JOURNEY'}
+              </Button>
+              <p className="text-sm">
+                New to Mood Trip?
+                <Link href="/register" className="text-accent pl-2 font-bold">
+                  Create an account
+                </Link>
+              </p>
+            </div>
           </form>
         </div>
       </div>
