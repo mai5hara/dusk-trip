@@ -1,3 +1,6 @@
+import { getAccessToken } from '@/lib/auth/token';
+import { refreshAccessToken } from '@/features/auth/api';
+
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiClient<T>(
@@ -8,13 +11,29 @@ export async function apiClient<T>(
     throw new Error('NEXT_PUBLIC_API_URL is not set');
   }
 
-  const res = await fetch(`${baseUrl}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...init?.headers,
-    },
-  });
+  const fetchWithAuth = () =>
+    fetch(`${baseUrl}${path}`, {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(getAccessToken()
+          ? { Authorization: `Bearer ${getAccessToken()}` }
+          : {}),
+        ...(init?.headers as Record<string, string> | undefined),
+      },
+    });
+
+  let res = await fetchWithAuth();
+
+  if (res.status === 401) {
+    const newToken = await refreshAccessToken();
+
+    if (!newToken) {
+      throw new Error('Unauthorized');
+    }
+
+    res = await fetchWithAuth();
+  }
 
   if (!res.ok) {
     throw new Error(`HTTP error! status: ${res.status}`);

@@ -1,9 +1,8 @@
 import { apiClient } from '@/lib/api/client';
 import type { TripListItem, TripWithEntries } from '@mood-trip/validators';
 
-export async function getTrips(userId: string): Promise<TripListItem[]> {
-  const params = new URLSearchParams({ userId });
-  return apiClient<TripListItem[]>(`/trips?${params.toString()}`);
+export async function getTrips(): Promise<TripListItem[]> {
+  return apiClient<TripListItem[]>('/trips');
 }
 
 export async function getTrip(id: string): Promise<TripWithEntries> {
