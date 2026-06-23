@@ -13,7 +13,7 @@
     "lint": "pnpm -r lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "pnpm --filter @mood-trip/web test",
+    "test": "pnpm -r test",
     "test:watch": "pnpm --filter @mood-trip/web test:watch"
   },
   "engines": {
