@@ -49,3 +49,19 @@ export const forgotPasswordResponseSchema = z.object({
 export type ResetPasswordResponse = z.infer<
   typeof forgotPasswordResponseSchema
 >;
+
+export const refreshBodySchema = z.object({
+  refreshToken: z.string().min(1),
+})
+
+export type RefreshBody = z.infer<typeof refreshBodySchema>;
+
+export const refreshResponseSchema = z.object({
+  accessToken: z.string(),
+});
+
+export type RefreshResponse = z.infer<typeof refreshResponseSchema>;
+
+export const meResponseSchema = authUserSchema;
+
+export type MeResponse = z.infer<typeof meResponseSchema>;

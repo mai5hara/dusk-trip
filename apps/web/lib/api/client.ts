@@ -1,4 +1,5 @@
 import { getAccessToken } from '@/lib/auth/token';
+import { refreshAccessToken } from '@/features/auth/api';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -25,7 +26,11 @@ export async function apiClient<T>(
   });
 
   if (res.status === 401) {
-    throw new Error('Unauthorized');
+    const newToken = await refreshAccessToken();
+
+    if(!newToken) {
+      throw new Error('Unauthorized');
+    }
   }
 
   if (!res.ok) {

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
-import type { LoginResponse } from '@mood-trip/validators';
+import type { AuthUser, LoginResponse } from '@mood-trip/validators';
 import type ms from 'ms';
 
 type JwtPayload = {
@@ -60,6 +60,48 @@ export class AuthService {
         email: user.email,
         name: user.name,
       },
+    };
+  }
+
+  async refresh(refreshToken: string): Promise<{ accessToken: string }> {
+    let payload: JwtPayload;
+
+    try {
+      payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const user = await this.userService.findByIdForAuth(payload.sub);
+
+    if(!user) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const accessToken = await this.jwtService.signAsync(
+      { sub: user.id, email: user.email } satisfies JwtPayload,
+      {
+        secret: this.configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
+        expiresIn: this.configService.getOrThrow<ms.StringValue>('JWT_ACCESS_EXPIRES_IN'),
+      }
+    )
+
+    return { accessToken };
+  }
+
+  async getMe(userId: string): Promise<AuthUser> {
+    const user = await this.userService.findByIdForAuth(userId);
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
     };
   }
 }

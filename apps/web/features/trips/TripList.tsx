@@ -11,11 +11,13 @@ import { getTrips } from './api';
 
 const TripList = () => {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const [initialTrips, setInitialTrips] = useState<TripListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (isAuthLoading) return;
+
     if (!isAuthenticated) {
       router.replace('/login');
       return;
@@ -25,7 +27,7 @@ const TripList = () => {
       .then(setInitialTrips)
       .catch(() => router.replace('/login'))
       .finally(() => setIsLoading(false));
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isAuthLoading, router]);
 
   const { trips } = useTripList({ initialTrips });
 

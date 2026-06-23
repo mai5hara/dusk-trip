@@ -1,4 +1,11 @@
-import { LoginBody, LoginResponse } from '@mood-trip/validators';
+import {
+  LoginBody,
+  LoginResponse,
+  MeResponse,
+  RefreshResponse,
+} from '@mood-trip/validators';
+import { apiClient } from '@/lib/api/client';
+import { getRefreshToken, setAccessToken } from '@/lib/auth/token';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -56,4 +63,27 @@ export async function resetPassword(
   }
 
   return res.json() as Promise<{ message: string }>;
+}
+
+export async function refreshAccessToken(): Promise<string | null> {
+  const refreshToken = getRefreshToken();
+  if(!refreshToken) return null;
+
+  const res = await fetch(`${baseUrl}/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
+  });
+
+  if (!res.ok) {
+    return null;
+  }
+
+  const data = (await res.json()) as RefreshResponse;
+  setAccessToken(data.accessToken);
+  return data.accessToken;
+}
+
+export async function getMe(): Promise<MeResponse> {
+  return apiClient<MeResponse>('/auth/me');
 }

@@ -17,9 +17,13 @@ export {
   forgotPasswordBodySchema,
   resetPasswordBodySchema,
   forgotPasswordResponseSchema,
+  refreshBodySchema,
+  meResponseSchema,
   type ForgotPasswordBody,
   type ResetPasswordBody,
   type LoginBody,
   type LoginResponse,
   type AuthUser,
+  type RefreshResponse,
+  type MeResponse,
 } from './auth';

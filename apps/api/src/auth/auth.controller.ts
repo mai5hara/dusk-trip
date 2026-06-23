@@ -1,10 +1,20 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import {
   loginBodySchema,
   forgotPasswordBodySchema,
   resetPasswordBodySchema,
+  refreshBodySchema,
 } from '@mood-trip/validators';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import { ResetPasswordService } from './reset-password.service';
 
 @Controller('auth')
@@ -48,5 +58,22 @@ export class AuthController {
       parsed.data.token,
       parsed.data.password,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async me(@Request() req: { user: { id: string } }) {
+    return this.authService.getMe(req.user.id);
+  }
+
+  @Post('refresh')
+  async refresh(@Body() body: unknown) {
+    const parsed = refreshBodySchema.safeParse(body);
+
+    if(!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten());
+    }
+
+    return this.authService.refresh(parsed.data.refreshToken);
   }
 }

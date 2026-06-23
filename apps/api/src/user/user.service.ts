@@ -25,4 +25,8 @@ export class UserService {
 
     return user;
   }
+
+  async findByIdForAuth(id: string): Promise<User | null> {
+    return this.prisma.client.user.findUnique({ where: { id }})
+  }
 }
