@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import {
   loginBodySchema,
+  signupBodySchema,
   forgotPasswordBodySchema,
   resetPasswordBodySchema,
   refreshBodySchema,
@@ -75,5 +76,20 @@ export class AuthController {
     }
 
     return this.authService.refresh(parsed.data.refreshToken);
+  }
+
+  @Post('signup')
+  async signup(@Body() body: unknown) {
+    const parsed = signupBodySchema.safeParse(body);
+
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten());
+    }
+
+    return this.authService.signup(
+      parsed.data.name,
+      parsed.data.email,
+      parsed.data.password,
+    );
   }
 }

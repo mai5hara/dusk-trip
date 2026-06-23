@@ -3,6 +3,8 @@ import {
   LoginResponse,
   MeResponse,
   RefreshResponse,
+  SignupBody,
+  SignupResponse,
 } from '@mood-trip/validators';
 import { apiClient } from '@/lib/api/client';
 import { getRefreshToken, setAccessToken } from '@/lib/auth/token';
@@ -86,4 +88,22 @@ export async function refreshAccessToken(): Promise<string | null> {
 
 export async function getMe(): Promise<MeResponse> {
   return apiClient<MeResponse>('/auth/me');
+}
+
+export async function signup(body: SignupBody): Promise<SignupResponse> {
+  if (!baseUrl) {
+    throw new Error('NEXT_PUBLIC_API_URL is not set');
+  }
+
+  const res = await fetch(`${baseUrl}/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error('Invalid email or password');
+  }
+
+  return res.json() as Promise<SignupResponse>;
 }

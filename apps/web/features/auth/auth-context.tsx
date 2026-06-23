@@ -11,7 +11,12 @@ import {
 } from 'react';
 import { useRouter } from 'next/navigation';
 import type { AuthUser } from '@mood-trip/validators';
-import { getMe, login as loginApi, refreshAccessToken } from './api';
+import {
+  getMe,
+  login as loginApi,
+  refreshAccessToken,
+  signup as signupApi,
+} from './api';
 import { clearTokens, setAccessToken, setRefreshToken } from '@/lib/auth/token';
 
 type AuthContextValue = {
@@ -19,6 +24,12 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  signup: (
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ) => Promise<void>;
   logout: () => void;
 };
 
@@ -67,6 +78,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [router],
   );
 
+  const signup = useCallback(
+    async (
+      name: string,
+      email: string,
+      password: string,
+      confirmPassword: string,
+    ) => {
+      const res = await signupApi({ name, email, password, confirmPassword });
+      setAccessToken(res.accessToken);
+      setRefreshToken(res.refreshToken);
+      setUser(res.user);
+      router.push('/');
+    },
+    [router],
+  );
+
   const logout = useCallback(() => {
     clearTokens();
     setUser(null);
@@ -79,9 +106,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: user !== null,
       isLoading,
       login,
+      signup,
       logout,
     }),
-    [user, isLoading, login, logout],
+    [user, isLoading, login, logout, signup],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

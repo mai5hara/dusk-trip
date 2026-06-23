@@ -65,3 +65,25 @@ export type RefreshResponse = z.infer<typeof refreshResponseSchema>;
 export const meResponseSchema = authUserSchema;
 
 export type MeResponse = z.infer<typeof meResponseSchema>;
+
+export const signupBodySchema = z
+  .object({
+    name: z.string().min(1),
+    email: z.string().email(),
+    password: z.string().min(8),
+    confirmPassword: z.string().min(8),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
+
+export type SignupBody = z.infer<typeof signupBodySchema>;
+
+export const signupResponseSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+  user: authUserSchema,
+});
+
+export type SignupResponse = z.infer<typeof signupResponseSchema>;

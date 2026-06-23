@@ -13,6 +13,8 @@ export { entrySchema, type Entry } from './entry';
 export {
   loginBodySchema,
   loginResponseSchema,
+  signupBodySchema,
+  signupResponseSchema,
   authUserSchema,
   forgotPasswordBodySchema,
   resetPasswordBodySchema,
@@ -23,6 +25,8 @@ export {
   type ResetPasswordBody,
   type LoginBody,
   type LoginResponse,
+  type SignupBody,
+  type SignupResponse,
   type AuthUser,
   type RefreshResponse,
   type MeResponse,

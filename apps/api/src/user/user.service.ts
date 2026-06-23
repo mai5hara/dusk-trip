@@ -29,4 +29,20 @@ export class UserService {
   async findByIdForAuth(id: string): Promise<User | null> {
     return this.prisma.client.user.findUnique({ where: { id } });
   }
+
+  async create(
+    name: string,
+    email: string,
+    passwordHash: string,
+  ): Promise<User> {
+    const user = await this.prisma.client.user.create({
+      data: {
+        name,
+        email,
+        passwordHash,
+      },
+    });
+
+    return user;
+  }
 }
