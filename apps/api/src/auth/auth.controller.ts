@@ -70,7 +70,7 @@ export class AuthController {
   async refresh(@Body() body: unknown) {
     const parsed = refreshBodySchema.safeParse(body);
 
-    if(!parsed.success) {
+    if (!parsed.success) {
       throw new BadRequestException(parsed.error.flatten());
     }
 

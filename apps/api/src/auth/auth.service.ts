@@ -76,7 +76,7 @@ export class AuthService {
 
     const user = await this.userService.findByIdForAuth(payload.sub);
 
-    if(!user) {
+    if (!user) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
@@ -84,9 +84,11 @@ export class AuthService {
       { sub: user.id, email: user.email } satisfies JwtPayload,
       {
         secret: this.configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
-        expiresIn: this.configService.getOrThrow<ms.StringValue>('JWT_ACCESS_EXPIRES_IN'),
-      }
-    )
+        expiresIn: this.configService.getOrThrow<ms.StringValue>(
+          'JWT_ACCESS_EXPIRES_IN',
+        ),
+      },
+    );
 
     return { accessToken };
   }

@@ -67,7 +67,7 @@ export async function resetPassword(
 
 export async function refreshAccessToken(): Promise<string | null> {
   const refreshToken = getRefreshToken();
-  if(!refreshToken) return null;
+  if (!refreshToken) return null;
 
   const res = await fetch(`${baseUrl}/auth/refresh`, {
     method: 'POST',

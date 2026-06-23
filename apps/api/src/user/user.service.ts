@@ -27,6 +27,6 @@ export class UserService {
   }
 
   async findByIdForAuth(id: string): Promise<User | null> {
-    return this.prisma.client.user.findUnique({ where: { id }})
+    return this.prisma.client.user.findUnique({ where: { id } });
   }
 }
