@@ -1,6 +1,19 @@
-import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { TripsService } from './trips.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {
+  createTripBodySchema,
+  createEntryBodySchema,
+} from '@mood-trip/validators';
 @Controller('trips')
 export class TripsController {
   constructor(private readonly tripsService: TripsService) {}
@@ -9,6 +22,26 @@ export class TripsController {
   @Get()
   findByUser(@Request() req: { user: { id: string } }) {
     return this.tripsService.findByUserId(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  create(@Body() body: unknown, @Request() req: { user: { id: string } }) {
+    const parsed = createTripBodySchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.tripsService.create(req.user.id, parsed.data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':tripId/entries')
+  createEntry(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Request() req: { user: { id: string } },
+  ) {
+    const parsed = createEntryBodySchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.tripsService.createEntry(tripId, req.user.id, parsed.data);
   }
 
   @UseGuards(JwtAuthGuard)

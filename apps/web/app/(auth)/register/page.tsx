@@ -99,12 +99,12 @@ export default function SignUpPage() {
                 disabled={isLoading}
                 className="w-full max-w-[350px]"
               >
-                {isLoading ? 'Loading...' : 'SIGN IN TO JOURNEY'}
+                {isLoading ? 'Loading...' : 'SIGN UP TO JOURNEY'}
               </Button>
               <p className="text-sm">
                 Already have an account?
                 <Link href="/login" className="text-accent pl-2 font-bold">
-                  Sign in to your account
+                  Login to your account
                 </Link>
               </p>
             </div>

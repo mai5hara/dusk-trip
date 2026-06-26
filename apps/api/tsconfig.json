@@ -10,5 +10,5 @@
     "strictPropertyInitialization": false,
     "types": ["node", "jest"]
   },
-  "include": ["src", "jest.config.ts"]
+  "include": ["src"]
 }
