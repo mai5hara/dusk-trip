@@ -6,7 +6,9 @@
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@mood-trip/database": "workspace:*",
@@ -28,12 +30,16 @@
     "@mood-trip/config": "workspace:*",
     "@nestjs/cli": "^11.0.21",
     "@nestjs/schematics": "^11.1.0",
+    "@nestjs/testing": "^11.1.27",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/ms": "^2.1.0",
     "@types/node": "^25.9.1",
     "@types/passport-jwt": "^4.0.1",
     "eslint": "^9.28.0",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }

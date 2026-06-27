@@ -28,11 +28,11 @@ export default function ResetPasswordPage() {
 
     try {
       await resetPassword(rawToken, newPassword, confirmPassword);
+      router.push('/login');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
-      router.push('/login');
     }
   };
 

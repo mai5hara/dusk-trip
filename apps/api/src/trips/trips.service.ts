@@ -1,5 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { TripListItem, TripWithEntries } from '@mood-trip/validators';
+import type {
+  TripListItem,
+  TripWithEntries,
+  CreateTripBody,
+  CreateEntryBody,
+  Entry,
+} from '@mood-trip/validators';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -36,5 +42,47 @@ export class TripsService {
     }
 
     return trip;
+  }
+
+  async create(userId: string, body: CreateTripBody): Promise<TripListItem> {
+    const trip = await this.prisma.client.trip.create({
+      data: {
+        userId,
+        ...body,
+      },
+      include: {
+        _count: { select: { entries: true } },
+      },
+    });
+
+    return {
+      ...trip,
+      entryCount: trip._count.entries,
+    };
+  }
+
+  async createEntry(
+    tripId: string,
+    userId: string,
+    body: CreateEntryBody,
+  ): Promise<Entry> {
+    const trip = await this.prisma.client.trip.findUnique({
+      where: { id: tripId },
+    });
+
+    if (!trip || trip.userId !== userId) {
+      throw new NotFoundException(`Trip ${tripId} not found`);
+    }
+
+    return this.prisma.client.entry.create({
+      data: {
+        tripId,
+        photoUrl: body.photoUrl,
+        caption: body.caption ?? null,
+        location: body.location ?? null,
+        dayLabel: body.dayLabel ?? null,
+        sortOrder: body.sortOrder ?? 0,
+      },
+    });
   }
 }

@@ -5,11 +5,18 @@ export {
   tripListItemSchema,
   tripWithEntriesSchema,
   listTripsQuerySchema,
+  createTripBodySchema,
   type Trip,
   type TripListItem,
   type TripWithEntries,
+  type CreateTripBody,
 } from './trip';
-export { entrySchema, type Entry } from './entry';
+export {
+  entrySchema,
+  createEntryBodySchema,
+  type Entry,
+  type CreateEntryBody,
+} from './entry';
 export {
   loginBodySchema,
   loginResponseSchema,

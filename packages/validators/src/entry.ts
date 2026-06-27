@@ -13,3 +13,13 @@ export const entrySchema = z.object({
 });
 
 export type Entry = z.infer<typeof entrySchema>;
+
+export const createEntryBodySchema = z.object({
+  photoUrl: z.string().url(),
+  caption: z.string().max(300).optional(),
+  location: z.string().optional(),
+  dayLabel: z.string().max(300).optional(),
+  sortOrder: z.number().int().optional(),
+});
+
+export type CreateEntryBody = z.infer<typeof createEntryBodySchema>;

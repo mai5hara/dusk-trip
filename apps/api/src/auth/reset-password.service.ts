@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
 
 const SUCCESS_MESSAGE = 'If that email exists, a reset link has been sent.';
-const RESET_SECCESS_MESSAGE = 'Password has been reset.';
+const RESET_SUCCESS_MESSAGE = 'Password has been reset.';
 
 @Injectable()
 export class ResetPasswordService {
@@ -116,6 +116,6 @@ export class ResetPasswordService {
       }),
     ]);
 
-    return { message: RESET_SECCESS_MESSAGE };
+    return { message: RESET_SUCCESS_MESSAGE };
   }
 }

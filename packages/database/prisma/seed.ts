@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { createPrismaClient } from '../src';
 
 const DEV_EMAIL = 'test@test.com';
-const DEV_PASSWORD = 'password';
+const DEV_PASSWORD = 'newpassword1';
 const DEV_NAME = 'Test User';
 
 const url = process.env.DATABASE_URL;
