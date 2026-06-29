@@ -5,3 +5,70 @@
 @source "../app/**/*.{js,ts,jsx,tsx}";
 @source "../components/**/*.{js,ts,jsx,tsx}";
 @source "../features/**/*.{js,ts,jsx,tsx}";
+
+@keyframes formExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes explorerEnter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-exit {
+  animation: formExit 450ms ease-in forwards;
+}
+
+.explorer-enter {
+  animation: explorerEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.itinerary-scroll {
+  scroll-behavior: smooth;
+}
+
+.itinerary-map-shell .maplibregl-map {
+  background: color-mix(in oklab, var(--surface) 92%, black);
+  font: inherit;
+}
+
+.itinerary-map-shell .maplibregl-popup-content {
+  border-radius: 16px;
+}
+
+.itinerary-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--accent) 88%, white);
+  border: 3px solid white;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 22%);
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.itinerary-marker--active {
+  width: 22px;
+  height: 22px;
+  transform: scale(1.08);
+  background: var(--accent);
+  box-shadow: 0 0 0 8px color-mix(in oklab, var(--accent) 24%, transparent);
+}
+
