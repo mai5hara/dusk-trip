@@ -13,10 +13,15 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   createTripBodySchema,
   createEntryBodySchema,
+  planTripBodySchema,
 } from '@mood-trip/validators';
+import { TripPlanService } from '../ai/trip-plan.service';
 @Controller('trips')
 export class TripsController {
-  constructor(private readonly tripsService: TripsService) {}
+  constructor(
+    private readonly tripsService: TripsService,
+    private readonly tripPlanService: TripPlanService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -30,6 +35,14 @@ export class TripsController {
     const parsed = createTripBodySchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
     return this.tripsService.create(req.user.id, parsed.data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('plan')
+  plan(@Body() body: unknown) {
+    const parsed = planTripBodySchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.tripPlanService.generateTripPlan(parsed.data);
   }
 
   @UseGuards(JwtAuthGuard)
