@@ -1,44 +1,42 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import type { TripListItem } from '@mood-trip/validators';
 import TripCard from './TripCard';
 import TripFilter from './TripFilter';
-import { useTripList } from './useTripList';
+import { useFilteredTrips } from './useFilteredTrips';
 import { useAuth } from '@/features/auth/auth-context';
-import { getTrips } from './api';
+import { useTripsQuery } from './useTripsQuery';
 
 const TripList = () => {
   const router = useRouter();
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  const [initialTrips, setInitialTrips] = useState<TripListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: trips = [], isLoading, isError } = useTripsQuery();
+  const { filteredTrips } = useFilteredTrips({ trips });
 
   useEffect(() => {
     if (isAuthLoading) return;
-
     if (!isAuthenticated) {
       router.replace('/login');
-      return;
     }
-
-    getTrips()
-      .then(setInitialTrips)
-      .catch(() => router.replace('/login'))
-      .finally(() => setIsLoading(false));
   }, [isAuthenticated, isAuthLoading, router]);
 
-  const { trips } = useTripList({ initialTrips });
+  useEffect(() => {
+    if (isError) {
+      router.replace('/login');
+    }
+  }, [isError, router]);
+
+  const isPageLoading = isAuthLoading || isLoading;
 
   return (
     <div className="flex flex-col gap-6 pt-10">
       <TripFilter />
       <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4">
-        {isLoading ? (
+        {isPageLoading ? (
           <p>Loading...</p>
         ) : (
-          trips.map((trip) => <TripCard key={trip.id} trip={trip} />)
+          filteredTrips.map((trip) => <TripCard key={trip.id} trip={trip} />)
         )}
       </div>
     </div>

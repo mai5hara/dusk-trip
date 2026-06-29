@@ -10,20 +10,20 @@ import {
 import { useTripListContext } from './trip-list-context';
 
 type UseTripListProps = {
-  initialTrips: TripListItem[];
+  trips: TripListItem[];
 };
 
-export function useTripList({ initialTrips }: UseTripListProps) {
+export function useFilteredTrips({ trips }: UseTripListProps) {
   const { query, sort, dateRange } = useTripListContext();
 
-  const trips = useMemo(() => {
-    const filteredBySearch = filterTripByQuery(initialTrips, query);
+  const filteredTrips = useMemo(() => {
+    const filteredBySearch = filterTripByQuery(trips, query);
     const filteredByDateRange = filterTripsByDateRange(
       filteredBySearch,
       dateRange,
     );
     return sortTrips(filteredByDateRange, sort);
-  }, [initialTrips, query, sort, dateRange]);
+  }, [trips, query, sort, dateRange]);
 
-  return { trips };
+  return { filteredTrips };
 }
