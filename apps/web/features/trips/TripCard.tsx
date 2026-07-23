@@ -26,7 +26,7 @@ const TripCard = ({ trip }: { trip: TripListItem }) => {
       <CardHeader>
         <CardTitle>{trip.title}</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-1">
+      <CardContent>
         <div className="flex items-center gap-2 text-sm">
           <MapPinIcon className="size-4" />
           {trip.location}

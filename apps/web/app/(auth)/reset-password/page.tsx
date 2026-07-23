@@ -82,7 +82,6 @@ export default function ResetPasswordPage() {
               variant="accent"
               rounded="full"
               disabled={isLoading}
-              className="w-full max-w-[350px]"
             >
               {isLoading ? 'Loading...' : 'RESET PASSWORD'}
             </Button>

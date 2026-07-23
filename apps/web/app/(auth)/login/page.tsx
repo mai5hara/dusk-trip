@@ -80,7 +80,6 @@ export default function LoginPage() {
                 variant="accent"
                 rounded="full"
                 disabled={isLoading}
-                className="w-full max-w-[350px]"
               >
                 {isLoading ? 'Loading...' : 'SIGN IN TO JOURNEY'}
               </Button>

@@ -76,7 +76,6 @@ export default function ForgotPasswordPage() {
                     variant="accent"
                     rounded="full"
                     disabled={isLoading}
-                    className="w-full max-w-[350px]"
                   >
                     {isLoading ? 'Loading...' : 'SEND RESET LINK'}
                   </Button>

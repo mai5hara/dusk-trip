@@ -97,7 +97,6 @@ export default function SignUpPage() {
                 variant="accent"
                 rounded="full"
                 disabled={isLoading}
-                className="w-full max-w-[350px]"
               >
                 {isLoading ? 'Loading...' : 'SIGN UP TO JOURNEY'}
               </Button>
