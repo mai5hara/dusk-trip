@@ -1,0 +1,166 @@
+import {
+  BadGatewayException,
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import {
+  type PlannedTripDraft,
+  type PlanTripBody,
+  plannedTripDraftSchema,
+} from '@mood-trip/validators';
+
+@Injectable()
+export class GeminiTripPlannerService {
+  private readonly logger = new Logger(GeminiTripPlannerService.name);
+  private readonly models = [
+    'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-2.5-flash-lite',
+  ] as const;
+
+  constructor(private readonly configService: ConfigService) {}
+
+  async generateTripPlan(body: PlanTripBody): Promise<PlannedTripDraft> {
+    const apiKey = this.configService.getOrThrow<string>('GEMINI_API_KEY');
+    const ai = await this.createClient(apiKey);
+    const prompt = this.buildPrompt(body);
+
+    let lastError: unknown;
+
+    for (const model of this.models) {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const response = await ai.models.generateContent({
+            model,
+            contents: prompt,
+            config: {
+              responseMimeType: 'application/json',
+            },
+          });
+
+          const parsedJson = this.parseJsonResponse(response.text ?? '');
+          const parsedPlan = plannedTripDraftSchema.safeParse(parsedJson);
+
+          if (!parsedPlan.success) {
+            throw new BadGatewayException(
+              'Gemini returned an invalid trip plan',
+            );
+          }
+
+          return parsedPlan.data;
+        } catch (error) {
+          lastError = error;
+
+          if (error instanceof BadGatewayException) {
+            throw error;
+          }
+
+          if (!this.isRetryableError(error)) {
+            throw new BadGatewayException('Gemini trip planning failed');
+          }
+
+          const delayMs = 1000 * (attempt + 1);
+          this.logger.warn(
+            `Gemini ${model} unavailable (attempt ${attempt + 1}). Retrying in ${delayMs}ms.`,
+          );
+          await this.sleep(delayMs);
+        }
+      }
+
+      this.logger.warn(`Falling back from Gemini model ${model}.`);
+    }
+
+    this.logger.error('Gemini trip planning exhausted retries', lastError);
+    throw new ServiceUnavailableException(
+      'The AI planner is busy right now. Please try again in a moment.',
+    );
+  }
+
+  private isRetryableError(error: unknown): boolean {
+    if (!error || typeof error !== 'object' || !('status' in error)) {
+      return false;
+    }
+
+    const status = (error as { status: number }).status;
+    return status === 429 || status === 500 || status === 503;
+  }
+
+  private sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private async createClient(apiKey: string) {
+    const { GoogleGenAI } = await import('@google/genai');
+    return new GoogleGenAI({ apiKey });
+  }
+
+  private buildPrompt(body: PlanTripBody): string {
+    const constraints = body.constraints?.trim() || 'No special constraints.';
+
+    return `
+You are a thoughtful travel planner for Mood-Trip.
+Generate a practical itinerary as JSON only. Do not include markdown.
+
+Input:
+- Destination: ${body.destination}
+- Mood: ${body.mood}
+- Pace: ${body.pace}
+- Start date: ${body.startDate.toISOString().slice(0, 10)}
+- End date: ${body.endDate.toISOString().slice(0, 10)}
+- Budget: ${body.budget}
+- Travelers: ${body.travelers}
+- Interests: ${body.interests.join(', ')}
+- Constraints: ${constraints}
+
+Return exactly this JSON shape:
+{
+  "title": "string",
+  "location": "string",
+  "summary": "string",
+  "startDate": "YYYY-MM-DD",
+  "endDate": "YYYY-MM-DD",
+  "days": [
+    {
+      "dayLabel": "Day 1",
+      "theme": "string",
+      "items": [
+        {
+          "timeOfDay": "morning",
+          "title": "string",
+          "description": "string",
+          "location": "string",
+          "placeName": "string",
+          "lat": 0,
+          "lng": 0
+        }
+      ]
+    }
+  ]
+}
+
+Rules:
+- Include one day object per trip day.
+- Include exactly three items per day: morning, afternoon, and evening.
+- Keep recommendations specific to the destination and aligned with the mood.
+- Use specific, geocodable place names in placeName (real landmarks, neighborhoods, venues).
+- location should be a short area label; placeName should be the precise POI name.
+- Do not invent booking confirmations, prices, or exact opening hours.
+- For lat and lng, give your best estimate of the place's real decimal coordinates (WGS84). Use 4-6 decimal places. These are approximate hints that will be refined, so do not omit them, but never fabricate precision you do not have.
+`.trim();
+  }
+
+  private parseJsonResponse(text: string): unknown {
+    const cleaned = text
+      .trim()
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/i, '');
+
+    try {
+      return JSON.parse(cleaned);
+    } catch {
+      throw new BadGatewayException('Gemini returned invalid JSON');
+    }
+  }
+}
