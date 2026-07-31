@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   type PlanTripBody,
@@ -35,8 +35,6 @@ const HINT_TRUST_RADIUS_KM = 60;
 // interest over a street or area centroid (expressed as a distance discount).
 const POI_PREFERENCE_KM = 0.5;
 
-const DEFAULT_CENTER: Coordinates = { lat: 35.0116, lng: 135.7681 };
-
 type DraftDay = PlannedTripDraft['days'][number];
 type DraftItem = DraftDay['items'][number];
 
@@ -68,10 +66,14 @@ export class TripPlanService {
       (await this.geocodingService.geocodeArea(draft.location)) ??
       (await this.geocodingService.geocodeArea(destination));
 
-    const center: Coordinates = area
-      ? { lat: area.lat, lng: area.lng }
-      : DEFAULT_CENTER;
-    const country = area?.countryCode;
+    if (!area) {
+      throw new BadRequestException(
+        `Could not resolve a map center for "${destination}".`,
+      );
+    }
+
+    const center: Coordinates = { lat: area.lat, lng: area.lng };
+    const country = area.countryCode;
 
     // Look up Wikipedia (photo + authoritative coordinates) for every stop up
     // front, in parallel. The coordinates feed location resolution; the image

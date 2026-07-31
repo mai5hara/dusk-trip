@@ -117,11 +117,7 @@ const TripItineraryMap = ({
       };
     }
 
-    return {
-      longitude: 135.7681,
-      latitude: 35.0116,
-      zoom: 12,
-    };
+    return null;
   }, [activeStop, center]);
 
   if (isMapLoading) {
@@ -132,7 +128,7 @@ const TripItineraryMap = ({
     );
   }
 
-  if (mapError || !mapStyle) {
+  if (mapError || !mapStyle || !initialViewState) {
     return (
       <div className="flex h-full min-h-[320px] items-center justify-center rounded-3xl border border-dashed px-6 text-center text-sm opacity-70">
         {mapError ?? 'Map is unavailable.'}
