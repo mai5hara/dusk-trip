@@ -2,9 +2,11 @@
   "name": "mood-trip",
   "private": true,
   "scripts": {
+    "dev": "pnpm --filter @mood-trip/database build && pnpm --filter @mood-trip/validators build && pnpm --parallel --filter @mood-trip/api --filter @mood-trip/web dev",
     "dev:api": "pnpm --filter @mood-trip/database build && pnpm --filter @mood-trip/validators build && pnpm --filter @mood-trip/api dev",
     "dev:web": "pnpm --filter @mood-trip/web dev",
     "dev:admin": "pnpm --filter @mood-trip/admin dev",
+    "dev:db": "docker compose up -d",
     "db:generate": "pnpm --filter @mood-trip/database db:generate",
     "db:migrate": "pnpm --filter @mood-trip/database db:migrate",
     "db:studio": "pnpm --filter @mood-trip/database db:studio",

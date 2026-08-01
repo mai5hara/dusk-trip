@@ -24,8 +24,9 @@ You will mostly work here. The web app talks to the API over HTTP (not directly 
 Typical commands (once each app is set up):
 
 ```bash
-pnpm dev:web
-pnpm dev:admin   # when the admin app is ready
+pnpm dev          # API + web together (preferred)
+pnpm dev:web      # web only
+pnpm dev:admin    # when the admin app is ready
 ```
 
 Environment variables for the web app will live under `apps/web` (e.g. `.env.local`) — e.g. `NEXT_PUBLIC_API_URL` pointing at the API.
@@ -47,9 +48,9 @@ You own server logic, database schema, and migrations.
 Typical commands:
 
 ```bash
-docker compose up -d
+pnpm dev:db       # start local Postgres (Docker)
 pnpm db:migrate
-pnpm dev:api
+pnpm dev          # API + web (or pnpm dev:api for API only)
 ```
 
 Database connection string: copy `.env.example` to `.env` at the repo root (see [Environment variables](#environment-variables)).
@@ -105,10 +106,10 @@ apps/web, apps/admin  →  apps/api  →  PostgreSQL (Docker)
 
    Edit `.env` if your local Postgres port or credentials differ.
 
-3. Start the database:
+3. Start the database (Docker; keep this separate from `pnpm dev`):
 
    ```bash
-   docker compose up -d
+   pnpm dev:db
    ```
 
 4. Apply migrations:
@@ -117,11 +118,13 @@ apps/web, apps/admin  →  apps/api  →  PostgreSQL (Docker)
    pnpm db:migrate
    ```
 
-5. Start the API (backend):
+5. Start the API and web app together:
 
    ```bash
-   pnpm dev:api
+   pnpm dev
    ```
+
+   This builds `@mood-trip/database` and `@mood-trip/validators`, then starts the API and web in parallel. To run only one side, use `pnpm dev:api` or `pnpm dev:web`.
 
 6. Verify the API:
 
@@ -130,21 +133,17 @@ apps/web, apps/admin  →  apps/api  →  PostgreSQL (Docker)
    curl http://localhost:3000/users
    ```
 
-Frontend dev server (when Next.js is set up):
-
-```bash
-pnpm dev:web
-```
-
-> **Note:** If port `3000` is already in use on your machine, run the API or web app on another port and adjust URLs accordingly.
+> **Note:** If port `3000` is already in use on your machine, run the API or web app on another port and adjust URLs accordingly. Plan My Trip also needs `GEMINI_API_KEY` and `MAPTILER_API_KEY` in the root `.env` (see `.env.example`).
 
 ---
 
 ## Environment variables
 
-| Variable       | Where       | Description                                   |
-| -------------- | ----------- | --------------------------------------------- |
-| `DATABASE_URL` | Root `.env` | PostgreSQL connection string (used by Prisma) |
+| Variable           | Where       | Description                                              |
+| ------------------ | ----------- | -------------------------------------------------------- |
+| `DATABASE_URL`     | Root `.env` | PostgreSQL connection string (used by Prisma)            |
+| `GEMINI_API_KEY`   | Root `.env` | Required for `POST /trips/plan` (AI trip planner)        |
+| `MAPTILER_API_KEY` | Root `.env` | Required for geocoding and itinerary map styles          |
 
 Do **not** commit `.env`. Only `.env.example` belongs in Git.
 
@@ -152,13 +151,15 @@ Do **not** commit `.env`. Only `.env.example` belongs in Git.
 
 ## Useful scripts (root)
 
-| Command            | Description                                            |
-| ------------------ | ------------------------------------------------------ |
-| `pnpm dev:api`     | Build `@mood-trip/database`, then start the API        |
-| `pnpm dev:web`     | Start the web app (when configured)                    |
-| `pnpm db:migrate`  | Run Prisma migrations (development)                    |
-| `pnpm db:generate` | Regenerate Prisma Client                               |
-| `pnpm db:studio`   | Open Prisma Studio (optional; UI may be flaky locally) |
+| Command            | Description                                                                 |
+| ------------------ | --------------------------------------------------------------------------- |
+| `pnpm dev`         | Build shared packages, then start API + web together                        |
+| `pnpm dev:api`     | Build `@mood-trip/database` + validators, then start the API only           |
+| `pnpm dev:web`     | Start the web app only                                                      |
+| `pnpm dev:db`      | Start local PostgreSQL via Docker Compose                                   |
+| `pnpm db:migrate`  | Run Prisma migrations (development)                                         |
+| `pnpm db:generate` | Regenerate Prisma Client                                                    |
+| `pnpm db:studio`   | Open Prisma Studio (optional; UI may be flaky locally)                      |
 
 ---
 
