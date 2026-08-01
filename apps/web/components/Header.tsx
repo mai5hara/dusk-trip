@@ -2,7 +2,7 @@
 
 import { ButtonLink } from '@mood-trip/ui';
 import { Input } from '@mood-trip/ui';
-import { PlusIcon, UserIcon } from 'lucide-react';
+import { PlusIcon, UserIcon, SparklesIcon } from 'lucide-react';
 import { useTripListContext } from '@/features/trips/trip-list-context';
 import { useAuth } from '@/features/auth/auth-context';
 
@@ -35,6 +35,10 @@ const Header = () => {
         >
           <PlusIcon className="size-5" />
           Add Trip
+        </ButtonLink>
+        <ButtonLink href="/plan-my-trip" variant="accent" size="sm" rounded="full">
+          <SparklesIcon className="size-4" />
+          Plan My Trip
         </ButtonLink>
         <ButtonLink href="#" variant="outline" size="icon" rounded="full">
           <UserIcon className="size-5" />
