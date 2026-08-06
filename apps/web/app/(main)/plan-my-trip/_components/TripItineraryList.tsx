@@ -13,6 +13,8 @@ import {
 } from '../_lib/itinerary-utils';
 import { useScrollSpy } from '../_hooks/useScrollSpy';
 
+const SCROLL_CONTAINER_SELECTOR = '.itinerary-scroll';
+
 type TripItineraryListProps = {
   trip: PlannedTrip;
   stops: ItineraryStop[];
@@ -33,7 +35,7 @@ const TripItineraryList = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const stopIds = useMemo(() => stops.map((stop) => stop.id), [stops]);
   const { pauseScrollSpy } = useScrollSpy(
-    scrollRef,
+    SCROLL_CONTAINER_SELECTOR,
     stopIds,
     onActiveStopChange,
     stops.length > 0,
@@ -42,11 +44,16 @@ const TripItineraryList = ({
   // A freshly generated plan must start at the very top — reset this list's
   // scroll, every scrollable ancestor (the page shell), and the window.
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0 });
-    let node: HTMLElement | null | undefined = scrollRef.current?.parentElement;
-    while (node) {
-      node.scrollTop = 0;
-      node = node.parentElement;
+    const container = scrollRef.current;
+    if (!container) {
+      return;
+    }
+
+    container.scrollTo({ top: 0 });
+    let ancestor: HTMLElement | null = container.parentElement;
+    while (ancestor) {
+      ancestor.scrollTop = 0;
+      ancestor = ancestor.parentElement;
     }
     window.scrollTo(0, 0);
   }, []);

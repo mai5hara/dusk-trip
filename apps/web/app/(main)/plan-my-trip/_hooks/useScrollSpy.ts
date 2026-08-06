@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef } from 'react';
 
 // Where in the scroll viewport a card is considered "active" — a line ~38%
 // from the top of the list.
@@ -8,18 +8,17 @@ const ACTIVE_LINE_RATIO = 0.38;
 const EDGE_EPSILON_PX = 4;
 
 export function useScrollSpy(
-  containerRef: React.RefObject<HTMLElement | null>,
+  containerSelector: string,
   itemIds: string[],
   onActiveChange: (id: string) => void,
   enabled: boolean,
 ) {
   const ignoreUntilRef = useRef(0);
-  const onActiveChangeRef = useRef(onActiveChange);
-  onActiveChangeRef.current = onActiveChange;
+  const onActiveChangeEvent = useEffectEvent(onActiveChange);
 
   useEffect(() => {
-    const root = containerRef.current;
-    if (!enabled || !root || itemIds.length === 0) {
+    const root = document.querySelector(containerSelector);
+    if (!enabled || !(root instanceof HTMLElement) || itemIds.length === 0) {
       return;
     }
 
@@ -65,7 +64,7 @@ export function useScrollSpy(
 
     const emit = (id: string | undefined) => {
       if (id) {
-        onActiveChangeRef.current(id);
+        onActiveChangeEvent(id);
       }
     };
 
@@ -86,7 +85,7 @@ export function useScrollSpy(
         cancelAnimationFrame(frame);
       }
     };
-  }, [containerRef, enabled, itemIds]);
+  }, [containerSelector, enabled, itemIds]);
 
   const pauseScrollSpy = useCallback((durationMs = 1200) => {
     ignoreUntilRef.current = Date.now() + durationMs;
