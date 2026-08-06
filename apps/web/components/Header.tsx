@@ -30,7 +30,12 @@ const Header = () => {
           <PlusIcon className="size-5" />
           Add Trip
         </ButtonLink>
-        <ButtonLink href="/plan-my-trip" variant="accent" size="sm" rounded="full">
+        <ButtonLink
+          href="/plan-my-trip"
+          variant="accent"
+          size="sm"
+          rounded="full"
+        >
           <SparklesIcon className="size-4" />
           Plan My Trip
         </ButtonLink>

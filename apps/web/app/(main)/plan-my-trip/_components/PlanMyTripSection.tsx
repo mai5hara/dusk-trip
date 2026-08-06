@@ -175,139 +175,139 @@ const PlanMyTripSection = () => {
             </CardHeader>
             <CardContent>
               <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="flex flex-col gap-2 md:col-span-1">
-                  <Label htmlFor="mood">Mood</Label>
-                  <Select
-                    variant="border"
-                    rounded="lg"
-                    options={moodOptions}
-                    value={mood}
-                    onValueChange={setMood}
-                    placeholder="Choose a mood"
-                  />
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div className="flex flex-col gap-2 md:col-span-1">
+                    <Label htmlFor="mood">Mood</Label>
+                    <Select
+                      variant="border"
+                      rounded="lg"
+                      options={moodOptions}
+                      value={mood}
+                      onValueChange={setMood}
+                      placeholder="Choose a mood"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2 md:col-span-1">
+                    <Label htmlFor="pace">Pace</Label>
+                    <Select
+                      variant="border"
+                      rounded="lg"
+                      options={paceOptions}
+                      value={pace}
+                      onValueChange={setPace}
+                      placeholder="Choose a pace"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2 md:col-span-1">
+                    <Label htmlFor="destination">Destination</Label>
+                    <Input
+                      id="destination"
+                      variant="border"
+                      rounded="lg"
+                      value={destination}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                        setDestination(event.target.value)
+                      }
+                      placeholder="Kyoto, Lisbon, Big Sur..."
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2 md:col-span-1">
-                  <Label htmlFor="pace">Pace</Label>
-                  <Select
-                    variant="border"
-                    rounded="lg"
-                    options={paceOptions}
-                    value={pace}
-                    onValueChange={setPace}
-                    placeholder="Choose a pace"
-                  />
-                </div>
-                <div className="flex flex-col gap-2 md:col-span-1">
-                  <Label htmlFor="destination">Destination</Label>
-                  <Input
-                    id="destination"
-                    variant="border"
-                    rounded="lg"
-                    value={destination}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      setDestination(event.target.value)
-                    }
-                    placeholder="Kyoto, Lisbon, Big Sur..."
-                    required
-                  />
-                </div>
-              </div>
 
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="tripDates">Trip dates</Label>
-                  <DateRangePicker
-                    id="tripDates"
-                    variant="border"
-                    rounded="lg"
-                    value={dateRange}
-                    onValueChange={handleDateRangeChange}
-                    placeholder="Select trip dates"
-                    numberOfMonths={2}
-                    errorMessage={dateRangeError}
-                  />
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="tripDates">Trip dates</Label>
+                    <DateRangePicker
+                      id="tripDates"
+                      variant="border"
+                      rounded="lg"
+                      value={dateRange}
+                      onValueChange={handleDateRangeChange}
+                      placeholder="Select trip dates"
+                      numberOfMonths={2}
+                      errorMessage={dateRangeError}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="budget">Budget</Label>
+                    <Select
+                      variant="border"
+                      rounded="lg"
+                      options={budgetOptions}
+                      value={budget}
+                      onValueChange={setBudget}
+                      placeholder="Choose a budget"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="travelers">Travelers</Label>
+                    <Input
+                      id="travelers"
+                      type="number"
+                      min="1"
+                      max="12"
+                      variant="border"
+                      rounded="lg"
+                      value={travelers}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                        setTravelers(event.target.value)
+                      }
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="budget">Budget</Label>
-                  <Select
-                    variant="border"
-                    rounded="lg"
-                    options={budgetOptions}
-                    value={budget}
-                    onValueChange={setBudget}
-                    placeholder="Choose a budget"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="travelers">Travelers</Label>
-                  <Input
-                    id="travelers"
-                    type="number"
-                    min="1"
-                    max="12"
-                    variant="border"
-                    rounded="lg"
-                    value={travelers}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      setTravelers(event.target.value)
-                    }
-                    required
-                  />
-                </div>
-              </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="interests">Interests</Label>
-                  <Input
-                    id="interests"
-                    variant="border"
-                    rounded="lg"
-                    value={interests}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      setInterests(event.target.value)
-                    }
-                    placeholder="food, art, hikes, markets..."
-                    required
-                  />
-                  <p className="text-xs opacity-60">
-                    Separate interests with commas.
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="interests">Interests</Label>
+                    <Input
+                      id="interests"
+                      variant="border"
+                      rounded="lg"
+                      value={interests}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                        setInterests(event.target.value)
+                      }
+                      placeholder="food, art, hikes, markets..."
+                      required
+                    />
+                    <p className="text-xs opacity-60">
+                      Separate interests with commas.
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="constraints">Constraints</Label>
+                    <textarea
+                      id="constraints"
+                      className="min-h-24 rounded-lg border bg-transparent px-3 py-2 text-sm"
+                      value={constraints}
+                      onChange={(event) => setConstraints(event.target.value)}
+                      placeholder="No driving, vegetarian food, kid-friendly..."
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-dashed p-5">
+                  <p className="text-sm uppercase tracking-[0.2em] opacity-70">
+                    Mood brief
                   </p>
+                  <p className="mt-3 text-xl">{tripIdea}</p>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="constraints">Constraints</Label>
-                  <textarea
-                    id="constraints"
-                    className="min-h-24 rounded-lg border bg-transparent px-3 py-2 text-sm"
-                    value={constraints}
-                    onChange={(event) => setConstraints(event.target.value)}
-                    placeholder="No driving, vegetarian food, kid-friendly..."
-                  />
+
+                {error ? <p className="text-sm text-red-500">{error}</p> : null}
+
+                <div className="self-start">
+                  <Button
+                    type="submit"
+                    variant="accent"
+                    rounded="full"
+                    disabled={isGenerating}
+                  >
+                    <SparklesIcon className="size-4" />
+                    {isGenerating ? 'Generating...' : 'Generate trip'}
+                  </Button>
                 </div>
-              </div>
-
-              <div className="rounded-3xl border border-dashed p-5">
-                <p className="text-sm uppercase tracking-[0.2em] opacity-70">
-                  Mood brief
-                </p>
-                <p className="mt-3 text-xl">{tripIdea}</p>
-              </div>
-
-              {error ? <p className="text-sm text-red-500">{error}</p> : null}
-
-              <div className="self-start">
-                <Button
-                  type="submit"
-                  variant="accent"
-                  rounded="full"
-                  disabled={isGenerating}
-                >
-                  <SparklesIcon className="size-4" />
-                  {isGenerating ? 'Generating...' : 'Generate trip'}
-                </Button>
-              </div>
-            </form>
+              </form>
             </CardContent>
           </Card>
         </div>

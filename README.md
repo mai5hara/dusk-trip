@@ -139,11 +139,11 @@ apps/web, apps/admin  →  apps/api  →  PostgreSQL (Docker)
 
 ## Environment variables
 
-| Variable           | Where       | Description                                              |
-| ------------------ | ----------- | -------------------------------------------------------- |
-| `DATABASE_URL`     | Root `.env` | PostgreSQL connection string (used by Prisma)            |
-| `GEMINI_API_KEY`   | Root `.env` | Required for `POST /trips/plan` (AI trip planner)        |
-| `MAPTILER_API_KEY` | Root `.env` | Required for geocoding and itinerary map styles          |
+| Variable           | Where       | Description                                       |
+| ------------------ | ----------- | ------------------------------------------------- |
+| `DATABASE_URL`     | Root `.env` | PostgreSQL connection string (used by Prisma)     |
+| `GEMINI_API_KEY`   | Root `.env` | Required for `POST /trips/plan` (AI trip planner) |
+| `MAPTILER_API_KEY` | Root `.env` | Required for geocoding and itinerary map styles   |
 
 Do **not** commit `.env`. Only `.env.example` belongs in Git.
 
@@ -151,15 +151,15 @@ Do **not** commit `.env`. Only `.env.example` belongs in Git.
 
 ## Useful scripts (root)
 
-| Command            | Description                                                                 |
-| ------------------ | --------------------------------------------------------------------------- |
-| `pnpm dev`         | Build shared packages, then start API + web together                        |
-| `pnpm dev:api`     | Build `@mood-trip/database` + validators, then start the API only           |
-| `pnpm dev:web`     | Start the web app only                                                      |
-| `pnpm dev:db`      | Start local PostgreSQL via Docker Compose                                   |
-| `pnpm db:migrate`  | Run Prisma migrations (development)                                         |
-| `pnpm db:generate` | Regenerate Prisma Client                                                    |
-| `pnpm db:studio`   | Open Prisma Studio (optional; UI may be flaky locally)                      |
+| Command            | Description                                                       |
+| ------------------ | ----------------------------------------------------------------- |
+| `pnpm dev`         | Build shared packages, then start API + web together              |
+| `pnpm dev:api`     | Build `@mood-trip/database` + validators, then start the API only |
+| `pnpm dev:web`     | Start the web app only                                            |
+| `pnpm dev:db`      | Start local PostgreSQL via Docker Compose                         |
+| `pnpm db:migrate`  | Run Prisma migrations (development)                               |
+| `pnpm db:generate` | Regenerate Prisma Client                                          |
+| `pnpm db:studio`   | Open Prisma Studio (optional; UI may be flaky locally)            |
 
 ---
 
