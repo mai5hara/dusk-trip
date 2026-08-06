@@ -9,7 +9,7 @@ import {
   CardMedia,
 } from '@mood-trip/ui';
 import Image from 'next/image';
-import { formatDateRange } from '../../lib/format-date';
+import { formatDateRange } from '@/lib/format-date';
 import { MapPinIcon, CalendarIcon, ArrowRightIcon } from 'lucide-react';
 
 const TripCard = ({ trip }: { trip: TripListItem }) => {

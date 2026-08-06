@@ -20,7 +20,7 @@ import type {
   PlannedTrip,
   PlanTripBody,
 } from '@mood-trip/validators';
-import { planTrip } from './api';
+import { planTrip } from '@/api/plan-my-trip/api';
 import TripItineraryExplorer from './TripItineraryExplorer';
 
 const moodOptions = [

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useAuth } from '@/features/auth/auth-context';
+import { useAuth } from '@/lib/auth/auth-context';
 import { Input, Button, Label } from '@mood-trip/ui';
 
 export default function SignUpPage() {

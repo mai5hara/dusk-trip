@@ -16,7 +16,7 @@ import {
   login as loginApi,
   refreshAccessToken,
   signup as signupApi,
-} from './api';
+} from '@/api/auth/api';
 import { clearTokens, setAccessToken, setRefreshToken } from '@/lib/auth/token';
 
 type AuthContextValue = {

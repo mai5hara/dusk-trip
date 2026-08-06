@@ -6,7 +6,7 @@ import {
   filterTripByQuery,
   sortTrips,
   filterTripsByDateRange,
-} from './trip-list-utils';
+} from '../_lib/trip-list-utils';
 import { useTripListContext } from './trip-list-context';
 
 type UseTripListProps = {

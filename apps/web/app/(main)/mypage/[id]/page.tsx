@@ -1,4 +1,4 @@
-import { getUser } from '@/features/user/api';
+import { getUser } from '@/api/user/api';
 
 type Props = {
   params: Promise<{ id: string }>;

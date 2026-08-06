@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input, Label, Button } from '@mood-trip/ui';
-import { resetPassword } from '@/features/auth/api';
+import { resetPassword } from '@/api/auth/api';
 
 export default function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState('');

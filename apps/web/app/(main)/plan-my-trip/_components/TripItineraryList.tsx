@@ -7,8 +7,8 @@ import type {
   PlannedTripDay,
   PlannedTripItem,
 } from '@mood-trip/validators';
-import { getItineraryStopId, type ItineraryStop } from './itinerary-utils';
-import { useScrollSpy } from './useScrollSpy';
+import { getItineraryStopId, type ItineraryStop } from '../_lib/itinerary-utils';
+import { useScrollSpy } from '../_hooks/useScrollSpy';
 
 type TripItineraryListProps = {
   trip: PlannedTrip;

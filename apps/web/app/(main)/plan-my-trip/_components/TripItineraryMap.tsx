@@ -10,7 +10,7 @@ import type { MapRef } from 'react-map-gl/maplibre';
 import type { StyleSpecification } from 'maplibre-gl';
 import type { ItineraryMapStyle } from '@mood-trip/validators';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import type { ItineraryStop } from './itinerary-utils';
+import type { ItineraryStop } from '../_lib/itinerary-utils';
 
 type TripItineraryMapProps = {
   mapStyle: ItineraryMapStyle | null;

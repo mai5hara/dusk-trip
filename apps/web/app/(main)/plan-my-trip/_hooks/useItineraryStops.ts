@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import type { PlannedTrip } from '@mood-trip/validators';
-import { flattenItinerary } from './itinerary-utils';
+import { flattenItinerary } from '../_lib/itinerary-utils';
 
 export function useItineraryStops(trip: PlannedTrip | null) {
   const stops = useMemo(

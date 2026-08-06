@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import { type TripSort } from './trip-sort';
+import { type TripSort } from '../_lib/trip-list-utils';
 import { type DateRangePickerValue } from '@mood-trip/ui';
 
 type TripListContextValue = {

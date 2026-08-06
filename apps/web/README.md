@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# `@mood-trip/web`
 
-## Getting Started
+Next.js app for the mood-trip product.
 
-First, run the development server:
+## Directory conventions
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Prefer **colocation**: keep page-specific UI and hooks next to the route. Do **not** add a top-level `features/` folder for new work.
+
+```
+app/
+  (main)/
+    page.tsx                 # thin route entry
+    _components/             # shared within (main) (e.g. trip list)
+    _hooks/
+    _lib/
+    plan-my-trip/
+      page.tsx
+      _components/           # this page only
+      _hooks/
+      _lib/
+  (auth)/…
+api/                         # HTTP calls, aligned with backend domains
+  auth/ api.ts
+  trips/ api.ts
+  …
+lib/                         # app-wide infra (apiClient, auth, query)
+components/                  # truly shared chrome (Header, Footer, theme)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Location | Put here |
+| -------- | -------- |
+| `app/.../_components` | UI used by that route (or route group) |
+| `app/.../_hooks` | Hooks for that route (or route group) |
+| `app/.../_lib` | Small helpers for that route |
+| `api/<domain>/` | `fetch` wrappers via `@/lib/api/client` |
+| `lib/` | Tokens, QueryProvider, AuthProvider, shared utils |
+| `components/` | Layout chrome reused across many routes |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Naming
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Route / folder segments: **kebab-case** (`plan-my-trip`)
+- React components: **PascalCase** (`TripCard.tsx`)
+- Hooks: **camelCase** `use*.ts` (`useTripsQuery.ts`)
+- Other modules: **kebab-case** (`trip-list-utils.ts`)
+- Private folders (`_components`, `_hooks`, `_lib`) are not routes ([Next.js colocation](https://nextjs.org/docs/app/building-your-application/routing/colocation#private-folders))
 
-## Learn More
+### What stays shared
 
-To learn more about Next.js, take a look at the following resources:
+- **Auth** lives in `lib/auth/` (used by root layout and many pages).
+- **Trip list filter context** lives under `app/(main)/_hooks/` because it wraps the main shell (Header + home).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+When the same UI is needed from **three or more unrelated routes**, extract a shared module then — not by default.

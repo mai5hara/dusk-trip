@@ -1,4 +1,4 @@
-import PlanMyTripSection from '@/features/plan-my-trip/PlanMyTripSection';
+import PlanMyTripSection from './_components/PlanMyTripSection';
 
 export default function PlanMyTripPage() {
   return <PlanMyTripSection />;

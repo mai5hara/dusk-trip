@@ -1,5 +1,5 @@
 import { getAccessToken } from '@/lib/auth/token';
-import { refreshAccessToken } from '@/features/auth/api';
+import { refreshAccessToken } from '@/api/auth/api';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 

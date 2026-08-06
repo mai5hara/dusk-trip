@@ -6,7 +6,7 @@ import { Button } from '@mood-trip/ui';
 import { ArrowLeftIcon, LoaderCircleIcon } from 'lucide-react';
 import type { ItineraryMapStyle, PlannedTrip } from '@mood-trip/validators';
 import TripItineraryList from './TripItineraryList';
-import { useItineraryStops } from './useItineraryStops';
+import { useItineraryStops } from '../_hooks/useItineraryStops';
 
 const TripItineraryMap = dynamic(() => import('./TripItineraryMap'), {
   ssr: false,

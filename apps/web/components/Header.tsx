@@ -3,7 +3,7 @@
 import { ButtonLink } from '@mood-trip/ui';
 import { Input } from '@mood-trip/ui';
 import { PlusIcon, UserIcon, SparklesIcon } from 'lucide-react';
-import { useTripListContext } from '@/features/trips/trip-list-context';
+import { useTripListContext } from '@/app/(main)/_hooks/trip-list-context';
 
 const Header = () => {
   const { query, setQuery } = useTripListContext();

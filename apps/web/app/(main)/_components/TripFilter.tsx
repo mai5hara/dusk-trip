@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { Button, Select } from '@mood-trip/ui';
 import { ListFilterIcon } from 'lucide-react';
-import { TRIP_SORT_OPTIONS, type TripSort } from './trip-sort';
-import { useTripListContext } from './trip-list-context';
+import { TRIP_SORT_OPTIONS, type TripSort } from '../_lib/trip-list-utils';
+import { useTripListContext } from '../_hooks/trip-list-context';
 import { DateRangePicker } from '@mood-trip/ui';
 
 const TripFilter = () => {

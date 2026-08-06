@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Input, Label, Button } from '@mood-trip/ui';
-import { requestPasswordReset } from '@/features/auth/api';
+import { requestPasswordReset } from '@/api/auth/api';
 import Link from 'next/link';
 
 export default function ForgotPasswordPage() {

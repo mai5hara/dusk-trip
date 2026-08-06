@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TripCard from './TripCard';
 import TripFilter from './TripFilter';
-import { useFilteredTrips } from './useFilteredTrips';
-import { useAuth } from '@/features/auth/auth-context';
-import { useTripsQuery } from './useTripsQuery';
+import { useFilteredTrips } from '../_hooks/useFilteredTrips';
+import { useAuth } from '@/lib/auth/auth-context';
+import { useTripsQuery } from '../_hooks/useTripsQuery';
 
 const TripList = () => {
   const router = useRouter();
