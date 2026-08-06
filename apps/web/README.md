@@ -19,11 +19,15 @@ app/
       _hooks/
       _lib/
   (auth)/…
-api/                         # HTTP calls, aligned with backend domains
-  auth/ api.ts
-  trips/ api.ts
+api/                         # all HTTP-related code
+  _common/
+    http.ts                  # shared URL / headers / JSON helpers
+    client.ts                # apiClient (authenticated)
+    public-client.ts         # publicApi (unauthenticated)
+  auth/api.ts
+  trips/api.ts
   …
-lib/                         # app-wide infra (apiClient, auth, query)
+lib/                         # app-wide non-HTTP infra (auth tokens, query)
 components/                  # truly shared chrome (Header, Footer, theme)
 ```
 
@@ -32,7 +36,8 @@ components/                  # truly shared chrome (Header, Footer, theme)
 | `app/.../_components` | UI used by that route (or route group) |
 | `app/.../_hooks` | Hooks for that route (or route group) |
 | `app/.../_lib` | Small helpers for that route |
-| `api/<domain>/` | `fetch` wrappers via `@/lib/api/client` |
+| `api/_common/` | Shared fetch helpers (`client.ts`, `public-client.ts`, `http.ts`) |
+| `api/<domain>/` | Endpoint functions for that backend domain |
 | `lib/` | Tokens, QueryProvider, AuthProvider, shared utils |
 | `components/` | Layout chrome reused across many routes |
 
@@ -46,7 +51,8 @@ components/                  # truly shared chrome (Header, Footer, theme)
 
 ### What stays shared
 
-- **Auth** lives in `lib/auth/` (used by root layout and many pages).
+- **Auth state** lives in `lib/auth/` (used by root layout and many pages).
+- **HTTP auth endpoints** live in `api/auth/`.
 - **Trip list filter context** lives under `app/(main)/_hooks/` because it wraps the main shell (Header + home).
 
 When the same UI is needed from **three or more unrelated routes**, extract a shared module then — not by default.

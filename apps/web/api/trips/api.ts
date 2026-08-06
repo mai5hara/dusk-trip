@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api/client';
+import { apiClient } from '@/api/_common/client';
 import type { TripListItem, TripWithEntries } from '@mood-trip/validators';
 
 export async function getTrips(): Promise<TripListItem[]> {

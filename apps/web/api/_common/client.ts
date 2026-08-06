@@ -1,25 +1,20 @@
 import { getAccessToken } from '@/lib/auth/token';
 import { refreshAccessToken } from '@/api/auth/api';
+import { buildHeaders, getBaseUrl, parseJson } from './http';
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
+/** Authenticated requests with Bearer token and one 401 refresh retry. */
 export async function apiClient<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  if (!baseUrl) {
-    throw new Error('NEXT_PUBLIC_API_URL is not set');
-  }
-
   const fetchWithAuth = () =>
-    fetch(`${baseUrl}${path}`, {
+    fetch(`${getBaseUrl()}${path}`, {
       ...init,
       headers: {
-        'Content-Type': 'application/json',
+        ...buildHeaders(init),
         ...(getAccessToken()
           ? { Authorization: `Bearer ${getAccessToken()}` }
           : {}),
-        ...(init?.headers as Record<string, string> | undefined),
       },
     });
 
@@ -39,5 +34,5 @@ export async function apiClient<T>(
     throw new Error(`HTTP error! status: ${res.status}`);
   }
 
-  return res.json() as Promise<T>;
+  return parseJson<T>(res);
 }
