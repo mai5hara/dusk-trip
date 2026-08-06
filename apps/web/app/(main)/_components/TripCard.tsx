@@ -26,18 +26,20 @@ const TripCard = ({ trip }: { trip: TripListItem }) => {
       <CardHeader>
         <CardTitle>{trip.title}</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-1">
-        <div className="flex items-center gap-2 text-sm">
-          <MapPinIcon className="size-4" />
-          {trip.location}
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <CalendarIcon className="size-4" />
-          {formatDateRange(trip.startDate, trip.endDate)}
-        </div>
-        <div className="flex items-center gap-2 text-sm justify-between">
-          {trip.entryCount} Memories
-          <ArrowRightIcon className="size-4 text-accent" />
+      <CardContent>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2 text-sm">
+            <MapPinIcon className="size-4" />
+            {trip.location}
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <CalendarIcon className="size-4" />
+            {formatDateRange(trip.startDate, trip.endDate)}
+          </div>
+          <div className="flex items-center gap-2 text-sm justify-between">
+            {trip.entryCount} Memories
+            <ArrowRightIcon className="size-4 text-accent" />
+          </div>
         </div>
       </CardContent>
     </Card>

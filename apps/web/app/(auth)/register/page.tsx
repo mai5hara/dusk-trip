@@ -92,15 +92,16 @@ export default function SignUpPage() {
             </div>
             {error && <p className="text-red-500">{error}</p>}
             <div className="flex flex-col gap-4">
-              <Button
-                type="submit"
-                variant="accent"
-                rounded="full"
-                disabled={isLoading}
-                className="w-full max-w-[350px]"
-              >
-                {isLoading ? 'Loading...' : 'SIGN UP TO JOURNEY'}
-              </Button>
+              <div className="w-full max-w-87.5">
+                <Button
+                  type="submit"
+                  variant="accent"
+                  rounded="full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Loading...' : 'SIGN UP TO JOURNEY'}
+                </Button>
+              </div>
               <p className="text-sm">
                 Already have an account?
                 <Link href="/login" className="text-accent pl-2 font-bold">

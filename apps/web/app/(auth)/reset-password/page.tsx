@@ -77,15 +77,16 @@ export default function ResetPasswordPage() {
               </div>
             </div>
             {error && <p className="text-red-500">{error}</p>}
-            <Button
-              type="submit"
-              variant="accent"
-              rounded="full"
-              disabled={isLoading}
-              className="w-full max-w-[350px]"
-            >
-              {isLoading ? 'Loading...' : 'RESET PASSWORD'}
-            </Button>
+            <div className="w-full max-w-87.5">
+              <Button
+                type="submit"
+                variant="accent"
+                rounded="full"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : 'RESET PASSWORD'}
+              </Button>
+            </div>
           </form>
         </div>
       </div>

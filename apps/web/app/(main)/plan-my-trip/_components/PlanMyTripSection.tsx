@@ -161,19 +161,20 @@ const PlanMyTripSection = () => {
           onBack={handleBackToForm}
         />
       ) : (
-        <Card
+        <div
           className={`mx-auto max-w-5xl transition-all duration-500 ease-out ${
             isFormExiting ? 'form-exit pointer-events-none' : ''
           }`}
         >
-          <CardHeader>
-            <CardTitle>Plan My Trip</CardTitle>
-            <CardDescription>
-              Pick the feeling first, then shape a trip around it.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-6">
-            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Plan My Trip</CardTitle>
+              <CardDescription>
+                Pick the feeling first, then shape a trip around it.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="flex flex-col gap-2 md:col-span-1">
                   <Label htmlFor="mood">Mood</Label>
@@ -295,19 +296,21 @@ const PlanMyTripSection = () => {
 
               {error ? <p className="text-sm text-red-500">{error}</p> : null}
 
-              <Button
-                type="submit"
-                variant="accent"
-                rounded="full"
-                className="self-start"
-                disabled={isGenerating}
-              >
-                <SparklesIcon className="size-4" />
-                {isGenerating ? 'Generating...' : 'Generate trip'}
-              </Button>
+              <div className="self-start">
+                <Button
+                  type="submit"
+                  variant="accent"
+                  rounded="full"
+                  disabled={isGenerating}
+                >
+                  <SparklesIcon className="size-4" />
+                  {isGenerating ? 'Generating...' : 'Generate trip'}
+                </Button>
+              </div>
             </form>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </section>
   );
