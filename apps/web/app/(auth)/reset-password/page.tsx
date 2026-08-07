@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input, Label, Button } from '@mood-trip/ui';
-import { resetPassword } from '@/features/auth/api';
+import { resetPassword } from '@/api/auth/api';
 
 export default function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState('');
@@ -50,7 +50,7 @@ export default function ResetPasswordPage() {
             </p>
           </div>
           <form onSubmit={handleSubmit} className="flex flex-col gap-10 w-full">
-            <div className="flex flex-col gap-4 items-center w-full max-w-[350px]">
+            <div className="flex flex-col gap-4 items-center w-full max-w-87.5">
               <div className="flex flex-col gap-2 w-full">
                 <Label htmlFor="new-password">New Password</Label>
                 <Input
@@ -77,14 +77,16 @@ export default function ResetPasswordPage() {
               </div>
             </div>
             {error && <p className="text-red-500">{error}</p>}
-            <Button
-              type="submit"
-              variant="accent"
-              rounded="full"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Loading...' : 'RESET PASSWORD'}
-            </Button>
+            <div className="w-full max-w-87.5">
+              <Button
+                type="submit"
+                variant="accent"
+                rounded="full"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Loading...' : 'RESET PASSWORD'}
+              </Button>
+            </div>
           </form>
         </div>
       </div>

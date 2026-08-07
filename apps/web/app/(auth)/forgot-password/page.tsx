@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Input, Label, Button } from '@mood-trip/ui';
-import { requestPasswordReset } from '@/features/auth/api';
+import { requestPasswordReset } from '@/api/auth/api';
 import Link from 'next/link';
 
 export default function ForgotPasswordPage() {
@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
         nanika
       </div>
       <div className="flex flex-col gap-8 flex-1 h-full items-center justify-center px-10">
-        <div className="flex flex-col gap-8 max-w-[350px] w-full">
+        <div className="flex flex-col gap-8 max-w-87.5 w-full">
           {sent ? (
             <div className="flex flex-col gap-2">
               <h1 className="text-2xl font-bold">Check your email</h1>
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-10 w-full"
               >
-                <div className="flex flex-col gap-4 items-center w-full max-w-[350px]">
+                <div className="flex flex-col gap-4 items-center w-full max-w-87.5">
                   <div className="flex flex-col gap-2 w-full">
                     <Label htmlFor="email">Email</Label>
                     <Input
@@ -71,14 +71,16 @@ export default function ForgotPasswordPage() {
                 </div>
                 {error && <p className="text-red-500">{error}</p>}
                 <div className="flex flex-col gap-4">
-                  <Button
-                    type="submit"
-                    variant="accent"
-                    rounded="full"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Loading...' : 'SEND RESET LINK'}
-                  </Button>
+                  <div className="w-full max-w-87.5">
+                    <Button
+                      type="submit"
+                      variant="accent"
+                      rounded="full"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Loading...' : 'SEND RESET LINK'}
+                    </Button>
+                  </div>
                   <Link
                     href="/login"
                     className="text-accent pl-2 font-bold text-sm"

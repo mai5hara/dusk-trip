@@ -241,12 +241,10 @@ describe('TripPlanService', () => {
     } as unknown as MapTilerGeocodingService;
     const imageService = {
       // ...but Wikipedia knows the landmark's exact location.
-      findPlace: jest
-        .fn()
-        .mockResolvedValue({
-          image: null,
-          coords: { lat: 38.711, lng: -9.129 },
-        }),
+      findPlace: jest.fn().mockResolvedValue({
+        image: null,
+        coords: { lat: 38.711, lng: -9.129 },
+      }),
     } as unknown as WikimediaImageService;
 
     const service = new TripPlanService(

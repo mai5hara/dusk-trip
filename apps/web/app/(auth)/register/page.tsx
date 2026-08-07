@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useAuth } from '@/features/auth/auth-context';
+import { useAuth } from '@/lib/auth/auth-context';
 import { Input, Button, Label } from '@mood-trip/ui';
 
 export default function SignUpPage() {
@@ -42,7 +42,7 @@ export default function SignUpPage() {
             </p>
           </div>
           <form onSubmit={handleSubmit} className="flex flex-col gap-10 w-full">
-            <div className="flex flex-col gap-4 items-center w-full max-w-[350px]">
+            <div className="flex flex-col gap-4 items-center w-full max-w-87.5">
               <div className="flex flex-col gap-2 w-full">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -92,14 +92,16 @@ export default function SignUpPage() {
             </div>
             {error && <p className="text-red-500">{error}</p>}
             <div className="flex flex-col gap-4">
-              <Button
-                type="submit"
-                variant="accent"
-                rounded="full"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Loading...' : 'SIGN UP TO JOURNEY'}
-              </Button>
+              <div className="w-full max-w-87.5">
+                <Button
+                  type="submit"
+                  variant="accent"
+                  rounded="full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Loading...' : 'SIGN UP TO JOURNEY'}
+                </Button>
+              </div>
               <p className="text-sm">
                 Already have an account?
                 <Link href="/login" className="text-accent pl-2 font-bold">
