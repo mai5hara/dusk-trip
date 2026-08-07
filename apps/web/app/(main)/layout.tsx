@@ -1,4 +1,4 @@
-import { TripListProvider } from '@/features/trips/trip-list-context';
+import { TripListProvider } from './_hooks/trip-list-context';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 

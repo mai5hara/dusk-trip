@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    uses: ./.github/workflows/ci-job.yml
+    secrets: inherit
+    with:
+      name: format
+      command: pnpm format:check
+
+  lint:
+    uses: ./.github/workflows/ci-job.yml
+    secrets: inherit
+    with:
+      name: lint
+      command: pnpm lint
+
+  test:
+    uses: ./.github/workflows/ci-job.yml
+    secrets: inherit
+    with:
+      name: test
+      command: pnpm test:ci

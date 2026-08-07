@@ -1,4 +1,4 @@
-import TripList from '@/features/trips/TripList';
+import TripList from './_components/TripList';
 
 export default async function Home() {
   return (

@@ -1,4 +1,7 @@
-import { BadGatewayException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GeminiTripPlannerService } from './gemini-trip-planner.service';
 import type { PlanTripBody } from '@mood-trip/validators';
@@ -76,7 +79,9 @@ describe('GeminiTripPlannerService', () => {
   });
 
   it('retries on transient Gemini overload and eventually succeeds', async () => {
-    const overloadError = Object.assign(new Error('overloaded'), { status: 503 });
+    const overloadError = Object.assign(new Error('overloaded'), {
+      status: 503,
+    });
     jest
       .spyOn(
         service as unknown as { sleep: (ms: number) => Promise<void> },
@@ -84,32 +89,30 @@ describe('GeminiTripPlannerService', () => {
       )
       .mockResolvedValue(undefined);
 
-    generateContent
-      .mockRejectedValueOnce(overloadError)
-      .mockResolvedValueOnce({
-        text: JSON.stringify({
-          title: 'Curious Lisbon',
-          location: 'Lisbon, Portugal',
-          summary: 'A food and neighborhood trip.',
-          startDate: '2026-07-01',
-          endDate: '2026-07-02',
-          days: [
-            {
-              dayLabel: 'Day 1',
-              theme: 'Old streets and local food',
-              items: [
-                {
-                  timeOfDay: 'morning',
-                  title: 'Alfama walk',
-                  description: 'Wander through Alfama before lunch.',
-                  location: 'Alfama',
-                  placeName: 'Miradouro de Santa Luzia',
-                },
-              ],
-            },
-          ],
-        }),
-      });
+    generateContent.mockRejectedValueOnce(overloadError).mockResolvedValueOnce({
+      text: JSON.stringify({
+        title: 'Curious Lisbon',
+        location: 'Lisbon, Portugal',
+        summary: 'A food and neighborhood trip.',
+        startDate: '2026-07-01',
+        endDate: '2026-07-02',
+        days: [
+          {
+            dayLabel: 'Day 1',
+            theme: 'Old streets and local food',
+            items: [
+              {
+                timeOfDay: 'morning',
+                title: 'Alfama walk',
+                description: 'Wander through Alfama before lunch.',
+                location: 'Alfama',
+                placeName: 'Miradouro de Santa Luzia',
+              },
+            ],
+          },
+        ],
+      }),
+    });
 
     const result = await service.generateTripPlan(body);
 
@@ -118,7 +121,9 @@ describe('GeminiTripPlannerService', () => {
   });
 
   it('throws a friendly error when Gemini stays unavailable', async () => {
-    const overloadError = Object.assign(new Error('overloaded'), { status: 503 });
+    const overloadError = Object.assign(new Error('overloaded'), {
+      status: 503,
+    });
     generateContent.mockRejectedValue(overloadError);
     jest
       .spyOn(
