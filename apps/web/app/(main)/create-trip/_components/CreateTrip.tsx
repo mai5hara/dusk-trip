@@ -9,9 +9,9 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import { Button, Input, Label, Select } from '@mood-trip/ui';
-import { useCreateTripMutation } from './useTripMutation';
-import { useCreateEntryMutation } from './useEntryMutation';
-import { useTripsQuery } from '../trips/useTripsQuery';
+import { useCreateTripMutation } from '../_hooks/useTripMutation';
+import { useCreateEntryMutation } from '../_hooks/useEntryMutation';
+import { useTripsQuery } from '@/app/(main)/_hooks/useTripsQuery';
 
 const NEW_TRIP_VALUE = '__new__' as const;
 
