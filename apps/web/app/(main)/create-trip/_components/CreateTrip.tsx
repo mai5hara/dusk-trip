@@ -149,8 +149,7 @@ const CreateTrip = () => {
   );
 
   useEffect(() => {
-    const start =
-      toDate(selectedTrip?.startDate) ?? toDate(travelStartDate);
+    const start = toDate(selectedTrip?.startDate) ?? toDate(travelStartDate);
     const end = toDate(selectedTrip?.endDate) ?? toDate(travelEndDate);
 
     if (!start || !end) {
@@ -314,9 +313,7 @@ const CreateTrip = () => {
                 <div className="grid grid-cols-16 gap-4">
                   <div className="col-span-7">
                     <Field>
-                      <Label htmlFor="newTrip.thumbnailUrl">
-                        Thumbnail
-                      </Label>
+                      <Label htmlFor="newTrip.thumbnailUrl">Thumbnail</Label>
                       <Controller
                         name="newTrip.thumbnailUrl"
                         control={control}
@@ -327,9 +324,7 @@ const CreateTrip = () => {
                             value={field.value}
                             onChange={field.onChange}
                             onBlur={field.onBlur}
-                            errorMessage={
-                              errors.newTrip?.thumbnailUrl?.message
-                            }
+                            errorMessage={errors.newTrip?.thumbnailUrl?.message}
                           />
                         )}
                       />

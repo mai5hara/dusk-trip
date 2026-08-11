@@ -26,7 +26,7 @@ import {
 } from '../_lib/travel-period';
 import PhotoUrlField from './PhotoUrlField';
 
-type Props = {
+type MemoriesByMonthProps = {
   entries: DayEntryFormValue[];
   // Parent form shape is wider; keep this loosely typed for reuse.
   control: Control<FieldValues>;
@@ -38,7 +38,12 @@ function isSavedDay(day: DayEntryFormValue): boolean {
   return Boolean(day.id);
 }
 
-const MemoriesByMonth = ({ entries, control, register, errors }: Props) => {
+const MemoriesByMonth = ({
+  entries,
+  control,
+  register,
+  errors,
+}: MemoriesByMonthProps) => {
   const months = groupEntriesByMonth(entries);
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
 
@@ -131,9 +136,7 @@ const MemoriesByMonth = ({ entries, control, register, errors }: Props) => {
                   <PhotoUrlField
                     id={`entries.${selectedIndex}.photoUrl`}
                     variant="inset"
-                    value={
-                      typeof field.value === 'string' ? field.value : ''
-                    }
+                    value={typeof field.value === 'string' ? field.value : ''}
                     onChange={field.onChange}
                     onBlur={field.onBlur}
                     errorMessage={

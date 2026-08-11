@@ -81,7 +81,9 @@ export function buildDayEntries(
   previous: DayEntryFormValue[] = [],
   existingEntries: Entry[] = [],
 ): DayEntryFormValue[] {
-  const previousByDate = new Map(previous.map((entry) => [entry.dateKey, entry]));
+  const previousByDate = new Map(
+    previous.map((entry) => [entry.dateKey, entry]),
+  );
 
   return eachDayInRange(start, end).map((date, dayIndex) => {
     const dateKey = toDateKey(date);

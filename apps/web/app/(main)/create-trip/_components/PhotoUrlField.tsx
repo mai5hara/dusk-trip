@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { PhotoUpload } from '@mood-trip/ui';
 import { uploadImage } from '@/api/uploads/api';
 
-type Props = {
+type PhotoUrlFieldProps = {
   id?: string;
   variant?: 'border' | 'filled' | 'raised' | 'inset';
   value?: string;
@@ -25,7 +25,7 @@ const PhotoUrlField = ({
   onBlur,
   errorMessage,
   placeholder,
-}: Props) => {
+}: PhotoUrlFieldProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | undefined>();
