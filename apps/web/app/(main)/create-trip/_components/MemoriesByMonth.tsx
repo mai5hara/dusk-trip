@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import type {
+  Control,
   FieldErrors,
   FieldValues,
   Path,
   UseFormRegister,
 } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { CheckIcon } from 'lucide-react';
 import {
   Accordion,
@@ -16,16 +18,18 @@ import {
   Field,
   Input,
   Label,
-  PhotoUpload,
 } from '@mood-trip/ui';
 import {
   formatDayHeading,
   groupEntriesByMonth,
   type DayEntryFormValue,
 } from '../_lib/travel-period';
+import PhotoUrlField from './PhotoUrlField';
 
 type Props = {
   entries: DayEntryFormValue[];
+  // Parent form shape is wider; keep this loosely typed for reuse.
+  control: Control<FieldValues>;
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors<FieldValues>;
 };
@@ -34,7 +38,7 @@ function isSavedDay(day: DayEntryFormValue): boolean {
   return Boolean(day.id);
 }
 
-const MemoriesByMonth = ({ entries, register, errors }: Props) => {
+const MemoriesByMonth = ({ entries, control, register, errors }: Props) => {
   const months = groupEntriesByMonth(entries);
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
 
@@ -120,18 +124,27 @@ const MemoriesByMonth = ({ entries, register, errors }: Props) => {
 
             <Field>
               <Label htmlFor={`entries.${selectedIndex}.photoUrl`}>Photo</Label>
-              <PhotoUpload
-                variant="inset"
-                {...register(
-                  `entries.${selectedIndex}.photoUrl` as Path<FieldValues>,
+              <Controller
+                name={`entries.${selectedIndex}.photoUrl` as Path<FieldValues>}
+                control={control}
+                render={({ field }) => (
+                  <PhotoUrlField
+                    id={`entries.${selectedIndex}.photoUrl`}
+                    variant="inset"
+                    value={
+                      typeof field.value === 'string' ? field.value : ''
+                    }
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    errorMessage={
+                      (
+                        errors.entries as
+                          | FieldErrors<DayEntryFormValue>[]
+                          | undefined
+                      )?.[selectedIndex]?.photoUrl?.message
+                    }
+                  />
                 )}
-                errorMessage={
-                  (
-                    errors.entries as
-                      | FieldErrors<DayEntryFormValue>[]
-                      | undefined
-                  )?.[selectedIndex]?.photoUrl?.message
-                }
               />
             </Field>
 
