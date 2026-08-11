@@ -1,14 +1,7 @@
 import type { Entry } from '@mood-trip/validators';
+import type { DayEntryFormValue } from './create-trip-form';
 
-export type DayEntryFormValue = {
-  id?: string;
-  dateKey: string;
-  dayLabel: string;
-  sortOrder: number;
-  photoUrl: string;
-  caption?: string;
-  location?: string;
-};
+export type { DayEntryFormValue };
 
 export type MonthGroup = {
   monthKey: string;

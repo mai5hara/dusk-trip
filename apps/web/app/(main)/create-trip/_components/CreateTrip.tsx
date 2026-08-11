@@ -1,11 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  z,
-  createTripBodySchema,
-  createEntryBodySchema,
-} from '@mood-trip/validators';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -30,77 +25,16 @@ import { useCreateEntryMutation } from '../_hooks/useEntryMutation';
 import { useTripQuery } from '../_hooks/useTripQuery';
 import { useTripsQuery } from '@/app/(main)/_hooks/useTripsQuery';
 import { buildDayEntries } from '../_lib/travel-period';
+import {
+  albumModeSchema,
+  entryFormSchema,
+  toDate,
+  type EntryFormValues,
+} from '../_lib/create-trip-form';
 import MemoriesByMonth from './MemoriesByMonth';
 import PhotoUrlField from './PhotoUrlField';
 
-const albumModeSchema = z.enum(['new', 'existing']);
 type Step = 1 | 2;
-
-const dayEntryFormSchema = z.object({
-  id: z.string().optional(),
-  dateKey: z.string(),
-  dayLabel: z.string(),
-  sortOrder: z.number().int(),
-  photoUrl: z.string(),
-  caption: z.string().optional(),
-  location: z.string().optional(),
-});
-
-const entryFormSchema = z
-  .object({
-    albumMode: albumModeSchema,
-    tripId: z.string(),
-    entries: z.array(dayEntryFormSchema),
-    newTrip: createTripBodySchema.optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.albumMode === 'existing' && !data.tripId) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Select a trip',
-        path: ['tripId'],
-      });
-    }
-
-    if (data.albumMode === 'new' && !data.tripId) {
-      const result = createTripBodySchema.safeParse(data.newTrip);
-      if (!result.success) {
-        result.error.issues.forEach((issue) => {
-          ctx.addIssue({
-            ...issue,
-            path: ['newTrip', ...issue.path],
-          });
-        });
-      }
-    }
-
-    data.entries.forEach((entry, index) => {
-      if (!entry.photoUrl) return;
-      const result = createEntryBodySchema.safeParse({
-        photoUrl: entry.photoUrl,
-        caption: entry.caption || undefined,
-        location: entry.location || undefined,
-        dayLabel: entry.dateKey,
-        sortOrder: entry.sortOrder,
-      });
-      if (!result.success) {
-        result.error.issues.forEach((issue) => {
-          ctx.addIssue({
-            ...issue,
-            path: ['entries', index, ...issue.path],
-          });
-        });
-      }
-    });
-  });
-
-type EntryFormValues = z.infer<typeof entryFormSchema>;
-
-function toDate(value: Date | string | undefined): Date | undefined {
-  if (!value) return undefined;
-  const date = value instanceof Date ? value : new Date(value);
-  return Number.isNaN(date.getTime()) ? undefined : date;
-}
 
 const CreateTrip = () => {
   const router = useRouter();
@@ -416,7 +350,7 @@ const CreateTrip = () => {
               {isNewTrip ? (
                 <Button
                   type="button"
-                  variant="border"
+                  variant="outline"
                   disabled={isSaving}
                   onClick={saveAlbumOnly}
                 >
@@ -463,7 +397,7 @@ const CreateTrip = () => {
             <div className="flex max-w-125 flex-col gap-3 self-center sm:flex-row">
               <Button
                 type="button"
-                variant="border"
+                variant="outline"
                 disabled={isSaving}
                 onClick={() => setStep(1)}
               >
@@ -471,7 +405,7 @@ const CreateTrip = () => {
               </Button>
               <Button
                 type="button"
-                variant="border"
+                variant="outline"
                 disabled={isSaving}
                 onClick={() => router.push('/')}
               >
