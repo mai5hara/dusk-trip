@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query/query-keys';
-import { createTrip } from '@/api/create-trip/api';
+import { createTrip } from '@/api/trips/api';
 
 export function useCreateTripMutation() {
   const queryClient = useQueryClient();

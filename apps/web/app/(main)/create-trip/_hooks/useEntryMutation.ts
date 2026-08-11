@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { CreateEntryBody } from '@mood-trip/validators';
 import { queryKeys } from '@/lib/query/query-keys';
-import { createEntry } from '@/api/create-trip/api';
+import { createEntry } from '@/api/trips/api';
 
 type CreateEntryVariables = {
   tripId: string;
