@@ -189,8 +189,6 @@ const CreateTrip = () => {
           }),
         ),
       );
-
-      router.push('/');
     } catch (error) {
       console.error(error);
     }
