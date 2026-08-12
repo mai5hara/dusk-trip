@@ -73,10 +73,7 @@ describe('eachDayInRange', () => {
 
 describe('buildDayEntries', () => {
   it('builds one row per day with Day labels', () => {
-    const entries = buildDayEntries(
-      new Date(2026, 5, 1),
-      new Date(2026, 5, 3),
-    );
+    const entries = buildDayEntries(new Date(2026, 5, 1), new Date(2026, 5, 3));
 
     expect(entries).toHaveLength(3);
     expect(entries.map((entry) => entry.dayLabel)).toEqual([
@@ -154,8 +151,8 @@ describe('groupEntriesByMonth', () => {
 
 describe('formatDayHeading', () => {
   it('includes the day label and short date', () => {
-    expect(
-      formatDayHeading(day('2026-06-01', { dayLabel: 'Day 1' })),
-    ).toBe('Day 1 · Jun 1');
+    expect(formatDayHeading(day('2026-06-01', { dayLabel: 'Day 1' }))).toBe(
+      'Day 1 · Jun 1',
+    );
   });
 });
