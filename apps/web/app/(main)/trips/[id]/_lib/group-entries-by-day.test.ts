@@ -22,9 +22,9 @@ function entry(overrides: Partial<Entry> = {}): Entry {
 
 describe('formatEntryDayHeading', () => {
   it('formats a date key with day index from trip start', () => {
-    expect(
-      formatEntryDayHeading('2026-06-03', 2, '2026-06-01'),
-    ).toBe('Day 3 · Jun 3');
+    expect(formatEntryDayHeading('2026-06-03', 2, '2026-06-01')).toBe(
+      'Day 3 · Jun 3',
+    );
   });
 
   it('falls back to day label text', () => {
