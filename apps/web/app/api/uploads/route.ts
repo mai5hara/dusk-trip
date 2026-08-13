@@ -3,6 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { NextResponse } from 'next/server';
 import { getS3UploadConfig, uploadBufferToS3 } from '@/lib/s3';
+import { requireAuthenticatedUser } from '@/lib/auth/require-authenticated-user';
 
 export const runtime = 'nodejs';
 
@@ -31,6 +32,14 @@ async function saveLocally(request: Request, filename: string, bytes: Buffer) {
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireAuthenticatedUser(request);
+    if (!auth.ok) {
+      return NextResponse.json(
+        { message: auth.message },
+        { status: auth.status },
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get('file');
 
