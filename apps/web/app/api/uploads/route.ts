@@ -10,6 +10,7 @@ export const runtime = 'nodejs';
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
+/** Dev-only fallback. Do not use on serverless — filesystem is ephemeral. */
 async function saveLocally(request: Request, filename: string, bytes: Buffer) {
   const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
   await mkdir(uploadsDir, { recursive: true });
@@ -68,6 +69,17 @@ export async function POST(request: Request) {
       });
 
       return NextResponse.json({ url, storage: 's3' });
+    }
+
+    // public/uploads is ephemeral/read-only on serverless (e.g. Vercel).
+    if (process.env.NODE_ENV === 'production') {
+      console.error(
+        'Uploads require S3 in production. Set AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and S3_BUCKET_NAME.',
+      );
+      return NextResponse.json(
+        { message: 'Image upload is temporarily unavailable' },
+        { status: 503 },
+      );
     }
 
     const url = await saveLocally(request, filename, bytes);

@@ -57,3 +57,14 @@ components/                  # truly shared chrome (Header, Footer, theme)
 - **Trip list filter context** lives under `app/(main)/_hooks/` because it wraps the main shell (Header + home).
 
 When the same UI is needed from **three or more unrelated routes**, extract a shared module then — not by default.
+
+## Image uploads
+
+`POST /api/uploads` stores images for trip creation.
+
+| Environment              | Behavior                                                                                                                      |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Development (`next dev`) | If S3 env vars are unset, files go to `public/uploads` (local disk, **dev-only**).                                            |
+| Production               | **S3 is required.** Local disk is ephemeral/read-only on serverless (e.g. Vercel). Without S3 config the route returns `503`. |
+
+Required for S3: `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME` (see `.env.local.example`). Optional: `S3_PUBLIC_URL_BASE` for CloudFront etc.
