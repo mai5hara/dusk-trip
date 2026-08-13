@@ -18,53 +18,70 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
   const { data: trip, isLoading, isError } = useTripQuery(tripId);
 
   if (!trip) {
-    return <div>Trip not found</div>;
+    return <section>Trip not found</section>;
   }
 
   const dayGroups = groupEntriesByDay(trip.entries, trip.startDate);
-  console.log(dayGroups);
 
   return (
     <section className="flex flex-col gap-5 max-2-[1248px]">
       {isLoading && <div>Loading...</div>}
       {isError && <div>Error loading trip</div>}
-      <Link className="font-mono flex gap-3 items-center" href="/">
+      <Link
+        className="font-mono flex gap-3 items-center hover:opacity-70 w-fit transition-opacity"
+        href="/"
+      >
         <ArrowLeftIcon className="size-4" />
-        Back to album list
+        Back to album
       </Link>
-      <div className="tokonoma-raised-panel flex flex-col gap-12 rounded-2xl p-6">
-        <div className="flex flex-row gap-14 w-full">
+      <div className="tokonoma-raised-panel flex flex-col gap-12 rounded-2xl p-10 items-center">
+        <div className="flex w-full flex-row items-start gap-10">
           <Image
-            className="max-w-116.25 max-h-78.75 object-cover rounded-xl"
+            className="w-1/2 max-w-140 shrink-0 aspect-4/3 rounded-xl object-cover"
             src={trip.thumbnailUrl}
             alt={trip.title}
-            width={400}
-            height={300}
+            width={560}
+            height={420}
           />
-          <div className="flex flex-col gap-10">
-            <div className="flex flex-col gap-2">
-              <h1 className="font-mono text-3xl font-medium">{trip.title}</h1>
-              <div className="flex items-center gap-2">
-                <MapPinIcon className="size-4" />
-                {trip.location}
-              </div>
-              <div className="flex items-center gap-2">
-                <CalendarIcon className="size-4" />
-                {formatDateRange(trip.startDate, trip.endDate)}
-              </div>
-              <div className="flex items-center gap-2 font-medium">
-                {trip.entries.length} Memories
+          <div className="flex min-w-0 flex-1 flex-col gap-12 pt-1">
+            <div className="flex flex-col gap-4">
+              <h1 className="font-mono text-4xl font-medium">{trip.title}</h1>
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <MapPinIcon className="size-4" />
+                    {trip.location}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CalendarIcon className="size-4" />
+                    {formatDateRange(trip.startDate, trip.endDate)}
+                  </div>
+                  <div className="flex items-center gap-2 font-medium">
+                    {trip.entries.length} Memories
+                  </div>
+                </div>
+                {/* Add trip description here */}
+                <p className="line-clamp-2">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Quisquam, quos. Lorem ipsum dolor sit amet consectetur
+                  adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet
+                  consectetur adipisicing elit. Quisquam, quos.
+                </p>
               </div>
             </div>
-            <div className="flex flex-col gap-4">
-              <ButtonLink variant="flat" href="" rounded="full">
-                Edit
-                <PenIcon className="size-4" />
-              </ButtonLink>
-              <Button variant="accent" rounded="full">
-                View Slideshow
-                <TriangleIcon className="size-4 rotate-90" />
-              </Button>
+            <div className="flex flex-col gap-6">
+              <div className="w-full md:max-w-50">
+                <ButtonLink variant="flat" href="" rounded="full" width="full">
+                  Edit
+                  <PenIcon className="size-4" />
+                </ButtonLink>
+              </div>
+              <div className="w-full md:max-w-50">
+                <Button variant="accent" rounded="full" width="full">
+                  View Slideshow
+                  <TriangleIcon className="size-4 rotate-90" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -77,7 +94,7 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
                 <h2 className="font-mono text-lg font-medium">{day.heading}</h2>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                   {day.entries.map((entry) => (
-                    <div key={entry.id} className="flex flex-col gap-2">
+                    <div key={entry.id} className="flex flex-col gap-3">
                       <Image
                         className="aspect-square rounded-xl object-cover"
                         src={entry.photoUrl}
@@ -85,18 +102,30 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
                         width={400}
                         height={400}
                       />
-                      {entry.caption ? (
-                        <p className="text-sm">{entry.caption}</p>
-                      ) : null}
-                      {entry.location ? (
-                        <p className="text-xs opacity-70">{entry.location}</p>
-                      ) : null}
+                      <div className="flex flex-col gap-2">
+                        {entry.caption && (
+                          <p className="line-clamp-2 text-sm">
+                            {entry.caption}
+                          </p>
+                        )}
+                        {entry.location && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <MapPinIcon className="size-4" />
+                            {entry.location}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             ))
           )}
+        </div>
+        <div className="max-w-62.5 w-full">
+          <ButtonLink variant="flat" href="/" rounded="full" width="full">
+            Back to album
+          </ButtonLink>
         </div>
       </div>
     </section>
