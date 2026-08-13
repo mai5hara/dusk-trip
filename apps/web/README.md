@@ -32,15 +32,15 @@ lib/                         # app-wide non-HTTP infra (auth tokens, query)
 components/                  # truly shared chrome (Header, Footer, theme)
 ```
 
-| Location              | Put here                                                          |
-| --------------------- | ----------------------------------------------------------------- |
-| `app/.../_components` | UI used by that route (or route group)                            |
-| `app/.../_hooks`      | Hooks for that route (or route group)                             |
-| `app/.../_lib`        | Small helpers for that route                                      |
+| Location              | Put here                                                                                |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| `app/.../_components` | UI used by that route (or route group)                                                  |
+| `app/.../_hooks`      | Hooks for that route (or route group)                                                   |
+| `app/.../_lib`        | Small helpers for that route                                                            |
 | `api/_common/`        | Shared fetch helpers (`client.ts`, `next-api-client.ts`, `public-client.ts`, `http.ts`) |
-| `api/<domain>/`       | Endpoint functions for that backend domain                        |
-| `lib/`                | Tokens, QueryProvider, AuthProvider, shared utils                 |
-| `components/`         | Layout chrome reused across many routes                           |
+| `api/<domain>/`       | Endpoint functions for that backend domain                                              |
+| `lib/`                | Tokens, QueryProvider, AuthProvider, shared utils                                       |
+| `components/`         | Layout chrome reused across many routes                                                 |
 
 ### Naming
 
