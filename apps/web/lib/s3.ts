@@ -5,7 +5,15 @@ export type S3UploadConfig = {
   bucket: string;
   accessKeyId: string;
   secretAccessKey: string;
-  /** Optional CDN / custom public base. Defaults to virtual-hosted–style S3 URL. */
+  /**
+   * Public base for returned object URLs (CloudFront, custom domain, etc.).
+   * Defaults to the virtual-hosted–style S3 URL.
+   *
+   * Returned URLs are stored and rendered as-is (no signed GET). The bucket
+   * (or CDN origin) must allow anonymous read for uploaded keys — typically a
+   * bucket policy on `uploads/*`, or CloudFront in front of a private bucket
+   * with `S3_PUBLIC_URL_BASE` set to the distribution URL.
+   */
   publicUrlBase?: string;
 };
 
@@ -47,6 +55,14 @@ function buildPublicUrl(config: S3UploadConfig, key: string): string {
   return `https://${config.bucket}.s3.${config.region}.amazonaws.com/${key}`;
 }
 
+/**
+ * Uploads an object and returns a stable public URL (not a pre-signed GET).
+ *
+ * PutObject does not set an object ACL — modern buckets often disable ACLs
+ * (Object Ownership: Bucket owner enforced). Public readability must come from
+ * bucket policy and/or CloudFront (`S3_PUBLIC_URL_BASE`). Without that, the
+ * returned URL will 403/404 for anonymous viewers.
+ */
 export async function uploadBufferToS3(options: {
   config: S3UploadConfig;
   key: string;

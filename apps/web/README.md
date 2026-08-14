@@ -67,4 +67,31 @@ When the same UI is needed from **three or more unrelated routes**, extract a sh
 | Development (`next dev`) | If S3 env vars are unset, files go to `public/uploads` (local disk, **dev-only**).                                            |
 | Production               | **S3 is required.** Local disk is ephemeral/read-only on serverless (e.g. Vercel). Without S3 config the route returns `503`. |
 
-Required for S3: `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME` (see `.env.local.example`). Optional: `S3_PUBLIC_URL_BASE` for CloudFront etc.
+Required for S3: `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME` (see `.env.local.example`).
+
+### Public object URLs
+
+Upload returns a **stable public URL** (stored on trips/entries), not a pre-signed GET. `PutObject` does **not** set an ACL — use a bucket policy and/or CloudFront.
+
+**Option A — public `uploads/*` via bucket policy** (and relax Block Public Access enough for this policy). Example:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadUploads",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/uploads/*"
+    }
+  ]
+}
+```
+
+Default returned URL: `https://{bucket}.s3.{region}.amazonaws.com/{key}`.
+
+**Option B — private bucket + CloudFront** (preferred): keep the bucket private, serve via CloudFront (OAC), and set `S3_PUBLIC_URL_BASE` to the distribution origin (e.g. `https://d111111abcdef8.cloudfront.net`). Returned URLs then use that base.
+
+Without A or B, browsers and `next/image` will fail to load the image.

@@ -21,6 +21,12 @@ const nextConfig: NextConfig = {
         hostname: '**.amazonaws.com',
         pathname: '/**',
       },
+      // CloudFront distribution URLs (S3_PUBLIC_URL_BASE)
+      {
+        protocol: 'https',
+        hostname: '**.cloudfront.net',
+        pathname: '/**',
+      },
     ],
   },
 };
