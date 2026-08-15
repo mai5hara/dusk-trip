@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { albumModeSchema, entryFormSchema, toDate } from './create-trip-form';
+import { entryFormSchema, toDate } from './create-trip-form';
 
 const validNewTrip = {
   title: 'Kyoto Spring',
@@ -9,21 +9,9 @@ const validNewTrip = {
   endDate: new Date('2026-06-03'),
 };
 
-describe('albumModeSchema', () => {
-  it('accepts new and existing', () => {
-    expect(albumModeSchema.safeParse('new').success).toBe(true);
-    expect(albumModeSchema.safeParse('existing').success).toBe(true);
-  });
-
-  it('rejects unknown modes', () => {
-    expect(albumModeSchema.safeParse('other').success).toBe(false);
-  });
-});
-
 describe('entryFormSchema', () => {
   it('accepts a new album with valid trip fields', () => {
     const result = entryFormSchema.safeParse({
-      albumMode: 'new',
       tripId: '',
       entries: [],
       newTrip: validNewTrip,
@@ -32,34 +20,8 @@ describe('entryFormSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts an existing album when tripId is set', () => {
+  it('validates newTrip fields when tripId is empty', () => {
     const result = entryFormSchema.safeParse({
-      albumMode: 'existing',
-      tripId: 'trip-1',
-      entries: [],
-    });
-
-    expect(result.success).toBe(true);
-  });
-
-  it('requires tripId for an existing album', () => {
-    const result = entryFormSchema.safeParse({
-      albumMode: 'existing',
-      tripId: '',
-      entries: [],
-    });
-
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(
-        result.error.issues.some((issue) => issue.path[0] === 'tripId'),
-      ).toBe(true);
-    }
-  });
-
-  it('validates newTrip fields when creating a new album', () => {
-    const result = entryFormSchema.safeParse({
-      albumMode: 'new',
       tripId: '',
       entries: [],
       newTrip: {
@@ -77,9 +39,17 @@ describe('entryFormSchema', () => {
     }
   });
 
+  it('skips newTrip validation when tripId is already set', () => {
+    const result = entryFormSchema.safeParse({
+      tripId: 'trip-1',
+      entries: [],
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   it('skips entry validation when photoUrl is empty', () => {
     const result = entryFormSchema.safeParse({
-      albumMode: 'existing',
       tripId: 'trip-1',
       entries: [
         {
@@ -96,7 +66,6 @@ describe('entryFormSchema', () => {
 
   it('rejects entries with an invalid photoUrl', () => {
     const result = entryFormSchema.safeParse({
-      albumMode: 'existing',
       tripId: 'trip-1',
       entries: [
         {
@@ -120,7 +89,6 @@ describe('entryFormSchema', () => {
 
   it('accepts entries with a valid photoUrl', () => {
     const result = entryFormSchema.safeParse({
-      albumMode: 'existing',
       tripId: 'trip-1',
       entries: [
         {

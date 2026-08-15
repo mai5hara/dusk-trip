@@ -4,8 +4,6 @@ import {
   createEntryBodySchema,
 } from '@mood-trip/validators';
 
-export const albumModeSchema = z.enum(['new', 'existing']);
-
 export const dayEntryFormSchema = z.object({
   id: z.string().optional(),
   dateKey: z.string(),
@@ -18,21 +16,12 @@ export const dayEntryFormSchema = z.object({
 
 export const entryFormSchema = z
   .object({
-    albumMode: albumModeSchema,
     tripId: z.string(),
     entries: z.array(dayEntryFormSchema),
     newTrip: createTripBodySchema.optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.albumMode === 'existing' && !data.tripId) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Select a trip',
-        path: ['tripId'],
-      });
-    }
-
-    if (data.albumMode === 'new' && !data.tripId) {
+    if (!data.tripId) {
       const result = createTripBodySchema.safeParse(data.newTrip);
       if (!result.success) {
         result.error.issues.forEach((issue) => {

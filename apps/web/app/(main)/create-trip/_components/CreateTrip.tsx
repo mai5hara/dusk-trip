@@ -10,23 +10,11 @@ import {
   type FieldValues,
   type UseFormRegister,
 } from 'react-hook-form';
-import {
-  Button,
-  Input,
-  Label,
-  Select,
-  RadioGroup,
-  Radio,
-  Field,
-  DateRangePicker,
-} from '@mood-trip/ui';
+import { Button, Input, Label, Field, DateRangePicker } from '@mood-trip/ui';
 import { useCreateTripMutation } from '../_hooks/useTripMutation';
 import { useCreateEntryMutation } from '../_hooks/useEntryMutation';
-import { useTripQuery } from '../_hooks/useTripQuery';
-import { useTripsQuery } from '@/app/(main)/_hooks/useTripsQuery';
 import { buildDayEntries } from '../_lib/travel-period';
 import {
-  albumModeSchema,
   entryFormSchema,
   toDate,
   type EntryFormValues,
@@ -43,7 +31,6 @@ const CreateTrip = () => {
     useCreateTripMutation();
   const { mutateAsync: createEntryAsync, isPending: isCreatingEntry } =
     useCreateEntryMutation();
-  const { data: trips = [], isLoading: isTripsLoading } = useTripsQuery();
 
   const {
     register,
@@ -57,7 +44,6 @@ const CreateTrip = () => {
   } = useForm<EntryFormValues>({
     resolver: zodResolver(entryFormSchema),
     defaultValues: {
-      albumMode: 'new',
       tripId: '',
       entries: [],
       newTrip: {
@@ -70,21 +56,13 @@ const CreateTrip = () => {
     },
   });
 
-  const albumMode = watch('albumMode');
-  const tripId = watch('tripId');
   const travelStartDate = watch('newTrip.startDate');
   const travelEndDate = watch('newTrip.endDate');
   const entries = watch('entries');
-  const isNewTrip = albumMode === 'new';
-  const hasCreatedOrSelectedAlbum = Boolean(tripId);
-
-  const { data: selectedTrip, isLoading: isTripLoading } = useTripQuery(
-    tripId || undefined,
-  );
 
   useEffect(() => {
-    const start = toDate(selectedTrip?.startDate) ?? toDate(travelStartDate);
-    const end = toDate(selectedTrip?.endDate) ?? toDate(travelEndDate);
+    const start = toDate(travelStartDate);
+    const end = toDate(travelEndDate);
 
     if (!start || !end) {
       setValue('entries', []);
@@ -92,31 +70,17 @@ const CreateTrip = () => {
     }
 
     const previous = getValues('entries');
-    const next = buildDayEntries(
-      start,
-      end,
-      previous,
-      selectedTrip?.entries ?? [],
-    );
-    setValue('entries', next);
-  }, [
-    isNewTrip,
-    travelStartDate,
-    travelEndDate,
-    selectedTrip?.id,
-    selectedTrip?.startDate,
-    selectedTrip?.endDate,
-    selectedTrip?.entries,
-    getValues,
-    setValue,
-  ]);
+    setValue('entries', buildDayEntries(start, end, previous));
+  }, [travelStartDate, travelEndDate, getValues, setValue]);
 
-  const ensureAlbumExists = async (values: EntryFormValues) => {
+  const ensureAlbumExists = async (
+    values: EntryFormValues,
+  ): Promise<string> => {
     if (values.tripId) {
       return values.tripId;
     }
 
-    if (values.albumMode !== 'new' || !values.newTrip) {
+    if (!values.newTrip) {
       throw new Error('Album is required');
     }
 
@@ -125,47 +89,34 @@ const CreateTrip = () => {
     return createdTrip.id;
   };
 
-  const validateAlbumStep = async () => {
-    if (isNewTrip) {
-      return trigger([
-        'newTrip',
-        'newTrip.title',
-        'newTrip.thumbnailUrl',
-        'newTrip.location',
-        'newTrip.startDate',
-        'newTrip.endDate',
-      ]);
-    }
-    return trigger('tripId');
+  const validateAlbumStep = async (): Promise<boolean> => {
+    return trigger([
+      'newTrip',
+      'newTrip.title',
+      'newTrip.thumbnailUrl',
+      'newTrip.location',
+      'newTrip.startDate',
+      'newTrip.endDate',
+    ]);
   };
 
-  const saveAlbumOnly = async () => {
+  const saveAlbumOnly = async (): Promise<void> => {
     const isValid = await validateAlbumStep();
     if (!isValid) return;
 
     try {
-      const values = getValues();
-      if (values.albumMode === 'existing') {
-        router.push('/');
-        return;
-      }
-      await ensureAlbumExists(values);
+      await ensureAlbumExists(getValues());
       router.push('/');
     } catch (error) {
       console.error(error);
     }
   };
 
-  const continueToMemories = async () => {
+  /** Validate only — album is created on Create album only / Save memories. */
+  const continueToMemories = async (): Promise<void> => {
     const isValid = await validateAlbumStep();
     if (!isValid) return;
-
-    try {
-      await ensureAlbumExists(getValues());
-      setStep(2);
-    } catch (error) {
-      console.error(error);
-    }
+    setStep(2);
   };
 
   const saveMemories = handleSubmit(async (values) => {
@@ -189,6 +140,9 @@ const CreateTrip = () => {
           }),
         ),
       );
+
+      // Fix routing to album details page later
+      router.push('/');
     } catch (error) {
       console.error(error);
     }
@@ -196,9 +150,7 @@ const CreateTrip = () => {
 
   const isSaving = isSubmitting || isCreatingTrip || isCreatingEntry;
   const showMemories =
-    entries.length > 0 ||
-    Boolean(tripId && (isTripLoading || selectedTrip)) ||
-    Boolean(travelStartDate && travelEndDate);
+    entries.length > 0 || Boolean(travelStartDate && travelEndDate);
 
   return (
     <div className="mx-auto flex w-full max-w-225 flex-col items-center pt-20 pb-40">
@@ -210,151 +162,92 @@ const CreateTrip = () => {
         {step === 1 ? (
           <section className="flex w-full flex-col gap-9">
             <h1 className="text-2xl font-mono font-medium">Add Trip</h1>
-            <div className="flex flex-col gap-5">
-              <Controller
-                name="albumMode"
-                control={control}
-                render={({ field }) => (
-                  <div className="max-w-sm">
-                    <RadioGroup
-                      variant="border"
-                      value={field.value}
-                      onValueChange={(value: string) => {
-                        if (hasCreatedOrSelectedAlbum && isNewTrip) return;
-                        const mode = albumModeSchema.parse(value);
-                        field.onChange(mode);
-                        setValue('tripId', '');
-                        setValue('entries', []);
-                      }}
-                    >
-                      <Radio value="new" disabled={hasCreatedOrSelectedAlbum}>
-                        Create new album
-                      </Radio>
-                      <Radio
-                        value="existing"
-                        disabled={hasCreatedOrSelectedAlbum && isNewTrip}
-                      >
-                        Create from existing album
-                      </Radio>
-                    </RadioGroup>
-                  </div>
-                )}
-              />
-
-              {isNewTrip ? (
-                <div className="grid grid-cols-16 gap-4">
-                  <div className="col-span-7">
-                    <Field>
-                      <Label htmlFor="newTrip.thumbnailUrl">Thumbnail</Label>
-                      <Controller
-                        name="newTrip.thumbnailUrl"
-                        control={control}
-                        render={({ field }) => (
-                          <PhotoUrlField
-                            id="newTrip.thumbnailUrl"
-                            variant="inset"
-                            value={field.value}
-                            onChange={field.onChange}
-                            onBlur={field.onBlur}
-                            errorMessage={errors.newTrip?.thumbnailUrl?.message}
-                          />
-                        )}
-                      />
-                    </Field>
-                  </div>
-
-                  <div className="col-span-8 flex flex-col gap-3">
-                    <Field>
-                      <Label htmlFor="newTrip.title">Album Name</Label>
-                      <Input
-                        type="text"
-                        variant="inset"
-                        placeholder="Enter album name"
-                        {...register('newTrip.title')}
-                        errorMessage={errors.newTrip?.title?.message}
-                      />
-                    </Field>
-
-                    <Field>
-                      <Label htmlFor="newTrip.location">Location</Label>
-                      <Input
-                        type="text"
-                        variant="inset"
-                        placeholder="Enter location"
-                        {...register('newTrip.location')}
-                      />
-                    </Field>
-                    <Field>
-                      <Label htmlFor="newTrip.startDate">Travel Period</Label>
-                      <Controller
-                        name="newTrip.startDate"
-                        control={control}
-                        render={({ field }) => (
-                          <DateRangePicker
-                            id="newTrip.startDate"
-                            variant="inset"
-                            placeholder="Select travel period"
-                            value={{
-                              from: field.value,
-                              to: travelEndDate,
-                            }}
-                            onValueChange={(range) => {
-                              setValue('newTrip.startDate', range?.from, {
-                                shouldValidate: true,
-                                shouldDirty: true,
-                              });
-                              setValue('newTrip.endDate', range?.to, {
-                                shouldValidate: true,
-                                shouldDirty: true,
-                              });
-                            }}
-                            errorMessage={
-                              errors.newTrip?.startDate?.message ??
-                              errors.newTrip?.endDate?.message
-                            }
-                          />
-                        )}
-                      />
-                    </Field>
-                  </div>
-                </div>
-              ) : (
+            <div className="grid grid-cols-16 gap-4">
+              <div className="col-span-7">
                 <Field>
+                  <Label htmlFor="newTrip.thumbnailUrl">Thumbnail</Label>
                   <Controller
-                    name="tripId"
+                    name="newTrip.thumbnailUrl"
                     control={control}
                     render={({ field }) => (
-                      <Select
-                        placeholder="Select album"
+                      <PhotoUrlField
+                        id="newTrip.thumbnailUrl"
+                        variant="inset"
                         value={field.value}
-                        onValueChange={(value: string) => {
-                          field.onChange(value);
-                          setValue('entries', []);
-                        }}
-                        disabled={isTripsLoading}
-                        options={trips.map((trip) => ({
-                          label: trip.title,
-                          value: trip.id,
-                        }))}
-                        errorMessage={errors.tripId?.message}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        errorMessage={errors.newTrip?.thumbnailUrl?.message}
                       />
                     )}
                   />
                 </Field>
-              )}
+              </div>
+
+              <div className="col-span-8 flex flex-col gap-3">
+                <Field>
+                  <Label htmlFor="newTrip.title">Album Name</Label>
+                  <Input
+                    type="text"
+                    variant="inset"
+                    placeholder="Enter album name"
+                    {...register('newTrip.title')}
+                    errorMessage={errors.newTrip?.title?.message}
+                  />
+                </Field>
+
+                <Field>
+                  <Label htmlFor="newTrip.location">Location</Label>
+                  <Input
+                    type="text"
+                    variant="inset"
+                    placeholder="Enter location"
+                    {...register('newTrip.location')}
+                  />
+                </Field>
+                <Field>
+                  <Label htmlFor="newTrip.startDate">Travel Period</Label>
+                  <Controller
+                    name="newTrip.startDate"
+                    control={control}
+                    render={({ field }) => (
+                      <DateRangePicker
+                        id="newTrip.startDate"
+                        variant="inset"
+                        placeholder="Select travel period"
+                        value={{
+                          from: field.value,
+                          to: travelEndDate,
+                        }}
+                        onValueChange={(range) => {
+                          setValue('newTrip.startDate', range?.from, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                          setValue('newTrip.endDate', range?.to, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }}
+                        errorMessage={
+                          errors.newTrip?.startDate?.message ??
+                          errors.newTrip?.endDate?.message
+                        }
+                      />
+                    )}
+                  />
+                </Field>
+              </div>
             </div>
 
             <div className="flex max-w-125 flex-col gap-3 self-center sm:flex-row">
-              {isNewTrip ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={isSaving}
-                  onClick={saveAlbumOnly}
-                >
-                  {isSaving ? 'Saving...' : 'Create album only'}
-                </Button>
-              ) : null}
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isSaving}
+                onClick={saveAlbumOnly}
+              >
+                {isSaving ? 'Saving...' : 'Create album only'}
+              </Button>
               <Button
                 type="button"
                 variant="accent"
@@ -376,16 +269,12 @@ const CreateTrip = () => {
             </div>
 
             {showMemories ? (
-              isTripLoading ? (
-                <p className="text-sm opacity-70">Loading album memories...</p>
-              ) : (
-                <MemoriesByMonth
-                  entries={entries}
-                  control={control as unknown as Control<FieldValues>}
-                  register={register as UseFormRegister<FieldValues>}
-                  errors={errors}
-                />
-              )
+              <MemoriesByMonth
+                entries={entries}
+                control={control as unknown as Control<FieldValues>}
+                register={register as unknown as UseFormRegister<FieldValues>}
+                errors={errors}
+              />
             ) : (
               <p className="text-sm opacity-70">
                 Select a travel period to add memories by day.
