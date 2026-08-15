@@ -10,15 +10,17 @@ import {
   type FieldValues,
   type UseFormRegister,
 } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Button, Input, Label, Field, DateRangePicker } from '@mood-trip/ui';
 import { useCreateTripMutation } from '../_hooks/useTripMutation';
-import { useCreateEntryMutation } from '../_hooks/useEntryMutation';
+import { useCreateEntriesMutation } from '../_hooks/useEntryMutation';
 import { buildDayEntries } from '../_lib/travel-period';
 import {
   entryFormSchema,
   toDate,
   type EntryFormValues,
 } from '../_lib/create-trip-form';
+import { getErrorMessage } from '@/lib/get-error-message';
 import MemoriesByMonth from './MemoriesByMonth';
 import PhotoUrlField from './PhotoUrlField';
 
@@ -29,8 +31,8 @@ const CreateTrip = () => {
   const [step, setStep] = useState<Step>(1);
   const { mutateAsync: createTripAsync, isPending: isCreatingTrip } =
     useCreateTripMutation();
-  const { mutateAsync: createEntryAsync, isPending: isCreatingEntry } =
-    useCreateEntryMutation();
+  const { mutateAsync: createEntriesAsync, isPending: isCreatingEntries } =
+    useCreateEntriesMutation();
 
   const {
     register,
@@ -108,7 +110,7 @@ const CreateTrip = () => {
       await ensureAlbumExists(getValues());
       router.push('/');
     } catch (error) {
-      console.error(error);
+      toast.error(getErrorMessage(error, 'Failed to create album'));
     }
   };
 
@@ -122,33 +124,31 @@ const CreateTrip = () => {
   const saveMemories = handleSubmit(async (values) => {
     try {
       const resolvedTripId = await ensureAlbumExists(values);
-      const entriesToCreate = values.entries.filter(
-        (entry) => !entry.id && entry.photoUrl.trim().length > 0,
-      );
+      const entriesToCreate = values.entries
+        .filter((entry) => !entry.id && entry.photoUrl.trim().length > 0)
+        .map((entry) => ({
+          photoUrl: entry.photoUrl,
+          caption: entry.caption || undefined,
+          location: entry.location || undefined,
+          dayLabel: entry.dateKey,
+          sortOrder: entry.sortOrder,
+        }));
 
-      await Promise.all(
-        entriesToCreate.map((entry) =>
-          createEntryAsync({
-            tripId: resolvedTripId,
-            body: {
-              photoUrl: entry.photoUrl,
-              caption: entry.caption || undefined,
-              location: entry.location || undefined,
-              dayLabel: entry.dateKey,
-              sortOrder: entry.sortOrder,
-            },
-          }),
-        ),
-      );
+      if (entriesToCreate.length > 0) {
+        await createEntriesAsync({
+          tripId: resolvedTripId,
+          body: { entries: entriesToCreate },
+        });
+      }
 
       // Fix routing to album details page later
       router.push('/');
     } catch (error) {
-      console.error(error);
+      toast.error(getErrorMessage(error, 'Failed to save memories'));
     }
   });
 
-  const isSaving = isSubmitting || isCreatingTrip || isCreatingEntry;
+  const isSaving = isSubmitting || isCreatingTrip || isCreatingEntries;
   const showMemories =
     entries.length > 0 || Boolean(travelStartDate && travelEndDate);
 

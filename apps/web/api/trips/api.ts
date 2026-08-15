@@ -2,6 +2,7 @@ import { apiClient } from '@/api/_common/client';
 import {
   planTripResponseSchema,
   type CreateEntryBody,
+  type CreateEntriesBatchBody,
   type CreateTripBody,
   type Entry,
   type PlanTripBody,
@@ -30,6 +31,16 @@ export async function createEntry(
   body: CreateEntryBody,
 ): Promise<Entry> {
   return apiClient<Entry>(`/trips/${tripId}/entries`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function createEntries(
+  tripId: string,
+  body: CreateEntriesBatchBody,
+): Promise<Entry[]> {
+  return apiClient<Entry[]>(`/trips/${tripId}/entries/batch`, {
     method: 'POST',
     body: JSON.stringify(body),
   });

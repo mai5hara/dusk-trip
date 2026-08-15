@@ -23,3 +23,14 @@ export const createEntryBodySchema = z.object({
 });
 
 export type CreateEntryBody = z.infer<typeof createEntryBodySchema>;
+
+/** Max days for a single batch create (about two months). */
+export const CREATE_ENTRIES_BATCH_MAX = 62;
+
+export const createEntriesBatchBodySchema = z.object({
+  entries: z.array(createEntryBodySchema).min(1).max(CREATE_ENTRIES_BATCH_MAX),
+});
+
+export type CreateEntriesBatchBody = z.infer<
+  typeof createEntriesBatchBodySchema
+>;

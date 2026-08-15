@@ -34,8 +34,11 @@ export {
 export {
   entrySchema,
   createEntryBodySchema,
+  createEntriesBatchBodySchema,
+  CREATE_ENTRIES_BATCH_MAX,
   type Entry,
   type CreateEntryBody,
+  type CreateEntriesBatchBody,
 } from './entry';
 export {
   loginBodySchema,
