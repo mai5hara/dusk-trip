@@ -202,6 +202,7 @@ const CreateTrip = () => {
                     variant="inset"
                     placeholder="Enter location"
                     {...register('newTrip.location')}
+                    errorMessage={errors.newTrip?.location?.message}
                   />
                 </Field>
                 <Field>

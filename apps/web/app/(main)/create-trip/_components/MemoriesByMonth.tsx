@@ -162,6 +162,13 @@ const MemoriesByMonth = ({
                 {...register(
                   `entries.${selectedIndex}.caption` as Path<FieldValues>,
                 )}
+                errorMessage={
+                  (
+                    errors.entries as
+                      | FieldErrors<DayEntryFormValue>[]
+                      | undefined
+                  )?.[selectedIndex]?.caption?.message
+                }
               />
             </Field>
 
@@ -176,6 +183,13 @@ const MemoriesByMonth = ({
                 {...register(
                   `entries.${selectedIndex}.location` as Path<FieldValues>,
                 )}
+                errorMessage={
+                  (
+                    errors.entries as
+                      | FieldErrors<DayEntryFormValue>[]
+                      | undefined
+                  )?.[selectedIndex]?.location?.message
+                }
               />
             </Field>
           </div>
