@@ -15,11 +15,11 @@ type PhotoUrlFieldProps = {
 };
 
 /**
- * Bridges tokonoma PhotoUpload (File) to form fields that store a URL string.
- * Uploads to local `/api/uploads` and saves under `public/uploads`.
+ * Bridges tokonoma PhotoUpload (File | URL) to form fields that store a URL string.
  */
 const PhotoUrlField = ({
   id,
+  value,
   variant = 'inset',
   onChange,
   onBlur,
@@ -37,7 +37,7 @@ const PhotoUrlField = ({
       placeholder={
         isUploading ? 'Uploading...' : (placeholder ?? 'Upload a photo')
       }
-      value={file}
+      value={file ?? (value ? value : null)}
       disabled={isUploading}
       errorMessage={uploadError ?? errorMessage}
       onBlur={onBlur}
@@ -55,6 +55,7 @@ const PhotoUrlField = ({
           try {
             const url = await uploadImage(nextFile);
             onChange(url);
+            setFile(null);
           } catch (error) {
             setFile(null);
             onChange('');
