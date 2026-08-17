@@ -1,4 +1,5 @@
 import { TripListProvider } from './_hooks/trip-list-context';
+import { AuthGate } from './_components/AuthGate';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -15,7 +16,7 @@ export default function MainLayout({
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 lg:h-screen lg:flex-none lg:overflow-hidden">
         <Header />
         <div className="flex min-h-0 flex-1 flex-col lg:overflow-y-auto">
-          {children}
+          <AuthGate>{children}</AuthGate>
         </div>
         <Footer />
       </div>
