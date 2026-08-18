@@ -9,3 +9,5 @@ dist
 coverage
 tokonoma-ui-deploy-key
 tokonoma-ui-deploy-key.pub
+apps/web/public/uploads/*
+!apps/web/public/uploads/.gitkeep

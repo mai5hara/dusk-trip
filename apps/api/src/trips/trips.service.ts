@@ -61,11 +61,10 @@ export class TripsService {
     };
   }
 
-  async createEntry(
+  private async _assertTripOwnedByUser(
     tripId: string,
     userId: string,
-    body: CreateEntryBody,
-  ): Promise<Entry> {
+  ): Promise<void> {
     const trip = await this.prisma.client.trip.findUnique({
       where: { id: tripId },
     });
@@ -73,6 +72,14 @@ export class TripsService {
     if (!trip || trip.userId !== userId) {
       throw new NotFoundException(`Trip ${tripId} not found`);
     }
+  }
+
+  async createEntry(
+    tripId: string,
+    userId: string,
+    body: CreateEntryBody,
+  ): Promise<Entry> {
+    await this._assertTripOwnedByUser(tripId, userId);
 
     return this.prisma.client.entry.create({
       data: {
@@ -84,5 +91,28 @@ export class TripsService {
         sortOrder: body.sortOrder ?? 0,
       },
     });
+  }
+
+  async createEntries(
+    tripId: string,
+    userId: string,
+    bodies: CreateEntryBody[],
+  ): Promise<Entry[]> {
+    await this._assertTripOwnedByUser(tripId, userId);
+
+    return this.prisma.client.$transaction(
+      bodies.map((body) =>
+        this.prisma.client.entry.create({
+          data: {
+            tripId,
+            photoUrl: body.photoUrl,
+            caption: body.caption ?? null,
+            location: body.location ?? null,
+            dayLabel: body.dayLabel ?? null,
+            sortOrder: body.sortOrder ?? 0,
+          },
+        }),
+      ),
+    );
   }
 }

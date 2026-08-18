@@ -18,12 +18,16 @@ const TripCard = ({ trip }: { trip: TripListItem }) => {
     <Link href={`/trips/${trip.id}`}>
       <Card variant="raised" size="sm">
         <CardMedia>
-          <Image
-            src={trip.thumbnailUrl}
-            alt={trip.title}
-            width={400}
-            height={300}
-          />
+          {trip.thumbnailUrl ? (
+            <Image
+              src={trip.thumbnailUrl}
+              alt={trip.title}
+              width={400}
+              height={300}
+            />
+          ) : (
+            <div className="aspect-4/3 w-full bg-black/5" aria-hidden="true" />
+          )}
         </CardMedia>
         <CardHeader>
           <CardTitle>{trip.title}</CardTitle>
