@@ -7,7 +7,11 @@ import { ConfigService } from '@nestjs/config';
  * existing restricted-key deployments keep working.
  */
 export function getMapTilerStyleApiKey(configService: ConfigService): string {
-  const dedicated = configService.get<string>('MAPTILER_MAP_API_KEY')?.trim();
+  // Tests and some Nest mocks may only implement `getOrThrow` (not `get`).
+  const dedicated =
+    typeof configService.get === 'function'
+      ? configService.get<string>('MAPTILER_MAP_API_KEY')?.trim()
+      : undefined;
   if (dedicated) {
     return dedicated;
   }

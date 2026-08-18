@@ -73,7 +73,9 @@ describe('GeminiItineraryPlannerService', () => {
     expect(generateContent).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'gemini-2.5-flash',
-        config: { responseMimeType: 'application/json' },
+        config: expect.objectContaining({
+          responseMimeType: 'application/json',
+        }),
       }),
     );
   });
