@@ -295,9 +295,9 @@ const CreateTrip = () => {
                 type="button"
                 variant="outline"
                 disabled={isSaving}
-                onClick={() => router.push('/')}
+                onClick={saveAlbumOnly}
               >
-                Skip for now
+                {isSaving ? 'Saving...' : 'Create album only'}
               </Button>
               <Button
                 type="button"
