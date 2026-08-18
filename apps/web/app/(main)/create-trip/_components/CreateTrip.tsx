@@ -142,10 +142,7 @@ const CreateTrip = () => {
           i < entriesToCreate.length;
           i += CREATE_ENTRIES_BATCH_MAX
         ) {
-          const chunk = entriesToCreate.slice(
-            i,
-            i + CREATE_ENTRIES_BATCH_MAX,
-          );
+          const chunk = entriesToCreate.slice(i, i + CREATE_ENTRIES_BATCH_MAX);
           await createEntriesAsync({
             tripId: resolvedTripId,
             body: { entries: chunk },
