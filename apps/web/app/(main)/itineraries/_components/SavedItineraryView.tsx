@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import TripItineraryExplorer from './TripItineraryExplorer';
+import ItineraryExplorer from './ItineraryExplorer';
 import { useItineraryQuery } from '../_hooks/useItineraryQuery';
 
 const SavedItineraryView = ({ id }: { id: string }) => {
@@ -20,8 +20,8 @@ const SavedItineraryView = ({ id }: { id: string }) => {
 
   return (
     <section className="flex flex-col py-4 lg:min-h-0 lg:flex-1 lg:py-6">
-      <TripItineraryExplorer
-        trip={data.plan}
+      <ItineraryExplorer
+        plan={data.plan}
         mapStyle={data.mapStyle}
         onBack={() => router.push('/itineraries')}
       />

@@ -10,17 +10,17 @@ import {
 } from '@nestjs/common';
 import {
   createItineraryBodySchema,
-  planTripBodySchema,
+  generateItineraryBodySchema,
 } from '@mood-trip/validators';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ItinerariesService } from './itineraries.service';
-import { TripPlanService } from '../ai/trip-plan.service';
+import { ItineraryPlanService } from '../ai/itinerary-plan.service';
 
 @Controller('itineraries')
 export class ItinerariesController {
   constructor(
     private readonly itinerariesService: ItinerariesService,
-    private readonly tripPlanService: TripPlanService,
+    private readonly itineraryPlanService: ItineraryPlanService,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -39,10 +39,10 @@ export class ItinerariesController {
 
   @UseGuards(JwtAuthGuard)
   @Post('plan')
-  plan(@Body() body: unknown) {
-    const parsed = planTripBodySchema.safeParse(body);
+  generate(@Body() body: unknown) {
+    const parsed = generateItineraryBodySchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
-    return this.tripPlanService.generateTripPlan(parsed.data);
+    return this.itineraryPlanService.generateItinerary(parsed.data);
   }
 
   @UseGuards(JwtAuthGuard)

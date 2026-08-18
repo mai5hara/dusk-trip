@@ -1,14 +1,14 @@
 import { apiClient } from '@/api/_common/client';
 import {
+  generateItineraryResponseSchema,
   itineraryDetailSchema,
   itineraryListItemSchema,
-  planTripResponseSchema,
   z,
   type CreateItineraryBody,
+  type GenerateItineraryBody,
+  type GenerateItineraryResponse,
   type ItineraryDetail,
   type ItineraryListItem,
-  type PlanTripBody,
-  type PlanTripResponse,
 } from '@mood-trip/validators';
 
 export async function getItineraries(): Promise<ItineraryListItem[]> {
@@ -32,11 +32,13 @@ export async function createItinerary(
   return itineraryListItemSchema.parse(response);
 }
 
-export async function planTrip(body: PlanTripBody): Promise<PlanTripResponse> {
+export async function generateItinerary(
+  body: GenerateItineraryBody,
+): Promise<GenerateItineraryResponse> {
   const response = await apiClient<unknown>('/itineraries/plan', {
     method: 'POST',
     body: JSON.stringify(body),
   });
 
-  return planTripResponseSchema.parse(response);
+  return generateItineraryResponseSchema.parse(response);
 }

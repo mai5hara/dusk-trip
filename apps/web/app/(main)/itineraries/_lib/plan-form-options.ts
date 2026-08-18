@@ -27,7 +27,7 @@ export const moodCopy: Record<string, string> = {
   restorative: 'nature, wellness rituals, and plenty of room to recharge',
 };
 
-export function buildTripIdea(
+export function buildItineraryIdea(
   destination: string,
   mood: string,
   pace: string,

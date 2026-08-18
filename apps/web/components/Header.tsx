@@ -47,7 +47,7 @@ const Header = () => {
           rounded="full"
         >
           <SparklesIcon className="size-4" />
-          Plan My Trip
+          Itineraries
         </ButtonLink>
         <ButtonLink href="#" variant="outline" size="icon" rounded="full">
           <UserIcon className="size-5" />

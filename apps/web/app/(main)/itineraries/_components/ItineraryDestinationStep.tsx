@@ -14,7 +14,7 @@ import { budgetOptions, paceOptions } from '../_lib/plan-form-options';
 const textareaClassName =
   'min-h-24 w-full rounded-md border border-transparent bg-surface px-3 py-2 text-sm text-text-primary shadow-[var(--shadow-button-inset)] outline-none transition-[box-shadow,border-color] duration-200 ease-out focus:shadow-[var(--shadow-button-raised-hover)] focus:ring-2 focus:ring-ring/40 focus:ring-offset-2 focus:ring-offset-surface motion-reduce:transition-none';
 
-type PlanDestinationStepProps = {
+type ItineraryDestinationStepProps = {
   destination: string;
   dateRange: DateRangePickerValue | undefined;
   dateRangeError: string | undefined;
@@ -23,7 +23,7 @@ type PlanDestinationStepProps = {
   travelers: string;
   interests: string;
   constraints: string;
-  tripIdea: string;
+  itineraryIdea: string;
   error: string | null;
   isGenerating: boolean;
   onDestinationChange: (value: string) => void;
@@ -36,7 +36,7 @@ type PlanDestinationStepProps = {
   onBack: () => void;
 };
 
-const PlanDestinationStep = ({
+const ItineraryDestinationStep = ({
   destination,
   dateRange,
   dateRangeError,
@@ -45,7 +45,7 @@ const PlanDestinationStep = ({
   travelers,
   interests,
   constraints,
-  tripIdea,
+  itineraryIdea,
   error,
   isGenerating,
   onDestinationChange,
@@ -56,12 +56,12 @@ const PlanDestinationStep = ({
   onInterestsChange,
   onConstraintsChange,
   onBack,
-}: PlanDestinationStepProps) => {
+}: ItineraryDestinationStepProps) => {
   return (
     <section className="flex w-full flex-col gap-9">
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-mono font-medium">Destination</h1>
-        <p className="text-sm opacity-70">{tripIdea}</p>
+        <p className="text-sm opacity-70">{itineraryIdea}</p>
       </div>
 
       <div className="flex w-full max-w-xl flex-col gap-3">
@@ -82,15 +82,15 @@ const PlanDestinationStep = ({
         </Field>
 
         <Field>
-          <Label htmlFor="tripDates" required>
+          <Label htmlFor="itineraryDates" required>
             Travel period
           </Label>
           <DateRangePicker
-            id="tripDates"
+            id="itineraryDates"
             variant="inset"
             value={dateRange}
             onValueChange={onDateRangeChange}
-            placeholder="Select trip dates"
+            placeholder="Select travel dates"
             numberOfMonths={2}
             errorMessage={dateRangeError}
           />
@@ -179,11 +179,11 @@ const PlanDestinationStep = ({
           Back
         </Button>
         <Button type="submit" variant="accent" disabled={isGenerating}>
-          {isGenerating ? 'Generating...' : 'Generate trip'}
+          {isGenerating ? 'Generating...' : 'Generate itinerary'}
         </Button>
       </div>
     </section>
   );
 };
 
-export default PlanDestinationStep;
+export default ItineraryDestinationStep;

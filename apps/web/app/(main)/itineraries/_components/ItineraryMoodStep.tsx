@@ -3,20 +3,20 @@
 import { Button, Field, Label, Radio, RadioGroup } from '@mood-trip/ui';
 import { moodCopy, moodOptions } from '../_lib/plan-form-options';
 
-type PlanMoodStepProps = {
+type ItineraryMoodStepProps = {
   mood: string;
   onMoodChange: (value: string) => void;
 };
 
-const PlanMoodStep = ({ mood, onMoodChange }: PlanMoodStepProps) => {
+const ItineraryMoodStep = ({ mood, onMoodChange }: ItineraryMoodStepProps) => {
   const subtitle = mood
-    ? `A trip built around ${moodCopy[mood]}.`
-    : 'Choose how this trip should feel.';
+    ? `An itinerary built around ${moodCopy[mood]}.`
+    : 'Choose how this itinerary should feel.';
 
   return (
     <section className="flex w-full flex-col items-center gap-9">
       <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-2xl font-mono font-medium">Plan My Trip</h1>
+        <h1 className="text-2xl font-mono font-medium">Plan an itinerary</h1>
         <p className="text-sm opacity-70">{subtitle}</p>
       </div>
 
@@ -54,4 +54,4 @@ const PlanMoodStep = ({ mood, onMoodChange }: PlanMoodStepProps) => {
   );
 };
 
-export default PlanMoodStep;
+export default ItineraryMoodStep;

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { ItineraryImage } from '@mood-trip/validators';
 
 // Wikimedia asks every API client to send a descriptive User-Agent.
-const USER_AGENT = 'Mood-Trip/1.0 (https://mood-trip.app; trip planner)';
+const USER_AGENT = 'Mood-Trip/1.0 (https://mood-trip.app; itinerary planner)';
 const ENDPOINT = 'https://en.wikipedia.org/w/api.php';
 const THUMB_SIZE = 800;
 

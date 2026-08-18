@@ -6,14 +6,14 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-  type PlannedTripDraft,
-  type PlanTripBody,
-  plannedTripDraftSchema,
+  type ItineraryPlanDraft,
+  type GenerateItineraryBody,
+  itineraryPlanDraftSchema,
 } from '@mood-trip/validators';
 
 @Injectable()
-export class GeminiTripPlannerService {
-  private readonly logger = new Logger(GeminiTripPlannerService.name);
+export class GeminiItineraryPlannerService {
+  private readonly logger = new Logger(GeminiItineraryPlannerService.name);
   private readonly models = [
     'gemini-2.5-flash',
     'gemini-2.0-flash',
@@ -22,7 +22,9 @@ export class GeminiTripPlannerService {
 
   constructor(private readonly configService: ConfigService) {}
 
-  async generateTripPlan(body: PlanTripBody): Promise<PlannedTripDraft> {
+  async generateItinerary(
+    body: GenerateItineraryBody,
+  ): Promise<ItineraryPlanDraft> {
     const apiKey = this.configService.getOrThrow<string>('GEMINI_API_KEY');
     const ai = await this.createClient(apiKey);
     const prompt = this.buildPrompt(body);
@@ -41,11 +43,11 @@ export class GeminiTripPlannerService {
           });
 
           const parsedJson = this.parseJsonResponse(response.text ?? '');
-          const parsedPlan = plannedTripDraftSchema.safeParse(parsedJson);
+          const parsedPlan = itineraryPlanDraftSchema.safeParse(parsedJson);
 
           if (!parsedPlan.success) {
             throw new BadGatewayException(
-              'Gemini returned an invalid trip plan',
+              'Gemini returned an invalid itinerary',
             );
           }
 
@@ -58,7 +60,7 @@ export class GeminiTripPlannerService {
           }
 
           if (!this.isRetryableError(error)) {
-            throw new BadGatewayException('Gemini trip planning failed');
+            throw new BadGatewayException('Gemini itinerary planning failed');
           }
 
           const delayMs = 1000 * (attempt + 1);
@@ -72,7 +74,7 @@ export class GeminiTripPlannerService {
       this.logger.warn(`Falling back from Gemini model ${model}.`);
     }
 
-    this.logger.error('Gemini trip planning exhausted retries', lastError);
+    this.logger.error('Gemini itinerary planning exhausted retries', lastError);
     throw new ServiceUnavailableException(
       'The AI planner is busy right now. Please try again in a moment.',
     );
@@ -96,7 +98,7 @@ export class GeminiTripPlannerService {
     return new GoogleGenAI({ apiKey });
   }
 
-  private buildPrompt(body: PlanTripBody): string {
+  private buildPrompt(body: GenerateItineraryBody): string {
     const constraints = body.constraints?.trim() || 'No special constraints.';
 
     return `
@@ -141,7 +143,7 @@ Return exactly this JSON shape:
 }
 
 Rules:
-- Include one day object per trip day.
+- Include one day object per itinerary day.
 - Include exactly three items per day: morning, afternoon, and evening.
 - Keep recommendations specific to the destination and aligned with the mood.
 - Use specific, geocodable place names in placeName (real landmarks, neighborhoods, venues).

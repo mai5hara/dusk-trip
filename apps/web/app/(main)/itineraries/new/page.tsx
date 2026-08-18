@@ -1,5 +1,5 @@
-import PlanMyTripSection from '../_components/PlanMyTripSection';
+import PlanItinerarySection from '../_components/PlanItinerarySection';
 
 export default function NewItineraryPage() {
-  return <PlanMyTripSection />;
+  return <PlanItinerarySection />;
 }

@@ -2,11 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   moodSchema,
-  plannedTripSchema,
+  itineraryPlanSchema,
   type CreateItineraryBody,
   type ItineraryDetail,
   type ItineraryListItem,
-  type PlannedTrip,
+  type ItineraryPlan,
 } from '@mood-trip/validators';
 import { PrismaService } from '../prisma/prisma.service';
 import { buildAquarelleStyle } from '../maps/maptiler-map-style';
@@ -26,7 +26,7 @@ const listSelect = {
   updatedAt: true,
 } as const;
 
-function _firstImageUrl(plan: PlannedTrip): string | null {
+function _firstImageUrl(plan: ItineraryPlan): string | null {
   for (const day of plan.days) {
     for (const item of day.items) {
       if (item.image?.url) {
@@ -84,7 +84,7 @@ export class ItinerariesService {
       throw new NotFoundException(`Itinerary ${id} not found`);
     }
 
-    const plan = plannedTripSchema.parse(row.plan);
+    const plan = itineraryPlanSchema.parse(row.plan);
     const apiKey = this.configService.getOrThrow<string>('MAPTILER_API_KEY');
 
     return {

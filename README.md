@@ -133,7 +133,7 @@ apps/web, apps/admin  →  apps/api  →  PostgreSQL (Docker)
    curl http://localhost:3000/users
    ```
 
-> **Note:** If port `3000` is already in use on your machine, run the API or web app on another port and adjust URLs accordingly. Plan My Trip also needs `GEMINI_API_KEY` and `MAPTILER_API_KEY` in the root `.env` (see `.env.example`).
+> **Note:** If port `3000` is already in use on your machine, run the API or web app on another port and adjust URLs accordingly. Itinerary generation also needs `GEMINI_API_KEY` and `MAPTILER_API_KEY` in the root `.env` (see `.env.example`).
 
 ---
 
@@ -142,7 +142,7 @@ apps/web, apps/admin  →  apps/api  →  PostgreSQL (Docker)
 | Variable           | Where       | Description                                       |
 | ------------------ | ----------- | ------------------------------------------------- |
 | `DATABASE_URL`     | Root `.env` | PostgreSQL connection string (used by Prisma)     |
-| `GEMINI_API_KEY`   | Root `.env` | Required for `POST /trips/plan` (AI trip planner) |
+| `GEMINI_API_KEY`   | Root `.env` | Required for `POST /itineraries/plan` (AI itinerary planner) |
 | `MAPTILER_API_KEY` | Root `.env` | Required for geocoding and itinerary map styles   |
 
 Do **not** commit `.env`. Only `.env.example` belongs in Git.

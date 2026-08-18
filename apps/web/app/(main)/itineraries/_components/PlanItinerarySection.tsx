@@ -5,21 +5,21 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { DateRangePickerValue } from '@mood-trip/ui';
 import type {
+  GenerateItineraryBody,
   ItineraryMapStyle,
-  PlannedTrip,
-  PlanTripBody,
+  ItineraryPlan,
 } from '@mood-trip/validators';
-import { planTrip } from '@/api/itineraries/api';
+import { generateItinerary } from '@/api/itineraries/api';
 import { getErrorMessage } from '@/lib/get-error-message';
-import { buildTripIdea } from '../_lib/plan-form-options';
+import { buildItineraryIdea } from '../_lib/plan-form-options';
 import { useCreateItineraryMutation } from '../_hooks/useCreateItineraryMutation';
-import PlanDestinationStep from './PlanDestinationStep';
-import PlanMoodStep from './PlanMoodStep';
-import TripItineraryExplorer from './TripItineraryExplorer';
+import ItineraryDestinationStep from './ItineraryDestinationStep';
+import ItineraryMoodStep from './ItineraryMoodStep';
+import ItineraryExplorer from './ItineraryExplorer';
 
 type PlanStep = 1 | 2;
 
-const PlanMyTripSection = () => {
+const PlanItinerarySection = () => {
   const router = useRouter();
   const { mutateAsync: createItineraryAsync, isPending: isSaving } =
     useCreateItineraryMutation();
@@ -37,15 +37,15 @@ const PlanMyTripSection = () => {
     'local food, neighborhoods, views',
   );
   const [constraints, setConstraints] = useState('');
-  const [plannedTrip, setPlannedTrip] = useState<PlannedTrip | null>(null);
+  const [plan, setPlan] = useState<ItineraryPlan | null>(null);
   const [mapStyle, setMapStyle] = useState<ItineraryMapStyle | null>(null);
   const [isFormExiting, setIsFormExiting] = useState(false);
   const [showExplorer, setShowExplorer] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const tripIdea = useMemo(
-    () => buildTripIdea(destination, mood, pace),
+  const itineraryIdea = useMemo(
+    () => buildItineraryIdea(destination, mood, pace),
     [destination, mood, pace],
   );
 
@@ -54,7 +54,7 @@ const PlanMyTripSection = () => {
     setIsFormExiting(false);
     setStep(2);
     window.setTimeout(() => {
-      setPlannedTrip(null);
+      setPlan(null);
       setMapStyle(null);
     }, 300);
   };
@@ -70,23 +70,23 @@ const PlanMyTripSection = () => {
 
   const handleGenerate = async (): Promise<void> => {
     setError(null);
-    setPlannedTrip(null);
+    setPlan(null);
     setMapStyle(null);
 
     if (!dateRange?.from || !dateRange?.to) {
-      setDateRangeError('Select a start and end date for your trip.');
+      setDateRangeError('Select a start and end date for your itinerary.');
       return;
     }
 
     setIsGenerating(true);
 
-    const body: PlanTripBody = {
+    const body: GenerateItineraryBody = {
       destination,
-      mood: mood as PlanTripBody['mood'],
-      pace: pace as PlanTripBody['pace'],
+      mood: mood as GenerateItineraryBody['mood'],
+      pace: pace as GenerateItineraryBody['pace'],
       startDate: dateRange.from,
       endDate: dateRange.to,
-      budget: budget as PlanTripBody['budget'],
+      budget: budget as GenerateItineraryBody['budget'],
       travelers: Number(travelers),
       interests: interests
         .split(',')
@@ -96,9 +96,9 @@ const PlanMyTripSection = () => {
     };
 
     try {
-      const nextPlan = await planTrip(body);
-      setPlannedTrip(nextPlan.trip);
-      setMapStyle(nextPlan.mapStyle);
+      const generated = await generateItinerary(body);
+      setPlan(generated.plan);
+      setMapStyle(generated.mapStyle);
       setIsFormExiting(true);
       window.setTimeout(() => {
         setShowExplorer(true);
@@ -106,7 +106,7 @@ const PlanMyTripSection = () => {
       }, 300);
     } catch {
       setError(
-        'Could not generate a trip plan. Check your inputs and try again.',
+        'Could not generate an itinerary. Check your inputs and try again.',
       );
     } finally {
       setIsGenerating(false);
@@ -130,14 +130,14 @@ const PlanMyTripSection = () => {
   };
 
   const handleSave = async (): Promise<void> => {
-    if (!plannedTrip || !mood) {
+    if (!plan || !mood) {
       return;
     }
 
     try {
       const saved = await createItineraryAsync({
-        mood: mood as PlanTripBody['mood'],
-        plan: plannedTrip,
+        mood: mood as GenerateItineraryBody['mood'],
+        plan,
       });
       toast.success('Itinerary saved');
       router.push(`/itineraries/${saved.id}`);
@@ -146,11 +146,11 @@ const PlanMyTripSection = () => {
     }
   };
 
-  if (showExplorer && plannedTrip) {
+  if (showExplorer && plan) {
     return (
       <section className="flex flex-col py-4 lg:min-h-0 lg:flex-1 lg:py-6">
-        <TripItineraryExplorer
-          trip={plannedTrip}
+        <ItineraryExplorer
+          plan={plan}
           mapStyle={mapStyle}
           onBack={handleBackToForm}
           onSave={handleSave}
@@ -173,9 +173,9 @@ const PlanMyTripSection = () => {
 
         <form className="flex w-full flex-col" onSubmit={handleSubmit}>
           {step === 1 ? (
-            <PlanMoodStep mood={mood} onMoodChange={setMood} />
+            <ItineraryMoodStep mood={mood} onMoodChange={setMood} />
           ) : (
-            <PlanDestinationStep
+            <ItineraryDestinationStep
               destination={destination}
               dateRange={dateRange}
               dateRangeError={dateRangeError}
@@ -184,7 +184,7 @@ const PlanMyTripSection = () => {
               travelers={travelers}
               interests={interests}
               constraints={constraints}
-              tripIdea={tripIdea}
+              itineraryIdea={itineraryIdea}
               error={error}
               isGenerating={isGenerating}
               onDestinationChange={setDestination}
@@ -203,4 +203,4 @@ const PlanMyTripSection = () => {
   );
 };
 
-export default PlanMyTripSection;
+export default PlanItinerarySection;

@@ -4,11 +4,11 @@ import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { Button } from '@mood-trip/ui';
 import { ArrowLeftIcon, LoaderCircleIcon } from 'lucide-react';
-import type { ItineraryMapStyle, PlannedTrip } from '@mood-trip/validators';
-import TripItineraryList from './TripItineraryList';
+import type { ItineraryMapStyle, ItineraryPlan } from '@mood-trip/validators';
+import ItineraryDayList from './ItineraryDayList';
 import { useItineraryStops } from '../_hooks/useItineraryStops';
 
-const TripItineraryMap = dynamic(() => import('./TripItineraryMap'), {
+const ItineraryMap = dynamic(() => import('./ItineraryMap'), {
   ssr: false,
   loading: () => (
     <div className="flex h-full min-h-[320px] items-center justify-center rounded-3xl border border-dashed">
@@ -17,22 +17,22 @@ const TripItineraryMap = dynamic(() => import('./TripItineraryMap'), {
   ),
 });
 
-type TripItineraryExplorerProps = {
-  trip: PlannedTrip;
+type ItineraryExplorerProps = {
+  plan: ItineraryPlan;
   mapStyle: ItineraryMapStyle | null;
   onBack: () => void;
   onSave?: () => void;
   isSaving?: boolean;
 };
 
-const TripItineraryExplorer = ({
-  trip,
+const ItineraryExplorer = ({
+  plan,
   mapStyle,
   onBack,
   onSave,
   isSaving = false,
-}: TripItineraryExplorerProps) => {
-  const { stops, center, isLoading, error } = useItineraryStops(trip);
+}: ItineraryExplorerProps) => {
+  const { stops, center, isLoading, error } = useItineraryStops(plan);
   const [selectedStopId, setSelectedStopId] = useState<string | null>(null);
   const [focusStopId, setFocusStopId] = useState<string | null>(null);
   const activeStopId = selectedStopId ?? stops[0]?.id ?? null;
@@ -72,8 +72,8 @@ const TripItineraryExplorer = ({
 
       <div className="flex flex-col gap-4 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
         <div className="overflow-hidden rounded-3xl border bg-surface lg:h-full lg:min-h-0">
-          <TripItineraryList
-            trip={trip}
+          <ItineraryDayList
+            plan={plan}
             stops={stops}
             activeStopId={activeStopId}
             focusStopId={focusStopId}
@@ -86,7 +86,7 @@ const TripItineraryExplorer = ({
         </div>
 
         <div className="h-[55vh] min-h-[280px] lg:h-full lg:min-h-0">
-          <TripItineraryMap
+          <ItineraryMap
             mapStyle={mapStyle}
             mapError={mapStyle ? null : 'Map is unavailable.'}
             isMapLoading={false}
@@ -104,4 +104,4 @@ const TripItineraryExplorer = ({
   );
 };
 
-export default TripItineraryExplorer;
+export default ItineraryExplorer;
