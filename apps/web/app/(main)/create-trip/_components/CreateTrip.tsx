@@ -143,10 +143,23 @@ const CreateTrip = () => {
           i += CREATE_ENTRIES_BATCH_MAX
         ) {
           const chunk = entriesToCreate.slice(i, i + CREATE_ENTRIES_BATCH_MAX);
-          await createEntriesAsync({
+          const created = await createEntriesAsync({
             tripId: resolvedTripId,
             body: { entries: chunk },
           });
+
+          const idByDayLabel = new Map(
+            created.map((entry) => [entry.dayLabel, entry.id]),
+          );
+          setValue(
+            'entries',
+            getValues('entries').map((entry) =>
+              idByDayLabel.has(entry.dateKey)
+                ? { ...entry, id: idByDayLabel.get(entry.dateKey) }
+                : entry,
+            ),
+          );
+
           savedCount += chunk.length;
         }
       } catch (error) {
