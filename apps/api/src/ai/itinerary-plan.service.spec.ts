@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { ItineraryPlanService } from './itinerary-plan.service';
-import { GeminiItineraryPlannerService } from './gemini-itinerary-planner.service';
+import type { ItineraryPlanner } from './itinerary-planner';
 import { MapTilerGeocodingService } from '../geocoding/maptiler-geocoding.service';
 import { WikimediaImageService } from '../images/wikimedia-image.service';
 import type {
@@ -53,7 +53,7 @@ describe('ItineraryPlanService', () => {
   it('enriches draft itinerary items with coordinates', async () => {
     const itineraryPlannerService = {
       generateItinerary: jest.fn().mockResolvedValue(draft),
-    } as unknown as GeminiItineraryPlannerService;
+    } as ItineraryPlanner;
     const geocodingService = {
       geocodeArea: jest.fn().mockResolvedValue({
         lat: 38.7223,
@@ -112,7 +112,7 @@ describe('ItineraryPlanService', () => {
     };
     const itineraryPlannerService = {
       generateItinerary: jest.fn().mockResolvedValue(draftWithHint),
-    } as unknown as GeminiItineraryPlannerService;
+    } as ItineraryPlanner;
     const geocodingService = {
       geocodeArea: jest
         .fn()
@@ -151,7 +151,7 @@ describe('ItineraryPlanService', () => {
     };
     const itineraryPlannerService = {
       generateItinerary: jest.fn().mockResolvedValue(draftWithHint),
-    } as unknown as GeminiItineraryPlannerService;
+    } as ItineraryPlanner;
     const geocodingService = {
       geocodeArea: jest
         .fn()
@@ -183,7 +183,7 @@ describe('ItineraryPlanService', () => {
   it('attaches a place image when one is found', async () => {
     const itineraryPlannerService = {
       generateItinerary: jest.fn().mockResolvedValue(draft),
-    } as unknown as GeminiItineraryPlannerService;
+    } as ItineraryPlanner;
     const geocodingService = {
       geocodeArea: jest
         .fn()
@@ -230,7 +230,7 @@ describe('ItineraryPlanService', () => {
   it('prefers authoritative Wikipedia coordinates over geocoding', async () => {
     const itineraryPlannerService = {
       generateItinerary: jest.fn().mockResolvedValue(draft),
-    } as unknown as GeminiItineraryPlannerService;
+    } as ItineraryPlanner;
     const geocodingService = {
       geocodeArea: jest
         .fn()

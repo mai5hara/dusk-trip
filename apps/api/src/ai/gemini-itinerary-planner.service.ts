@@ -10,9 +10,10 @@ import {
   type GenerateItineraryBody,
   itineraryPlanDraftSchema,
 } from '@mood-trip/validators';
+import type { ItineraryPlanner } from './itinerary-planner';
 
 @Injectable()
-export class GeminiItineraryPlannerService {
+export class GeminiItineraryPlannerService implements ItineraryPlanner {
   private readonly logger = new Logger(GeminiItineraryPlannerService.name);
   private readonly models = [
     'gemini-2.5-flash',

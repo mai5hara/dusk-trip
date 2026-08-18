@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   type GenerateItineraryBody,
@@ -20,7 +20,7 @@ import {
 } from '../geocoding/geocoding-utils';
 import { WikimediaImageService } from '../images/wikimedia-image.service';
 import { buildAquarelleStyle } from '../maps/maptiler-map-style';
-import { GeminiItineraryPlannerService } from './gemini-itinerary-planner.service';
+import { ITINERARY_PLANNER, type ItineraryPlanner } from './itinerary-planner';
 
 // A real itinerary stop should sit within day-trip range of the destination
 // center. Anything beyond this is treated as a wrong geocoding match.
@@ -41,7 +41,8 @@ type DraftItem = DraftDay['items'][number];
 @Injectable()
 export class ItineraryPlanService {
   constructor(
-    private readonly itineraryPlannerService: GeminiItineraryPlannerService,
+    @Inject(ITINERARY_PLANNER)
+    private readonly itineraryPlanner: ItineraryPlanner,
     private readonly geocodingService: MapTilerGeocodingService,
     private readonly imageService: WikimediaImageService,
     private readonly configService: ConfigService,
@@ -50,7 +51,7 @@ export class ItineraryPlanService {
   async generateItinerary(
     body: GenerateItineraryBody,
   ): Promise<GenerateItineraryResponse> {
-    const draft = await this.itineraryPlannerService.generateItinerary(body);
+    const draft = await this.itineraryPlanner.generateItinerary(body);
     const plan = await this.enrichWithCoordinates(draft, body.destination);
     const apiKey = this.configService.getOrThrow<string>('MAPTILER_API_KEY');
 
