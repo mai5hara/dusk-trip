@@ -1,12 +1,9 @@
 import { apiClient } from '@/api/_common/client';
 import {
-  planTripResponseSchema,
   type CreateEntryBody,
   type CreateEntriesBatchBody,
   type CreateTripBody,
   type Entry,
-  type PlanTripBody,
-  type PlanTripResponse,
   type TripListItem,
   type TripWithEntries,
 } from '@mood-trip/validators';
@@ -44,13 +41,4 @@ export async function createEntries(
     method: 'POST',
     body: JSON.stringify(body),
   });
-}
-
-export async function planTrip(body: PlanTripBody): Promise<PlanTripResponse> {
-  const response = await apiClient<unknown>('/trips/plan', {
-    method: 'POST',
-    body: JSON.stringify(body),
-  });
-
-  return planTripResponseSchema.parse(response);
 }

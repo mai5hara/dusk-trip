@@ -1,14 +1,18 @@
 'use client';
 
 import { useMemo, useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import type { DateRangePickerValue } from '@mood-trip/ui';
 import type {
   ItineraryMapStyle,
   PlannedTrip,
   PlanTripBody,
 } from '@mood-trip/validators';
-import { planTrip } from '@/api/trips/api';
+import { planTrip } from '@/api/itineraries/api';
+import { getErrorMessage } from '@/lib/get-error-message';
 import { buildTripIdea } from '../_lib/plan-form-options';
+import { useCreateItineraryMutation } from '../_hooks/useCreateItineraryMutation';
 import PlanDestinationStep from './PlanDestinationStep';
 import PlanMoodStep from './PlanMoodStep';
 import TripItineraryExplorer from './TripItineraryExplorer';
@@ -16,6 +20,9 @@ import TripItineraryExplorer from './TripItineraryExplorer';
 type PlanStep = 1 | 2;
 
 const PlanMyTripSection = () => {
+  const router = useRouter();
+  const { mutateAsync: createItineraryAsync, isPending: isSaving } =
+    useCreateItineraryMutation();
   const [step, setStep] = useState<PlanStep>(1);
   const [mood, setMood] = useState('');
   const [pace, setPace] = useState('balanced');
@@ -122,6 +129,23 @@ const PlanMyTripSection = () => {
     await handleGenerate();
   };
 
+  const handleSave = async (): Promise<void> => {
+    if (!plannedTrip || !mood) {
+      return;
+    }
+
+    try {
+      const saved = await createItineraryAsync({
+        mood: mood as PlanTripBody['mood'],
+        plan: plannedTrip,
+      });
+      toast.success('Itinerary saved');
+      router.push(`/itineraries/${saved.id}`);
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to save itinerary'));
+    }
+  };
+
   if (showExplorer && plannedTrip) {
     return (
       <section className="flex flex-col py-4 lg:min-h-0 lg:flex-1 lg:py-6">
@@ -129,6 +153,8 @@ const PlanMyTripSection = () => {
           trip={plannedTrip}
           mapStyle={mapStyle}
           onBack={handleBackToForm}
+          onSave={handleSave}
+          isSaving={isSaving}
         />
       </section>
     );

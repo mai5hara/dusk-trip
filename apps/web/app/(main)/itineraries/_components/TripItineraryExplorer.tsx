@@ -21,12 +21,16 @@ type TripItineraryExplorerProps = {
   trip: PlannedTrip;
   mapStyle: ItineraryMapStyle | null;
   onBack: () => void;
+  onSave?: () => void;
+  isSaving?: boolean;
 };
 
 const TripItineraryExplorer = ({
   trip,
   mapStyle,
   onBack,
+  onSave,
+  isSaving = false,
 }: TripItineraryExplorerProps) => {
   const { stops, center, isLoading, error } = useItineraryStops(trip);
   const [selectedStopId, setSelectedStopId] = useState<string | null>(null);
@@ -40,12 +44,24 @@ const TripItineraryExplorer = ({
           <ArrowLeftIcon className="size-4" />
           Back
         </Button>
-        {isLoading ? (
-          <p className="flex items-center gap-2 text-sm opacity-70">
-            <LoaderCircleIcon className="size-4 animate-spin" />
-            Loading itinerary map...
-          </p>
-        ) : null}
+        <div className="flex items-center gap-3">
+          {isLoading ? (
+            <p className="flex items-center gap-2 text-sm opacity-70">
+              <LoaderCircleIcon className="size-4 animate-spin" />
+              Loading itinerary map...
+            </p>
+          ) : null}
+          {onSave ? (
+            <Button
+              type="button"
+              variant="accent"
+              onClick={onSave}
+              disabled={isSaving}
+            >
+              {isSaving ? 'Saving...' : 'Save itinerary'}
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       {error ? (

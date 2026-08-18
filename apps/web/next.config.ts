@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: 'fastly.picsum.photos',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        pathname: '/**',
+      },
       // Local uploads via /api/uploads → public/uploads
       {
         protocol: 'http',

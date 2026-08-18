@@ -24,7 +24,7 @@ const TripFilter = () => {
             placeholder="Sort by"
             rounded="lg"
             value={sort}
-            onValueChange={(value: TripSort) => setSort(value)}
+            onValueChange={(value: string) => setSort(value as TripSort)}
           />
         </div>
         <Button

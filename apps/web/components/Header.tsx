@@ -41,7 +41,7 @@ const Header = () => {
           Add Trip
         </ButtonLink>
         <ButtonLink
-          href="/plan-my-trip"
+          href="/itineraries"
           variant="accent"
           size="sm"
           rounded="full"

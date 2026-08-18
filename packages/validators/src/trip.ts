@@ -46,7 +46,7 @@ export const createTripBodySchema = z
 
 export type CreateTripBody = z.infer<typeof createTripBodySchema>;
 
-const moodSchema = z.enum([
+export const moodSchema = z.enum([
   'calm',
   'curious',
   'energized',

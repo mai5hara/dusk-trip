@@ -16,6 +16,7 @@ export {
   planTripResponseSchema,
   itineraryMapStyleSchema,
   itineraryImageSchema,
+  moodSchema,
   type ItineraryImage,
   type Trip,
   type TripListItem,
@@ -31,6 +32,14 @@ export {
   type PlanTripResponse,
   type ItineraryMapStyle,
 } from './trip';
+export {
+  itineraryListItemSchema,
+  itineraryDetailSchema,
+  createItineraryBodySchema,
+  type ItineraryListItem,
+  type ItineraryDetail,
+  type CreateItineraryBody,
+} from './itinerary';
 export {
   entrySchema,
   createEntryBodySchema,
