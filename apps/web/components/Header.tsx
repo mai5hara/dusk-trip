@@ -11,7 +11,7 @@ const Header = () => {
   const { logout } = useAuth();
 
   return (
-    <header className="tokonoma-raised-panel w-full max-w-312 bg-surface shrink-0 py-4 mt-6 flex justify-between items-center fixed rounded-full p-4">
+    <header className="tokonoma-raised-panel w-full max-w-312 bg-surface shrink-0 py-4 mt-6 flex justify-between items-center fixed rounded-full p-4 z-10">
       <h1 className="flex-1">
         <ButtonLink href="/" variant="ghost">
           Mood-Trip

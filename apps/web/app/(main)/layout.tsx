@@ -12,7 +12,7 @@ export default function MainLayout({
     <TripListProvider>
       <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4">
         <Header />
-        <div className="flex min-h-0 flex-1 flex-col lg:overflow-y-auto">
+        <div className="flex min-h-0 pt-36 pb-40 flex-1 flex-col lg:overflow-y-auto">
           <AuthGate>{children}</AuthGate>
         </div>
         <Footer />
