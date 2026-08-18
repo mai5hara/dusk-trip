@@ -1,59 +1,23 @@
 'use client';
 
 import { useMemo, useState, type FormEvent } from 'react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  DateRangePicker,
-  Input,
-  Label,
-  Select,
-  type DateRangePickerValue,
-} from '@mood-trip/ui';
-import { SparklesIcon } from 'lucide-react';
+import type { DateRangePickerValue } from '@mood-trip/ui';
 import type {
   ItineraryMapStyle,
   PlannedTrip,
   PlanTripBody,
 } from '@mood-trip/validators';
 import { planTrip } from '@/api/trips/api';
+import { buildTripIdea } from '../_lib/plan-form-options';
+import PlanDestinationStep from './PlanDestinationStep';
+import PlanMoodStep from './PlanMoodStep';
 import TripItineraryExplorer from './TripItineraryExplorer';
 
-const moodOptions = [
-  { label: 'Calm', value: 'calm' },
-  { label: 'Curious', value: 'curious' },
-  { label: 'Energized', value: 'energized' },
-  { label: 'Romantic', value: 'romantic' },
-  { label: 'Restorative', value: 'restorative' },
-];
-
-const paceOptions = [
-  { label: 'Slow and spacious', value: 'slow' },
-  { label: 'Balanced', value: 'balanced' },
-  { label: 'Packed with plans', value: 'packed' },
-];
-
-const budgetOptions = [
-  { label: 'Budget', value: 'budget' },
-  { label: 'Moderate', value: 'moderate' },
-  { label: 'Premium', value: 'premium' },
-  { label: 'Luxury', value: 'luxury' },
-];
-
-const moodCopy: Record<string, string> = {
-  calm: 'quiet stays, gentle walks, and places with soft edges',
-  curious: 'neighborhood wandering, local food, and small cultural surprises',
-  energized: 'bright cities, bold activities, and a full-day rhythm',
-  romantic: 'intimate dinners, scenic views, and unhurried evenings',
-  restorative: 'nature, wellness rituals, and plenty of room to recharge',
-};
+type PlanStep = 1 | 2;
 
 const PlanMyTripSection = () => {
-  const [mood, setMood] = useState('calm');
+  const [step, setStep] = useState<PlanStep>(1);
+  const [mood, setMood] = useState('');
   const [pace, setPace] = useState('balanced');
   const [budget, setBudget] = useState('moderate');
   const [destination, setDestination] = useState('');
@@ -73,35 +37,31 @@ const PlanMyTripSection = () => {
   const [error, setError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleBackToForm = () => {
+  const tripIdea = useMemo(
+    () => buildTripIdea(destination, mood, pace),
+    [destination, mood, pace],
+  );
+
+  const handleBackToForm = (): void => {
     setShowExplorer(false);
     setIsFormExiting(false);
+    setStep(2);
     window.setTimeout(() => {
       setPlannedTrip(null);
       setMapStyle(null);
-    }, 450);
+    }, 300);
   };
 
-  const tripIdea = useMemo(() => {
-    const place = destination.trim() || 'your next destination';
-    const moodText = moodCopy[mood] ?? moodCopy.calm;
-    const paceText =
-      paceOptions
-        .find((option) => option.value === pace)
-        ?.label.toLowerCase() ?? 'balanced';
-
-    return `Plan ${place} around ${moodText}, with a ${paceText} pace.`;
-  }, [destination, mood, pace]);
-
-  const handleDateRangeChange = (value: DateRangePickerValue | undefined) => {
+  const handleDateRangeChange = (
+    value: DateRangePickerValue | undefined,
+  ): void => {
     setDateRange(value);
     if (value?.from && value?.to) {
       setDateRangeError(undefined);
     }
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleGenerate = async (): Promise<void> => {
     setError(null);
     setPlannedTrip(null);
     setMapStyle(null);
@@ -136,7 +96,7 @@ const PlanMyTripSection = () => {
       window.setTimeout(() => {
         setShowExplorer(true);
         setIsFormExiting(false);
-      }, 450);
+      }, 300);
     } catch {
       setError(
         'Could not generate a trip plan. Check your inputs and try again.',
@@ -146,173 +106,74 @@ const PlanMyTripSection = () => {
     }
   };
 
-  return (
-    <section
-      className={
-        showExplorer
-          ? 'flex flex-col py-4 lg:min-h-0 lg:flex-1 lg:py-6'
-          : 'py-10'
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
+    event.preventDefault();
+
+    if (step === 1) {
+      if (!mood) {
+        return;
       }
-    >
-      {showExplorer && plannedTrip ? (
+      setStep(2);
+      return;
+    }
+
+    await handleGenerate();
+  };
+
+  if (showExplorer && plannedTrip) {
+    return (
+      <section className="flex flex-col py-4 lg:min-h-0 lg:flex-1 lg:py-6">
         <TripItineraryExplorer
           trip={plannedTrip}
           mapStyle={mapStyle}
           onBack={handleBackToForm}
         />
-      ) : (
-        <div
-          className={`mx-auto max-w-5xl transition-all duration-500 ease-out ${
-            isFormExiting ? 'form-exit pointer-events-none' : ''
-          }`}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle>Plan My Trip</CardTitle>
-              <CardDescription>
-                Pick the feeling first, then shape a trip around it.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="flex flex-col gap-2 md:col-span-1">
-                    <Label htmlFor="mood">Mood</Label>
-                    <Select
-                      variant="border"
-                      rounded="lg"
-                      options={moodOptions}
-                      value={mood}
-                      onValueChange={setMood}
-                      placeholder="Choose a mood"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 md:col-span-1">
-                    <Label htmlFor="pace">Pace</Label>
-                    <Select
-                      variant="border"
-                      rounded="lg"
-                      options={paceOptions}
-                      value={pace}
-                      onValueChange={setPace}
-                      placeholder="Choose a pace"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 md:col-span-1">
-                    <Label htmlFor="destination">Destination</Label>
-                    <Input
-                      id="destination"
-                      variant="border"
-                      rounded="lg"
-                      value={destination}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                        setDestination(event.target.value)
-                      }
-                      placeholder="Kyoto, Lisbon, Big Sur..."
-                      required
-                    />
-                  </div>
-                </div>
+      </section>
+    );
+  }
 
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="tripDates">Trip dates</Label>
-                    <DateRangePicker
-                      id="tripDates"
-                      variant="border"
-                      rounded="lg"
-                      value={dateRange}
-                      onValueChange={handleDateRangeChange}
-                      placeholder="Select trip dates"
-                      numberOfMonths={2}
-                      errorMessage={dateRangeError}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="budget">Budget</Label>
-                    <Select
-                      variant="border"
-                      rounded="lg"
-                      options={budgetOptions}
-                      value={budget}
-                      onValueChange={setBudget}
-                      placeholder="Choose a budget"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="travelers">Travelers</Label>
-                    <Input
-                      id="travelers"
-                      type="number"
-                      min="1"
-                      max="12"
-                      variant="border"
-                      rounded="lg"
-                      value={travelers}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                        setTravelers(event.target.value)
-                      }
-                      required
-                    />
-                  </div>
-                </div>
+  return (
+    <div className="mx-auto flex w-full max-w-225 flex-col items-center pt-20 pb-40">
+      <div
+        className={`flex w-full flex-col items-center gap-14 ${
+          isFormExiting ? 'form-exit pointer-events-none' : ''
+        }`}
+      >
+        <p className="text-sm opacity-70">
+          Step {step} of 2 · {step === 1 ? 'Mood' : 'Destination'}
+        </p>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="interests">Interests</Label>
-                    <Input
-                      id="interests"
-                      variant="border"
-                      rounded="lg"
-                      value={interests}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                        setInterests(event.target.value)
-                      }
-                      placeholder="food, art, hikes, markets..."
-                      required
-                    />
-                    <p className="text-xs opacity-60">
-                      Separate interests with commas.
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Label htmlFor="constraints">Constraints</Label>
-                    <textarea
-                      id="constraints"
-                      className="min-h-24 rounded-lg border bg-transparent px-3 py-2 text-sm"
-                      value={constraints}
-                      onChange={(event) => setConstraints(event.target.value)}
-                      placeholder="No driving, vegetarian food, kid-friendly..."
-                    />
-                  </div>
-                </div>
-
-                <div className="rounded-3xl border border-dashed p-5">
-                  <p className="text-sm uppercase tracking-[0.2em] opacity-70">
-                    Mood brief
-                  </p>
-                  <p className="mt-3 text-xl">{tripIdea}</p>
-                </div>
-
-                {error ? <p className="text-sm text-red-500">{error}</p> : null}
-
-                <div className="self-start">
-                  <Button
-                    type="submit"
-                    variant="accent"
-                    rounded="full"
-                    disabled={isGenerating}
-                  >
-                    <SparklesIcon className="size-4" />
-                    {isGenerating ? 'Generating...' : 'Generate trip'}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </section>
+        <form className="flex w-full flex-col" onSubmit={handleSubmit}>
+          {step === 1 ? (
+            <PlanMoodStep mood={mood} onMoodChange={setMood} />
+          ) : (
+            <PlanDestinationStep
+              destination={destination}
+              dateRange={dateRange}
+              dateRangeError={dateRangeError}
+              pace={pace}
+              budget={budget}
+              travelers={travelers}
+              interests={interests}
+              constraints={constraints}
+              tripIdea={tripIdea}
+              error={error}
+              isGenerating={isGenerating}
+              onDestinationChange={setDestination}
+              onDateRangeChange={handleDateRangeChange}
+              onPaceChange={setPace}
+              onBudgetChange={setBudget}
+              onTravelersChange={setTravelers}
+              onInterestsChange={setInterests}
+              onConstraintsChange={setConstraints}
+              onBack={() => setStep(1)}
+            />
+          )}
+        </form>
+      </div>
+    </div>
   );
 };
 

@@ -36,15 +36,9 @@ const TripItineraryExplorer = ({
   return (
     <div className="explorer-enter flex flex-col gap-4 lg:h-full lg:min-h-0">
       <div className="flex items-center justify-between gap-4">
-        <Button
-          type="button"
-          variant="outline"
-          rounded="full"
-          size="sm"
-          onClick={onBack}
-        >
+        <Button type="button" variant="outline" onClick={onBack}>
           <ArrowLeftIcon className="size-4" />
-          Edit plan
+          Back
         </Button>
         {isLoading ? (
           <p className="flex items-center gap-2 text-sm opacity-70">

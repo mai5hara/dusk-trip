@@ -80,11 +80,8 @@ const TripItineraryList = ({
   return (
     <div className="flex flex-col lg:h-full lg:min-h-0">
       <div className="shrink-0 border-b px-5 py-5">
-        <p className="text-xs uppercase tracking-[0.2em] opacity-70 sm:text-sm">
-          Draft itinerary
-        </p>
-        <h2 className="mt-2 text-xl sm:text-2xl">{trip.title}</h2>
-        <p className="mt-2 text-sm opacity-80">{trip.summary}</p>
+        <h2 className="text-2xl font-mono font-medium">{trip.title}</h2>
+        <p className="mt-2 text-sm opacity-70">{trip.summary}</p>
       </div>
 
       {/* No top padding: a sticky `top-0` header cannot rise above its scroll

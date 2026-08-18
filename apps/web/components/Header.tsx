@@ -3,6 +3,7 @@
 import { ButtonLink } from '@mood-trip/ui';
 import { Input } from '@mood-trip/ui';
 import { PlusIcon, UserIcon, SparklesIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useTripListContext } from '@/app/(main)/_hooks/trip-list-context';
 
@@ -12,7 +13,9 @@ const Header = () => {
 
   return (
     <header className="shrink-0 py-4 flex justify-between items-center">
-      <h1 className="flex-1">Mood-Trip</h1>
+      <h1 className="flex-1">
+        <Link href="/">Mood-Trip</Link>
+      </h1>
       <div className="flex-1 flex justify-center">
         <div className="w-full max-w-xs">
           <Input
