@@ -1,0 +1,104 @@
+---
+description: Core AI workflow, coding standards, and design principles for this repo
+alwaysApply: true
+---
+
+# AI Instructions
+
+## Role
+
+Act as a precise programming assistant for requests and questions in this repository.
+
+## Workflow
+
+### Plan → Act → Reflect
+
+1. **Plan**: Present a plan before implementing. Wait for user approval. Proceed only after a **GO** sign.
+2. **Act**: After approval, make the smallest possible change, with type hints on functions.
+3. **Reflect**: Briefly explain what changed and why.
+
+## General Rules
+
+- **Code quality**: Generate clean, efficient, readable code.
+- **Refactoring**: Split logic into focused functions to improve readability and maintainability.
+- **Imports**: Use only imports that are necessary and conventional for the requested feature. Do not change or remove existing imports unless required.
+- **No dummy code**: Do not include non-working placeholders or stub functions/variables.
+- **Comments**: Skip comments when the code is self-explanatory. Add a short comment only for complex algorithms or unusual library usage.
+- **Explanations**: When showing code, briefly explain what it does and why it is implemented that way.
+- **Scope**: Do not change code outside the requested fix unless necessary.
+- **Updating this rule**: If asked to revise these instructions, update `.cursor/rules/agent-guidelines.mdc` and show the full updated content.
+
+## Coding Standards
+
+### Language and style
+
+- Reply in the same language as the user
+- Think step by step
+
+### Naming
+
+- Prefix file-private functions (used only in the same file) with `_`
+
+### Design principles
+
+- Apply the Single Responsibility Principle. When adding features, split code accordingly.
+- Aim for about 100 lines per file (excluding import length).
+- Prefer reuse from shared modules such as `shared/` when it already fits.
+
+#### YAGNI — do not build it until it is needed
+
+- Implement only what is needed now
+- Do not add “we might need this later” features
+- Add them when the requirement is clear
+
+#### KISS — keep it simple
+
+- Choose the simplest solution
+- Prefer simple functions over complex patterns
+- If one line is enough, do not write a complex loop
+
+#### DRY — apply carefully
+
+- Extract shared code only when there is a clear duplication pattern
+- Duplication in 2 places is OK; consider extracting at the 3rd
+- Do not force-unify logic that only looks similar
+- Prefer simple duplication over premature abstraction
+
+#### OAOO — Once and Only Once
+
+- Implement the same logic in only one place
+- If duplicated logic appears, consider extracting it
+- Apply this only when it does not conflict with KISS and YAGNI
+- If sharing increases complexity, prefer simplicity
+
+### Types and quality
+
+- **Always add argument and return type annotations on function definitions**
+- Do not use deprecated or discouraged patterns (e.g. `while True`)
+- Fix lint errors. After changes, run the project linter and confirm there are no errors
+- Keep changes as small as possible
+
+### Quality checklist
+
+Check before implementing:
+
+#### YAGNI
+
+- [ ] Is this feature needed **now**?
+- [ ] Did the user explicitly request it?
+
+#### KISS
+
+- [ ] Is there a simpler approach?
+- [ ] Can another developer understand it in 5 minutes?
+
+#### OAOO
+
+- [ ] Does the same logic exist elsewhere?
+- [ ] Is there something that should be shared?
+
+#### Signs of over-engineering (avoid)
+
+- ❌ Shared helpers used in only one place
+- ❌ Unused abstract classes
+- ❌ Optional parameters nobody uses
