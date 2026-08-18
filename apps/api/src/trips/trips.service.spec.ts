@@ -15,6 +15,7 @@ describe('TripsService', () => {
       entry: {
         create: jest.Mock;
       };
+      $transaction: jest.Mock;
     };
   };
 
@@ -29,6 +30,7 @@ describe('TripsService', () => {
         entry: {
           create: jest.fn(),
         },
+        $transaction: jest.fn(),
       },
     };
 
@@ -141,6 +143,69 @@ describe('TripsService', () => {
     expect(result.location).toBe(null);
     expect(result.dayLabel).toBe(null);
     expect(result.sortOrder).toBe(0);
+  });
+
+  it('createEntries: throws NotFoundException if trip not found', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue(null);
+
+    await expect(
+      service.createEntries('trip-1', 'user-1', [
+        { photoUrl: 'https://example.com/photo.jpg' },
+      ]),
+    ).rejects.toThrow(NotFoundException);
+
+    expect(prismaService.client.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('createEntries: creates entries in a transaction', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-1',
+    });
+
+    const created = [
+      {
+        id: 'entry-1',
+        tripId: 'trip-1',
+        photoUrl: 'https://example.com/a.jpg',
+        caption: null,
+        location: null,
+        dayLabel: '2026-06-01',
+        sortOrder: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: 'entry-2',
+        tripId: 'trip-1',
+        photoUrl: 'https://example.com/b.jpg',
+        caption: null,
+        location: null,
+        dayLabel: '2026-06-02',
+        sortOrder: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+
+    prismaService.client.$transaction.mockResolvedValue(created);
+
+    const result = await service.createEntries('trip-1', 'user-1', [
+      {
+        photoUrl: 'https://example.com/a.jpg',
+        dayLabel: '2026-06-01',
+        sortOrder: 0,
+      },
+      {
+        photoUrl: 'https://example.com/b.jpg',
+        dayLabel: '2026-06-02',
+        sortOrder: 1,
+      },
+    ]);
+
+    expect(prismaService.client.$transaction).toHaveBeenCalled();
+    expect(result).toHaveLength(2);
+    expect(result[0].id).toBe('entry-1');
   });
 
   it('findOne: throws NotFoundException if trip not found', async () => {

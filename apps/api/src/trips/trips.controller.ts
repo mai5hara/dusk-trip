@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   createTripBodySchema,
   createEntryBodySchema,
+  createEntriesBatchBodySchema,
   planTripBodySchema,
 } from '@mood-trip/validators';
 import { TripPlanService } from '../ai/trip-plan.service';
@@ -43,6 +44,22 @@ export class TripsController {
     const parsed = planTripBodySchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
     return this.tripPlanService.generateTripPlan(parsed.data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':tripId/entries/batch')
+  createEntries(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Request() req: { user: { id: string } },
+  ) {
+    const parsed = createEntriesBatchBodySchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.tripsService.createEntries(
+      tripId,
+      req.user.id,
+      parsed.data.entries,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

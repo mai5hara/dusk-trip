@@ -40,7 +40,7 @@ export default function LoginPage() {
             </p>
           </div>
           <form onSubmit={handleSubmit} className="flex flex-col gap-10 w-full">
-            <div className="flex flex-col gap-4 items-center w-full max-w-[350px]">
+            <div className="flex flex-col gap-4 items-center w-full max-w-87.5">
               <div className="flex flex-col gap-2 w-full">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
