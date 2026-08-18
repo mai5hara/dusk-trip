@@ -9,7 +9,6 @@ import type {
   UseFormRegister,
 } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import { CheckIcon } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -33,10 +32,6 @@ type MemoriesByMonthProps = {
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors<FieldValues>;
 };
-
-function isSavedDay(day: DayEntryFormValue): boolean {
-  return Boolean(day.id);
-}
 
 const MemoriesByMonth = ({
   entries,
@@ -83,7 +78,6 @@ const MemoriesByMonth = ({
                 <ul className="flex flex-col gap-1">
                   {month.days.map((day) => {
                     const isSelected = day.dateKey === effectiveSelectedDateKey;
-                    const saved = isSavedDay(day);
 
                     return (
                       <li key={day.dateKey}>
@@ -97,18 +91,7 @@ const MemoriesByMonth = ({
                               : 'hover:bg-black/5',
                           ].join(' ')}
                         >
-                          <span
-                            className="flex size-4 shrink-0 items-center justify-center"
-                            aria-hidden
-                          >
-                            {saved ? (
-                              <CheckIcon className="size-3.5 text-accent" />
-                            ) : null}
-                          </span>
                           <span>{formatDayHeading(day)}</span>
-                          {saved ? (
-                            <span className="sr-only">(saved)</span>
-                          ) : null}
                         </button>
                       </li>
                     );

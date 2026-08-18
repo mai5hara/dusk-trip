@@ -1,17 +1,9 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type {
-  CreateEntryBody,
-  CreateEntriesBatchBody,
-} from '@mood-trip/validators';
+import type { CreateEntriesBatchBody } from '@mood-trip/validators';
 import { queryKeys } from '@/lib/query/query-keys';
-import { createEntry, createEntries } from '@/api/trips/api';
-
-type CreateEntryVariables = {
-  tripId: string;
-  body: CreateEntryBody;
-};
+import { createEntries } from '@/api/trips/api';
 
 type CreateEntriesVariables = {
   tripId: string;
@@ -25,18 +17,6 @@ function _invalidateTripQueries(
   queryClient.invalidateQueries({ queryKey: queryKeys.trips.all });
   queryClient.invalidateQueries({
     queryKey: queryKeys.trips.detail(tripId),
-  });
-}
-
-export function useCreateEntryMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ tripId, body }: CreateEntryVariables) =>
-      createEntry(tripId, body),
-    onSuccess: (_data, variables) => {
-      _invalidateTripQueries(queryClient, variables.tripId);
-    },
   });
 }
 
