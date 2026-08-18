@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useTripQuery } from '../_hooks/useTripQuery';
+import { useTripQuery } from '@/app/(main)/_hooks/useTripQuery';
 import { formatDateRange } from '@/lib/format-date';
 import {
   MapPinIcon,
