@@ -11,6 +11,7 @@ import {
   type UseFormRegister,
 } from 'react-hook-form';
 import { toast } from 'sonner';
+import { CREATE_ENTRIES_BATCH_MAX } from '@mood-trip/validators';
 import { Button, Input, Label, Field, DateRangePicker } from '@mood-trip/ui';
 import { useCreateTripMutation } from '../_hooks/useTripMutation';
 import { useCreateEntriesMutation } from '../_hooks/useEntryMutation';
@@ -134,11 +135,32 @@ const CreateTrip = () => {
           sortOrder: entry.sortOrder,
         }));
 
-      if (entriesToCreate.length > 0) {
-        await createEntriesAsync({
-          tripId: resolvedTripId,
-          body: { entries: entriesToCreate },
-        });
+      let savedCount = 0;
+      try {
+        for (
+          let i = 0;
+          i < entriesToCreate.length;
+          i += CREATE_ENTRIES_BATCH_MAX
+        ) {
+          const chunk = entriesToCreate.slice(
+            i,
+            i + CREATE_ENTRIES_BATCH_MAX,
+          );
+          await createEntriesAsync({
+            tripId: resolvedTripId,
+            body: { entries: chunk },
+          });
+          savedCount += chunk.length;
+        }
+      } catch (error) {
+        if (savedCount > 0) {
+          toast.error(
+            `Saved ${savedCount} of ${entriesToCreate.length} memories, then ${getErrorMessage(error, 'an error occurred')}. Try again to save the rest.`,
+          );
+        } else {
+          toast.error(getErrorMessage(error, 'Failed to save memories'));
+        }
+        return;
       }
 
       // Fix routing to album details page later
