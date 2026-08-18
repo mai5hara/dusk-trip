@@ -144,10 +144,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ url, storage: 'local' });
   } catch (error) {
     if (error instanceof RequestTooLargeError) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: 400 },
-      );
+      return NextResponse.json({ message: error.message }, { status: 400 });
     }
     console.error(error);
     return NextResponse.json(

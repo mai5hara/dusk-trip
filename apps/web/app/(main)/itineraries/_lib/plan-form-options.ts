@@ -35,9 +35,8 @@ export function buildItineraryIdea(
   const place = destination.trim() || 'your next destination';
   const moodText = moodCopy[mood] ?? 'the feeling you choose';
   const paceText =
-    paceOptions
-      .find((option) => option.value === pace)
-      ?.label.toLowerCase() ?? 'balanced';
+    paceOptions.find((option) => option.value === pace)?.label.toLowerCase() ??
+    'balanced';
 
   return `Plan ${place} around ${moodText}, with a ${paceText} pace.`;
 }

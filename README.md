@@ -139,11 +139,11 @@ apps/web, apps/admin  →  apps/api  →  PostgreSQL (Docker)
 
 ## Environment variables
 
-| Variable           | Where       | Description                                       |
-| ------------------ | ----------- | ------------------------------------------------- |
-| `DATABASE_URL`     | Root `.env` | PostgreSQL connection string (used by Prisma)     |
+| Variable           | Where       | Description                                                  |
+| ------------------ | ----------- | ------------------------------------------------------------ |
+| `DATABASE_URL`     | Root `.env` | PostgreSQL connection string (used by Prisma)                |
 | `GEMINI_API_KEY`   | Root `.env` | Required for `POST /itineraries/plan` (AI itinerary planner) |
-| `MAPTILER_API_KEY` | Root `.env` | Required for geocoding and itinerary map styles   |
+| `MAPTILER_API_KEY` | Root `.env` | Required for geocoding and itinerary map styles              |
 
 Do **not** commit `.env`. Only `.env.example` belongs in Git.
 

@@ -37,7 +37,10 @@ export class GeminiItineraryPlannerService implements ItineraryPlanner {
     for (const model of this.models) {
       for (let attempt = 0; attempt < 2; attempt++) {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+        const timeout = setTimeout(
+          () => controller.abort(),
+          REQUEST_TIMEOUT_MS,
+        );
 
         try {
           const response = await ai.models.generateContent({
@@ -94,19 +97,25 @@ export class GeminiItineraryPlannerService implements ItineraryPlanner {
       return false;
     }
 
-    const status = 'status' in error ? (error as { status: unknown }).status : undefined;
+    const status =
+      'status' in error ? (error as { status: unknown }).status : undefined;
     if (status === 429 || status === 500 || status === 503) {
       return true;
     }
 
-    const name = 'name' in error ? String((error as { name: unknown }).name) : '';
+    const name =
+      'name' in error ? String((error as { name: unknown }).name) : '';
     const message =
       'message' in error ? String((error as { message: unknown }).message) : '';
-    const code = 'code' in error ? String((error as { code: unknown }).code) : '';
+    const code =
+      'code' in error ? String((error as { code: unknown }).code) : '';
     const cause =
       'cause' in error && (error as { cause: unknown }).cause
-        ? (error as { cause: { name?: unknown; code?: unknown; message?: unknown } })
-            .cause
+        ? (
+            error as {
+              cause: { name?: unknown; code?: unknown; message?: unknown };
+            }
+          ).cause
         : undefined;
 
     if (name === 'AbortError' || name === 'TimeoutError') {
