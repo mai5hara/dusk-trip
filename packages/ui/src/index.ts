@@ -9,6 +9,7 @@ export {
   CardContent,
   CardFooter,
   Input,
+  Textarea,
   Label,
   Modal,
   ModalTrigger,

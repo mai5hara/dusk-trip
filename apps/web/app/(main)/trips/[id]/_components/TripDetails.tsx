@@ -62,13 +62,9 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
                     {trip.entries.length} Memories
                   </div>
                 </div>
-                {/* Add trip description here */}
-                <p className="line-clamp-2">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Quisquam, quos. Lorem ipsum dolor sit amet consectetur
-                  adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet
-                  consectetur adipisicing elit. Quisquam, quos.
-                </p>
+                {trip.description && (
+                  <p className="line-clamp-2">{trip.description}</p>
+                )}
               </div>
             </div>
             <div className="flex flex-col gap-6">

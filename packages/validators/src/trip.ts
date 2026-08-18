@@ -6,6 +6,7 @@ export const tripSchema = z.object({
   userId: z.string(),
   title: z.string(),
   thumbnailUrl: z.string(),
+  description: z.string().nullable(),
   location: z.string(),
   startDate: z.date(),
   endDate: z.date(),
@@ -35,6 +36,7 @@ export const createTripBodySchema = z
   .object({
     title: z.string().min(1),
     thumbnailUrl: z.string().url(),
+    description: z.string().min(1).max(500).optional(),
     location: z.string().min(1),
     startDate: z.coerce.date(),
     endDate: z.coerce.date(),

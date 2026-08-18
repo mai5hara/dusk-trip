@@ -287,8 +287,8 @@ importers:
         specifier: ^19.0.0
         version: 19.2.7(react@19.2.7)
       tokonoma-ui:
-        specifier: git+ssh://git@github.com/mai5hara/tokonoma-ui.git#v0.2.6
-        version: https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/e07a28cea6dbc3bd6afba92b5bf33df8aecf9962(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: git+ssh://git@github.com/mai5hara/tokonoma-ui.git#v0.2.7
+        version: https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/1da9027b6409d9b81cfc130ed0632abcc862f2d7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
     devDependencies:
       '@mood-trip/config':
         specifier: workspace:*
@@ -5124,9 +5124,9 @@ packages:
     resolution: {integrity: sha512-dRXchy+C0IgK8WPC6xvCHFRIWYUbqqdEIKPaKo/AcTUNzwLTK6AH7RjdLWsEZcAN/TBdtfUw3PYEgPr5VPr6ww==}
     engines: {node: '>=14.16'}
 
-  tokonoma-ui@https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/e07a28cea6dbc3bd6afba92b5bf33df8aecf9962:
-    resolution: {tarball: https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/e07a28cea6dbc3bd6afba92b5bf33df8aecf9962}
-    version: 0.2.5
+  tokonoma-ui@https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/1da9027b6409d9b81cfc130ed0632abcc862f2d7:
+    resolution: {tarball: https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/1da9027b6409d9b81cfc130ed0632abcc862f2d7}
+    version: 0.2.7
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
@@ -10902,7 +10902,7 @@ snapshots:
       '@tokenizer/token': 0.3.0
       ieee754: 1.2.1
 
-  tokonoma-ui@https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/e07a28cea6dbc3bd6afba92b5bf33df8aecf9962(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+  tokonoma-ui@https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/1da9027b6409d9b81cfc130ed0632abcc862f2d7(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
