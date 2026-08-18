@@ -15,9 +15,11 @@ import Link from 'next/link';
 import { groupEntriesByDay } from '../_lib/group-entries-by-day';
 
 const TripDetails = ({ tripId }: { tripId: string }) => {
-  const { data: trip, isLoading, isError } = useTripQuery(tripId);
+  if (isLoading) {
+    return <section>Loading...</section>;
+  }
 
-  if (!trip) {
+  if (isError || !trip) {
     return <section>Trip not found</section>;
   }
 
