@@ -15,6 +15,8 @@ import Link from 'next/link';
 import { groupEntriesByDay } from '../_lib/group-entries-by-day';
 
 const TripDetails = ({ tripId }: { tripId: string }) => {
+  const { data: trip, isLoading, isError } = useTripQuery(tripId);
+
   if (isLoading) {
     return <section>Loading...</section>;
   }
@@ -26,9 +28,7 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
   const dayGroups = groupEntriesByDay(trip.entries, trip.startDate);
 
   return (
-    <section className="flex flex-col gap-5 max-2-[1248px]">
-      {isLoading && <div>Loading...</div>}
-      {isError && <div>Error loading trip</div>}
+    <section className="flex flex-col gap-5 max-w-312">
       <Link
         className="font-mono flex gap-3 items-center hover:opacity-70 w-fit transition-opacity"
         href="/"
