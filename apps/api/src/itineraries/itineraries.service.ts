@@ -10,6 +10,7 @@ import {
 } from '@mood-trip/validators';
 import { PrismaService } from '../prisma/prisma.service';
 import { buildAquarelleStyle } from '../maps/maptiler-map-style';
+import { getMapTilerStyleApiKey } from '../maps/maptiler-style-key';
 
 const listSelect = {
   id: true,
@@ -85,7 +86,7 @@ export class ItinerariesService {
     }
 
     const plan = itineraryPlanSchema.parse(row.plan);
-    const apiKey = this.configService.getOrThrow<string>('MAPTILER_API_KEY');
+    const apiKey = getMapTilerStyleApiKey(this.configService);
 
     return {
       ..._toListItem(row),

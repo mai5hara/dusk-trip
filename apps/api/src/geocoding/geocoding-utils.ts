@@ -1,19 +1,55 @@
 type Coordinates = { lat: number; lng: number };
 
+const EARTH_RADIUS_KM = 6371;
+const METERS_PER_DEGREE = 111_320;
+
 export function fallbackCoords(
   center: Coordinates,
   index: number,
 ): Coordinates {
   const angle = index * 2.1;
   const radius = 0.006 + index * 0.0025;
+  return geodesicOffset(center, radius * METERS_PER_DEGREE, angle);
+}
+
+function geodesicOffset(
+  center: Coordinates,
+  distanceM: number,
+  bearingRad: number,
+): Coordinates {
+  const angular = distanceM / (EARTH_RADIUS_KM * 1000);
+  const lat1 = (center.lat * Math.PI) / 180;
+  const lng1 = (center.lng * Math.PI) / 180;
+
+  const lat2 = Math.asin(
+    Math.sin(lat1) * Math.cos(angular) +
+      Math.cos(lat1) * Math.sin(angular) * Math.cos(bearingRad),
+  );
+  const lng2 =
+    lng1 +
+    Math.atan2(
+      Math.sin(bearingRad) * Math.sin(angular) * Math.cos(lat1),
+      Math.cos(angular) - Math.sin(lat1) * Math.sin(lat2),
+    );
 
   return {
-    lat: center.lat + radius * Math.cos(angle),
-    lng: center.lng + radius * Math.sin(angle),
+    lat: clamp(radToDeg(lat2), -90, 90),
+    lng: normalizeLng(radToDeg(lng2)),
   };
 }
 
-const EARTH_RADIUS_KM = 6371;
+function radToDeg(value: number): number {
+  return (value * 180) / Math.PI;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function normalizeLng(lng: number): number {
+  const wrapped = ((((lng + 180) % 360) + 360) % 360) - 180;
+  return wrapped === -180 ? 180 : wrapped;
+}
 
 /** Great-circle distance in kilometers between two coordinates. */
 export function distanceKm(a: Coordinates, b: Coordinates): number {

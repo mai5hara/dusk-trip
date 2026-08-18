@@ -65,7 +65,7 @@ const ItineraryDayList = ({
 
     pauseScrollSpy();
     scrollRef.current
-      ?.querySelector(`[data-stop-id="${focusStopId}"]`)
+      ?.querySelector(`[data-stop-id="${CSS.escape(focusStopId)}"]`)
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [focusStopId, pauseScrollSpy]);
 
@@ -73,7 +73,7 @@ const ItineraryDayList = ({
     pauseScrollSpy();
     onStopClick(stopId);
     scrollRef.current
-      ?.querySelector(`[data-stop-id="${stopId}"]`)
+      ?.querySelector(`[data-stop-id="${CSS.escape(stopId)}"]`)
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 

@@ -20,6 +20,7 @@ import {
 } from '../geocoding/geocoding-utils';
 import { WikimediaImageService } from '../images/wikimedia-image.service';
 import { buildAquarelleStyle } from '../maps/maptiler-map-style';
+import { getMapTilerStyleApiKey } from '../maps/maptiler-style-key';
 import { ITINERARY_PLANNER, type ItineraryPlanner } from './itinerary-planner';
 
 // A real itinerary stop should sit within day-trip range of the destination
@@ -53,7 +54,7 @@ export class ItineraryPlanService {
   ): Promise<GenerateItineraryResponse> {
     const draft = await this.itineraryPlanner.generateItinerary(body);
     const plan = await this.enrichWithCoordinates(draft, body.destination);
-    const apiKey = this.configService.getOrThrow<string>('MAPTILER_API_KEY');
+    const apiKey = getMapTilerStyleApiKey(this.configService);
 
     return generateItineraryResponseSchema.parse({
       plan,
@@ -91,35 +92,30 @@ export class ItineraryPlanService {
       ),
     );
 
-    const enrichedDays = [];
+    const enrichedDays = await Promise.all(
+      draft.days.map((day: DraftDay, dayIndex: number) =>
+        Promise.all(
+          day.items.map(async (item: DraftItem, index: number) => {
+            const place = places[dayIndex][index];
+            const coords = await this.locateStop(
+              item,
+              destination,
+              center,
+              country,
+              index,
+              place.coords,
+            );
 
-    for (const [dayIndex, day] of draft.days.entries()) {
-      const enrichedItems = [];
-
-      for (const [index, item] of day.items.entries()) {
-        const place = places[dayIndex][index];
-        const coords = await this.locateStop(
-          item,
-          destination,
-          center,
-          country,
-          index,
-          place.coords,
-        );
-
-        enrichedItems.push({
-          ...item,
-          lat: coords.lat,
-          lng: coords.lng,
-          image: place.image ?? undefined,
-        });
-      }
-
-      enrichedDays.push({
-        ...day,
-        items: enrichedItems,
-      });
-    }
+            return {
+              ...item,
+              lat: coords.lat,
+              lng: coords.lng,
+              image: place.image ?? undefined,
+            };
+          }),
+        ).then((items) => ({ ...day, items })),
+      ),
+    );
 
     return itineraryPlanSchema.parse({
       ...draft,

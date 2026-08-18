@@ -9,6 +9,53 @@ import { detectImageType } from '@/lib/detect-image-type';
 export const runtime = 'nodejs';
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_REQUEST_BYTES = MAX_SIZE_BYTES + 256 * 1024;
+
+async function parseBoundedFormData(request: Request): Promise<FormData> {
+  const stream = request.body;
+  if (!stream) {
+    return new FormData();
+  }
+
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+
+    total += value.byteLength;
+    if (total > MAX_REQUEST_BYTES) {
+      await reader.cancel();
+      throw new RequestTooLargeError();
+    }
+
+    chunks.push(value);
+  }
+
+  const body = Buffer.concat(chunks);
+  const headers = new Headers();
+  const contentType = request.headers.get('content-type');
+  if (contentType) {
+    headers.set('content-type', contentType);
+  }
+
+  return new Request(request.url, {
+    method: request.method,
+    headers,
+    body,
+  }).formData();
+}
+
+class RequestTooLargeError extends Error {
+  constructor() {
+    super('File must be 5MB or smaller');
+    this.name = 'RequestTooLargeError';
+  }
+}
 
 /** Dev-only fallback. Do not use on serverless — filesystem is ephemeral. */
 async function saveLocally(request: Request, filename: string, bytes: Buffer) {
@@ -29,7 +76,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const formData = await request.formData();
+    const contentLength = request.headers.get('content-length');
+    if (contentLength !== null) {
+      const length = Number(contentLength);
+      if (Number.isFinite(length) && length > MAX_REQUEST_BYTES) {
+        return NextResponse.json(
+          { message: 'File must be 5MB or smaller' },
+          { status: 400 },
+        );
+      }
+    }
+
+    const formData = await parseBoundedFormData(request);
     const file = formData.get('file');
 
     if (!(file instanceof File)) {
@@ -85,6 +143,12 @@ export async function POST(request: Request) {
     const url = await saveLocally(request, filename, bytes);
     return NextResponse.json({ url, storage: 'local' });
   } catch (error) {
+    if (error instanceof RequestTooLargeError) {
+      return NextResponse.json(
+        { message: error.message },
+        { status: 400 },
+      );
+    }
     console.error(error);
     return NextResponse.json(
       { message: 'Failed to upload file' },

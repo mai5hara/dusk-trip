@@ -7,11 +7,12 @@ export function getBaseUrl(): string {
   return baseUrl;
 }
 
-export function buildHeaders(init?: RequestInit): HeadersInit {
-  return {
-    'Content-Type': 'application/json',
-    ...(init?.headers as Record<string, string> | undefined),
-  };
+export function buildHeaders(init?: RequestInit): Headers {
+  const headers = new Headers(init?.headers);
+  if (!headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+  return headers;
 }
 
 export async function parseJson<T>(res: Response): Promise<T> {

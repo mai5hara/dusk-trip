@@ -10,16 +10,30 @@ import ItineraryEmptyState from './ItineraryEmptyState';
 
 const ItineraryList = () => {
   const router = useRouter();
-  const { data: itineraries = [], isLoading, isError } = useItinerariesQuery();
+  const {
+    data: itineraries = [],
+    isLoading,
+    isError,
+    error,
+  } = useItinerariesQuery();
 
   useEffect(() => {
-    if (isError) {
+    const status = getErrorStatus(error);
+    if (isError && (status === 401 || status === 403)) {
       router.replace('/login');
     }
-  }, [isError, router]);
+  }, [isError, error, router]);
 
   if (isLoading) {
     return <p className="pt-10 text-sm opacity-70">Loading itineraries...</p>;
+  }
+
+  if (isError) {
+    return (
+      <p className="pt-10 text-sm opacity-70">
+        Could not load itineraries. Please try again.
+      </p>
+    );
   }
 
   if (itineraries.length === 0) {
@@ -45,3 +59,28 @@ const ItineraryList = () => {
 };
 
 export default ItineraryList;
+
+function getErrorStatus(error: unknown): number | undefined {
+  if (!error || typeof error !== 'object') {
+    return undefined;
+  }
+
+  if (
+    'status' in error &&
+    typeof (error as { status: unknown }).status === 'number'
+  ) {
+    return (error as { status: number }).status;
+  }
+
+  if (error instanceof Error) {
+    if (error.message === 'Unauthorized') {
+      return 401;
+    }
+    const match = /status:\s*(\d+)/i.exec(error.message);
+    if (match) {
+      return Number(match[1]);
+    }
+  }
+
+  return undefined;
+}

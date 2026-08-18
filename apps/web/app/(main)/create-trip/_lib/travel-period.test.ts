@@ -130,6 +130,25 @@ describe('buildDayEntries', () => {
     expect(entries[0]?.id).toBe('draft-id');
     expect(entries[0]?.photoUrl).toBe('https://example.com/draft.jpg');
   });
+
+  it('preserves explicit empty previous values instead of falling back', () => {
+    const entries = buildDayEntries(
+      new Date(2026, 5, 1),
+      new Date(2026, 5, 1),
+      [
+        day('2026-06-01', {
+          photoUrl: '',
+          caption: '',
+          location: '',
+        }),
+      ],
+      [apiEntry({ dayLabel: '2026-06-01' })],
+    );
+
+    expect(entries[0]?.photoUrl).toBe('');
+    expect(entries[0]?.caption).toBe('');
+    expect(entries[0]?.location).toBe('');
+  });
 });
 
 describe('groupEntriesByMonth', () => {

@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 import { buildAquarelleStyle } from './maptiler-map-style';
+import { getMapTilerStyleApiKey } from './maptiler-style-key';
 
 @Controller('maps')
 export class MapsController {
@@ -11,7 +12,7 @@ export class MapsController {
   @UseGuards(JwtAuthGuard)
   @Get('itinerary-config')
   itineraryConfig() {
-    const apiKey = this.configService.getOrThrow<string>('MAPTILER_API_KEY');
+    const apiKey = getMapTilerStyleApiKey(this.configService);
 
     return {
       mapStyle: buildAquarelleStyle(apiKey),

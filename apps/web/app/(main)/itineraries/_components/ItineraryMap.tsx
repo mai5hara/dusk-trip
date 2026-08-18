@@ -167,7 +167,18 @@ const ItineraryMap = ({
               }}
             >
               <div
+                role="button"
+                tabIndex={0}
+                aria-label={stop.placeName}
                 className={`itinerary-marker${isActive ? ' itinerary-marker--active' : ''}`}
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter' && event.key !== ' ') {
+                    return;
+                  }
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onMarkerClick(stop.id);
+                }}
               />
             </Marker>
           );

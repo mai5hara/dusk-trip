@@ -12,6 +12,8 @@ import {
 } from '@mood-trip/validators';
 import type { ItineraryPlanner } from './itinerary-planner';
 
+const REQUEST_TIMEOUT_MS = 30_000;
+
 @Injectable()
 export class GeminiItineraryPlannerService implements ItineraryPlanner {
   private readonly logger = new Logger(GeminiItineraryPlannerService.name);
@@ -34,12 +36,16 @@ export class GeminiItineraryPlannerService implements ItineraryPlanner {
 
     for (const model of this.models) {
       for (let attempt = 0; attempt < 2; attempt++) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
         try {
           const response = await ai.models.generateContent({
             model,
             contents: prompt,
             config: {
               responseMimeType: 'application/json',
+              abortSignal: controller.signal,
             },
           });
 
@@ -69,6 +75,8 @@ export class GeminiItineraryPlannerService implements ItineraryPlanner {
             `Gemini ${model} unavailable (attempt ${attempt + 1}). Retrying in ${delayMs}ms.`,
           );
           await this.sleep(delayMs);
+        } finally {
+          clearTimeout(timeout);
         }
       }
 
@@ -82,12 +90,39 @@ export class GeminiItineraryPlannerService implements ItineraryPlanner {
   }
 
   private isRetryableError(error: unknown): boolean {
-    if (!error || typeof error !== 'object' || !('status' in error)) {
+    if (!error || typeof error !== 'object') {
       return false;
     }
 
-    const status = (error as { status: number }).status;
-    return status === 429 || status === 500 || status === 503;
+    const status = 'status' in error ? (error as { status: unknown }).status : undefined;
+    if (status === 429 || status === 500 || status === 503) {
+      return true;
+    }
+
+    const name = 'name' in error ? String((error as { name: unknown }).name) : '';
+    const message =
+      'message' in error ? String((error as { message: unknown }).message) : '';
+    const code = 'code' in error ? String((error as { code: unknown }).code) : '';
+    const cause =
+      'cause' in error && (error as { cause: unknown }).cause
+        ? (error as { cause: { name?: unknown; code?: unknown; message?: unknown } })
+            .cause
+        : undefined;
+
+    if (name === 'AbortError' || name === 'TimeoutError') {
+      return true;
+    }
+
+    if (
+      code === 'ECONNRESET' ||
+      cause?.code === 'ECONNRESET' ||
+      /fetch failed|ECONNRESET/i.test(message) ||
+      (typeof cause?.message === 'string' && /ECONNRESET/i.test(cause.message))
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   private sleep(ms: number) {

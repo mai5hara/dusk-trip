@@ -23,6 +23,10 @@ export function useScrollSpy(
     }
 
     let frame = 0;
+    const cards = itemIds.flatMap((id) => {
+      const element = root.querySelector(`[data-stop-id="${CSS.escape(id)}"]`);
+      return element ? [{ id, element }] : [];
+    });
 
     const computeActive = () => {
       frame = 0;
@@ -48,11 +52,7 @@ export function useScrollSpy(
       const line =
         root.getBoundingClientRect().top + clientHeight * ACTIVE_LINE_RATIO;
       let activeId = itemIds[0];
-      for (const id of itemIds) {
-        const element = root.querySelector(`[data-stop-id="${id}"]`);
-        if (!element) {
-          continue;
-        }
+      for (const { id, element } of cards) {
         if (element.getBoundingClientRect().top - 1 <= line) {
           activeId = id;
         } else {
