@@ -2,6 +2,7 @@ import {
   z,
   createTripBodySchema,
   createEntryBodySchema,
+  memoryTimeOfDaySchema,
 } from '@mood-trip/validators';
 
 export const dayEntryFormSchema = z.object({
@@ -9,7 +10,7 @@ export const dayEntryFormSchema = z.object({
   id: z.string().optional(),
   dateKey: z.string(),
   dayLabel: z.string(),
-  timeOfDay: z.enum(['MORNING', 'AFTERNOON', 'EVENING']),
+  timeOfDay: memoryTimeOfDaySchema,
   sortOrder: z.number().int(),
   photoUrl: z.string(),
   caption: z.string().optional(),

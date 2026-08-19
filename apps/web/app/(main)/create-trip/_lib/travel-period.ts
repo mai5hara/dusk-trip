@@ -57,6 +57,21 @@ export function createDayEntry(
   };
 }
 
+export function getNextMemoryIndex(
+  entries: DayEntryFormValue[],
+  dateKey: string,
+  dayIndex: number,
+): number {
+  const dayBaseSortOrder = dayIndex * 100;
+  const highestSortOrder = Math.max(
+    dayBaseSortOrder - 1,
+    ...entries
+      .filter((entry) => entry.dateKey === dateKey)
+      .map((entry) => entry.sortOrder),
+  );
+  return highestSortOrder - dayBaseSortOrder + 1;
+}
+
 function _emptyDayEntry(date: Date, dayIndex: number): DayEntryFormValue {
   const dateKey = toDateKey(date);
   return createDayEntry(dateKey, dayIndex);
@@ -89,23 +104,19 @@ export function buildDayEntries(
   previous: DayEntryFormValue[] = [],
   existingEntries: Entry[] = [],
 ): DayEntryFormValue[] {
-  const validDateKeys = new Set(eachDayInRange(start, end).map(toDateKey));
-  const preserved = previous.filter((entry) =>
-    validDateKeys.has(entry.dateKey),
-  );
-  if (preserved.length > 0) {
-    const preservedDates = new Set(preserved.map((entry) => entry.dateKey));
-    const missingDays = eachDayInRange(start, end)
-      .map((date, dayIndex) => ({ date, dayIndex }))
-      .filter(({ date }) => !preservedDates.has(toDateKey(date)))
-      .map(({ date, dayIndex }) => _emptyDayEntry(date, dayIndex));
-    return [...preserved, ...missingDays].sort(
-      (a, b) => a.dateKey.localeCompare(b.dateKey) || a.sortOrder - b.sortOrder,
-    );
-  }
-
   return eachDayInRange(start, end).flatMap((date, dayIndex) => {
     const dateKey = toDateKey(date);
+    const previousForDate = previous.filter(
+      (entry) => entry.dateKey === dateKey,
+    );
+    if (previousForDate.length > 0) {
+      return previousForDate.map((entry, memoryIndex) => ({
+        ...entry,
+        dayLabel: `Day ${dayIndex + 1}`,
+        sortOrder: dayIndex * 100 + memoryIndex,
+      }));
+    }
+
     const existing = _matchExistingEntries(dateKey, dayIndex, existingEntries);
 
     if (existing.length === 0) return [_emptyDayEntry(date, dayIndex)];

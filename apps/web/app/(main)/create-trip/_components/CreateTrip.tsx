@@ -22,7 +22,11 @@ import {
 } from '@mood-trip/ui';
 import { useCreateTripMutation } from '../_hooks/useTripMutation';
 import { useCreateEntriesMutation } from '../_hooks/useEntryMutation';
-import { buildDayEntries, createDayEntry } from '../_lib/travel-period';
+import {
+  buildDayEntries,
+  createDayEntry,
+  getNextMemoryIndex,
+} from '../_lib/travel-period';
 import {
   entryFormSchema,
   toDate,
@@ -133,9 +137,7 @@ const CreateTrip = () => {
     const currentEntries = getValues('entries');
     const dateKeys = [...new Set(currentEntries.map((entry) => entry.dateKey))];
     const dayIndex = dateKeys.indexOf(dateKey);
-    const memoryIndex = currentEntries.filter(
-      (entry) => entry.dateKey === dateKey,
-    ).length;
+    const memoryIndex = getNextMemoryIndex(currentEntries, dateKey, dayIndex);
     const entry = createDayEntry(dateKey, dayIndex, memoryIndex);
     setValue('entries', [...currentEntries, entry]);
     return entry.clientId;

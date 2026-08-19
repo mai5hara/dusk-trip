@@ -42,6 +42,7 @@ export {
 } from './itinerary';
 export {
   entrySchema,
+  memoryTimeOfDaySchema,
   createEntryBodySchema,
   createEntriesBatchBodySchema,
   CREATE_ENTRIES_BATCH_MAX,
