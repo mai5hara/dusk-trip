@@ -44,3 +44,17 @@ export const createEntriesBatchBodySchema = z.object({
 export type CreateEntriesBatchBody = z.infer<
   typeof createEntriesBatchBodySchema
 >;
+
+export const updateEntryBodySchema = createEntryBodySchema.extend({
+  id: z.string(),
+});
+
+export type UpdateEntryBody = z.infer<typeof updateEntryBodySchema>;
+
+export const updateEntriesBatchBodySchema = z.object({
+  entries: z.array(updateEntryBodySchema).min(1).max(CREATE_ENTRIES_BATCH_MAX),
+});
+
+export type UpdateEntriesBatchBody = z.infer<
+  typeof updateEntriesBatchBodySchema
+>;

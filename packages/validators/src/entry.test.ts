@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   createEntryBodySchema,
   createEntriesBatchBodySchema,
+  updateEntriesBatchBodySchema,
   CREATE_ENTRIES_BATCH_MAX,
 } from './entry';
 
@@ -72,6 +73,30 @@ describe('createEntriesBatchBodySchema', () => {
         photoUrl: `https://example.com/${i}.jpg`,
         sortOrder: i,
       })),
+    });
+
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('updateEntriesBatchBodySchema', () => {
+  it('accepts entries that include ids', () => {
+    const result = updateEntriesBatchBodySchema.safeParse({
+      entries: [
+        {
+          id: 'entry-1',
+          photoUrl: 'https://example.com/a.jpg',
+          sortOrder: 0,
+        },
+      ],
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects entries without ids', () => {
+    const result = updateEntriesBatchBodySchema.safeParse({
+      entries: [{ photoUrl: 'https://example.com/a.jpg' }],
     });
 
     expect(result.success).toBe(false);

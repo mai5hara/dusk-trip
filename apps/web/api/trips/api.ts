@@ -3,6 +3,7 @@ import {
   type CreateEntriesBatchBody,
   type CreateEntryBody,
   type CreateTripBody,
+  type UpdateEntriesBatchBody,
   type Entry,
   type TripListItem,
   type TripWithEntries,
@@ -55,6 +56,16 @@ export async function updateEntry(
   body: CreateEntryBody,
 ): Promise<Entry> {
   return apiClient<Entry>(`/trips/${tripId}/entries/${entryId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function updateEntries(
+  tripId: string,
+  body: UpdateEntriesBatchBody,
+): Promise<Entry[]> {
+  return apiClient<Entry[]>(`/trips/${tripId}/entries/batch`, {
     method: 'PATCH',
     body: JSON.stringify(body),
   });

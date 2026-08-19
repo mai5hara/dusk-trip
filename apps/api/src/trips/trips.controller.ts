@@ -18,6 +18,7 @@ import {
   createTripBodySchema,
   createEntryBodySchema,
   createEntriesBatchBodySchema,
+  updateEntriesBatchBodySchema,
 } from '@mood-trip/validators';
 
 @Controller('trips')
@@ -64,6 +65,22 @@ export class TripsController {
     const parsed = createEntryBodySchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
     return this.tripsService.createEntry(tripId, req.user.id, parsed.data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':tripId/entries/batch')
+  updateEntries(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Request() req: { user: { id: string } },
+  ) {
+    const parsed = updateEntriesBatchBodySchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.tripsService.updateEntries(
+      tripId,
+      req.user.id,
+      parsed.data.entries,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

@@ -45,10 +45,14 @@ export {
   memoryTimeOfDaySchema,
   createEntryBodySchema,
   createEntriesBatchBodySchema,
+  updateEntryBodySchema,
+  updateEntriesBatchBodySchema,
   CREATE_ENTRIES_BATCH_MAX,
   type Entry,
   type CreateEntryBody,
   type CreateEntriesBatchBody,
+  type UpdateEntryBody,
+  type UpdateEntriesBatchBody,
 } from './entry';
 export {
   loginBodySchema,

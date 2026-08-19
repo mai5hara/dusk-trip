@@ -9,7 +9,7 @@ import { z, createEntryBodySchema } from '@mood-trip/validators';
 import { Button, Field, Input, Label } from '@mood-trip/ui';
 import { toast } from 'sonner';
 import { useTripQuery } from '@/app/(main)/_hooks/useTripQuery';
-import { updateEntry } from '@/api/trips/api';
+import { updateEntries } from '@/api/trips/api';
 import { queryKeys } from '@/lib/query/query-keys';
 import { getErrorMessage } from '@/lib/get-error-message';
 
@@ -56,18 +56,9 @@ const EditMemories = ({ tripId }: { tripId: string }) => {
   const save = async (values: EditMemoriesForm): Promise<void> => {
     setIsPending(true);
     try {
-      await Promise.all(
-        values.entries.map((entry) =>
-          updateEntry(tripId, entry.id, {
-            photoUrl: entry.photoUrl,
-            caption: entry.caption,
-            location: entry.location,
-            dayLabel: entry.dayLabel,
-            timeOfDay: entry.timeOfDay,
-            sortOrder: entry.sortOrder,
-          }),
-        ),
-      );
+      if (values.entries.length > 0) {
+        await updateEntries(tripId, { entries: values.entries });
+      }
       await queryClient.invalidateQueries({ queryKey: queryKeys.trips.all });
       await queryClient.invalidateQueries({
         queryKey: queryKeys.trips.detail(tripId),
