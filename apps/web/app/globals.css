@@ -77,3 +77,87 @@
   background: var(--background-gradient-raised);
   box-shadow: var(--shadow-button-raised);
 }
+
+@keyframes notFoundEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes notFoundRouteDraw {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0.38;
+  }
+}
+
+@keyframes notFoundPinFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.not-found-enter {
+  animation: notFoundEnter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--index, 0) * 90ms);
+}
+
+.not-found-route {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: notFoundRouteDraw 1.6s cubic-bezier(0.22, 1, 0.36, 1) 280ms
+    forwards;
+}
+
+.not-found-pin {
+  animation: notFoundPinFloat 3.2s ease-in-out 1.2s infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.not-found-blend {
+  background: linear-gradient(
+    to bottom,
+    var(--color-surface) 0%,
+    color-mix(in oklab, var(--color-surface) 72%, transparent) 42%,
+    transparent 100%
+  );
+}
+
+@media (min-width: 64rem) {
+  .not-found-blend {
+    background: linear-gradient(
+      to right,
+      var(--color-surface) 0%,
+      color-mix(in oklab, var(--color-surface) 78%, transparent) 36%,
+      color-mix(in oklab, var(--color-surface) 28%, transparent) 68%,
+      transparent 100%
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .not-found-enter,
+  .not-found-route,
+  .not-found-pin {
+    animation: none;
+  }
+
+  .not-found-route {
+    stroke-dashoffset: 0.38;
+  }
+}

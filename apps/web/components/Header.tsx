@@ -1,17 +1,26 @@
 'use client';
 
+import type { ReactElement } from 'react';
 import { ButtonLink } from '@mood-trip/ui';
 import { Input } from '@mood-trip/ui';
 import { PlusIcon, UserIcon, SparklesIcon } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useTripListContext } from '@/app/(main)/_hooks/trip-list-context';
 
-const Header = () => {
+type HeaderProps = {
+  fullWidth?: boolean;
+};
+
+const Header = ({ fullWidth = false }: HeaderProps): ReactElement => {
   const { query, setQuery } = useTripListContext();
   const { logout } = useAuth();
 
   return (
-    <header className="tokonoma-raised-panel w-full max-w-312 bg-surface shrink-0 py-4 mt-6 flex justify-between items-center fixed rounded-full p-4 z-10">
+    <header
+      className={`tokonoma-raised-panel bg-surface shrink-0 py-4 mt-6 flex justify-between items-center fixed rounded-full p-4 z-10 ${
+        fullWidth ? 'inset-x-6 w-auto max-w-none' : 'w-full max-w-312'
+      }`}
+    >
       <h1 className="flex-1">
         <ButtonLink href="/" variant="ghost">
           Mood-Trip
