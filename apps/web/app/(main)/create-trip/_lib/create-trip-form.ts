@@ -5,9 +5,11 @@ import {
 } from '@mood-trip/validators';
 
 export const dayEntryFormSchema = z.object({
+  clientId: z.string(),
   id: z.string().optional(),
   dateKey: z.string(),
   dayLabel: z.string(),
+  timeOfDay: z.enum(['MORNING', 'DAY', 'EVENING', 'NIGHT']),
   sortOrder: z.number().int(),
   photoUrl: z.string(),
   caption: z.string().optional(),
@@ -40,6 +42,7 @@ export const entryFormSchema = z
         caption: entry.caption || undefined,
         location: entry.location || undefined,
         dayLabel: entry.dateKey,
+        timeOfDay: entry.timeOfDay,
         sortOrder: entry.sortOrder,
       });
       if (!result.success) {

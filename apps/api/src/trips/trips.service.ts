@@ -88,6 +88,7 @@ export class TripsService {
         caption: body.caption ?? null,
         location: body.location ?? null,
         dayLabel: body.dayLabel ?? null,
+        ...(body.timeOfDay ? { timeOfDay: body.timeOfDay } : {}),
         sortOrder: body.sortOrder ?? 0,
       },
     });
@@ -109,6 +110,7 @@ export class TripsService {
             caption: body.caption ?? null,
             location: body.location ?? null,
             dayLabel: body.dayLabel ?? null,
+            ...(body.timeOfDay ? { timeOfDay: body.timeOfDay } : {}),
             sortOrder: body.sortOrder ?? 0,
           },
         }),

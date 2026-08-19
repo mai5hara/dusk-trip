@@ -1,0 +1,4 @@
+CREATE TYPE "MemoryTimeOfDay" AS ENUM ('MORNING', 'DAY', 'EVENING', 'NIGHT');
+
+ALTER TABLE "Entry"
+ADD COLUMN "timeOfDay" "MemoryTimeOfDay" NOT NULL DEFAULT 'DAY';

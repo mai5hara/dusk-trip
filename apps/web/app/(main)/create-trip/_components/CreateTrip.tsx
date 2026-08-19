@@ -22,7 +22,7 @@ import {
 } from '@mood-trip/ui';
 import { useCreateTripMutation } from '../_hooks/useTripMutation';
 import { useCreateEntriesMutation } from '../_hooks/useEntryMutation';
-import { buildDayEntries } from '../_lib/travel-period';
+import { buildDayEntries, createDayEntry } from '../_lib/travel-period';
 import {
   entryFormSchema,
   toDate,
@@ -129,16 +129,37 @@ const CreateTrip = () => {
     setStep(2);
   };
 
+  const addMemory = (dateKey: string): string => {
+    const currentEntries = getValues('entries');
+    const dateKeys = [...new Set(currentEntries.map((entry) => entry.dateKey))];
+    const dayIndex = dateKeys.indexOf(dateKey);
+    const memoryIndex = currentEntries.filter(
+      (entry) => entry.dateKey === dateKey,
+    ).length;
+    const entry = createDayEntry(dateKey, dayIndex, memoryIndex);
+    setValue('entries', [...currentEntries, entry]);
+    return entry.clientId;
+  };
+
+  const removeMemory = (clientId: string): void => {
+    setValue(
+      'entries',
+      getValues('entries').filter((entry) => entry.clientId !== clientId),
+    );
+  };
+
   const saveMemories = handleSubmit(async (values) => {
     try {
       const resolvedTripId = await ensureAlbumExists(values);
       const entriesToCreate = values.entries
         .filter((entry) => !entry.id && entry.photoUrl.trim().length > 0)
         .map((entry) => ({
+          clientId: entry.clientId,
           photoUrl: entry.photoUrl,
           caption: entry.caption || undefined,
           location: entry.location || undefined,
           dayLabel: entry.dateKey,
+          timeOfDay: entry.timeOfDay,
           sortOrder: entry.sortOrder,
         }));
 
@@ -152,17 +173,26 @@ const CreateTrip = () => {
           const chunk = entriesToCreate.slice(i, i + CREATE_ENTRIES_BATCH_MAX);
           const created = await createEntriesAsync({
             tripId: resolvedTripId,
-            body: { entries: chunk },
+            body: {
+              entries: chunk.map((entry) => ({
+                photoUrl: entry.photoUrl,
+                caption: entry.caption,
+                location: entry.location,
+                dayLabel: entry.dayLabel,
+                timeOfDay: entry.timeOfDay,
+                sortOrder: entry.sortOrder,
+              })),
+            },
           });
 
-          const idByDayLabel = new Map(
-            created.map((entry) => [entry.dayLabel, entry.id]),
+          const idByClientId = new Map(
+            chunk.map((entry, index) => [entry.clientId, created[index]?.id]),
           );
           setValue(
             'entries',
             getValues('entries').map((entry) =>
-              idByDayLabel.has(entry.dateKey)
-                ? { ...entry, id: idByDayLabel.get(entry.dateKey) }
+              idByClientId.has(entry.clientId)
+                ? { ...entry, id: idByClientId.get(entry.clientId) }
                 : entry,
             ),
           );
@@ -323,6 +353,8 @@ const CreateTrip = () => {
                 control={control as unknown as Control<FieldValues>}
                 register={register as unknown as UseFormRegister<FieldValues>}
                 errors={errors}
+                onAddMemory={addMemory}
+                onRemoveMemory={removeMemory}
               />
             ) : (
               <p className="text-sm opacity-70">

@@ -12,6 +12,7 @@ describe('createEntryBodySchema', () => {
       caption: 'Test Caption',
       location: 'Test Location',
       dayLabel: 'Test Day Label',
+      timeOfDay: 'MORNING',
       sortOrder: 0,
     });
 
@@ -36,6 +37,15 @@ describe('createEntryBodySchema', () => {
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it('rejects an unsupported time of day', () => {
+    const result = createEntryBodySchema.safeParse({
+      photoUrl: 'https://example.com/photo.jpg',
+      timeOfDay: 'LUNCH',
+    });
+
+    expect(result.success).toBe(false);
   });
 });
 

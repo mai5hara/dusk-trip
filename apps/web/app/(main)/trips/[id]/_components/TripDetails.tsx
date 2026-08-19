@@ -12,7 +12,10 @@ import {
 } from 'lucide-react';
 import { Button, ButtonLink } from '@mood-trip/ui';
 import Link from 'next/link';
-import { groupEntriesByDay } from '../_lib/group-entries-by-day';
+import {
+  formatTimeOfDay,
+  groupEntriesByDay,
+} from '../_lib/group-entries-by-day';
 
 const TripDetails = ({ tripId }: { tripId: string }) => {
   const { data: trip, isLoading, isError } = useTripQuery(tripId);
@@ -101,6 +104,9 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
                         height={400}
                       />
                       <div className="flex flex-col gap-2">
+                        <p className="text-xs font-medium uppercase tracking-wide opacity-60">
+                          {formatTimeOfDay(entry.timeOfDay)}
+                        </p>
                         {entry.caption && (
                           <p className="line-clamp-2 text-sm">
                             {entry.caption}

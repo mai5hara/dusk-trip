@@ -8,6 +8,16 @@ export type EntryDayGroup = {
 
 const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DAY_LABEL_RE = /^Day\s+(\d+)$/i;
+const TIME_OF_DAY_ORDER = {
+  MORNING: 0,
+  DAY: 1,
+  EVENING: 2,
+  NIGHT: 3,
+} as const;
+
+export function formatTimeOfDay(timeOfDay: Entry['timeOfDay']): string {
+  return `${timeOfDay.charAt(0)}${timeOfDay.slice(1).toLowerCase()}`;
+}
 
 function parseDateKey(dateKey: string): Date {
   const [y, m, d] = dateKey.split('-').map(Number);
@@ -107,7 +117,11 @@ export function groupEntriesByDay(
   return [...groups.values()]
     .map((group) => ({
       ...group,
-      entries: [...group.entries].sort((a, b) => a.sortOrder - b.sortOrder),
+      entries: [...group.entries].sort(
+        (a, b) =>
+          TIME_OF_DAY_ORDER[a.timeOfDay] - TIME_OF_DAY_ORDER[b.timeOfDay] ||
+          a.sortOrder - b.sortOrder,
+      ),
     }))
     .sort(
       (a, b) =>

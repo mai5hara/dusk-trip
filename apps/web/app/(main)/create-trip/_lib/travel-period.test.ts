@@ -15,8 +15,10 @@ function day(
   overrides: Partial<DayEntryFormValue> = {},
 ): DayEntryFormValue {
   return {
+    clientId: `draft-${dateKey}`,
     dateKey,
     dayLabel: 'Day 1',
+    timeOfDay: 'DAY',
     sortOrder: 0,
     photoUrl: '',
     caption: '',
@@ -33,6 +35,7 @@ function apiEntry(overrides: Partial<Entry> = {}): Entry {
     caption: 'Saved caption',
     location: 'Kyoto',
     dayLabel: '2026-06-01',
+    timeOfDay: 'DAY',
     sortOrder: 0,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
@@ -81,7 +84,7 @@ describe('buildDayEntries', () => {
       'Day 2',
       'Day 3',
     ]);
-    expect(entries.map((entry) => entry.sortOrder)).toEqual([0, 1, 2]);
+    expect(entries.map((entry) => entry.sortOrder)).toEqual([0, 100, 200]);
   });
 
   it('keeps previous form values for matching dates', () => {
@@ -112,6 +115,24 @@ describe('buildDayEntries', () => {
     expect(entries[0]?.id).toBe('entry-1');
     expect(entries[0]?.photoUrl).toBe('https://example.com/saved.jpg');
     expect(entries[1]?.id).toBeUndefined();
+  });
+
+  it('keeps multiple saved memories on the same day', () => {
+    const entries = buildDayEntries(
+      new Date(2026, 5, 1),
+      new Date(2026, 5, 1),
+      [],
+      [
+        apiEntry({ id: 'morning', timeOfDay: 'MORNING' }),
+        apiEntry({ id: 'night', timeOfDay: 'NIGHT' }),
+      ],
+    );
+
+    expect(entries.map((entry) => entry.id)).toEqual(['morning', 'night']);
+    expect(entries.map((entry) => entry.timeOfDay)).toEqual([
+      'MORNING',
+      'NIGHT',
+    ]);
   });
 
   it('prefers previous form values over saved API entries', () => {
