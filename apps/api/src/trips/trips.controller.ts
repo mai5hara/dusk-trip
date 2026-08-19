@@ -2,8 +2,12 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
+  Patch,
   Post,
   Request,
   UseGuards,
@@ -63,8 +67,48 @@ export class TripsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Patch(':tripId/entries/:entryId')
+  updateEntry(
+    @Param('tripId') tripId: string,
+    @Param('entryId') entryId: string,
+    @Body() body: unknown,
+    @Request() req: { user: { id: string } },
+  ) {
+    const parsed = createEntryBodySchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.tripsService.updateEntry(
+      tripId,
+      entryId,
+      req.user.id,
+      parsed.data,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string, @Request() req: { user: { id: string } }) {
     return this.tripsService.findOne(id, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() body: unknown,
+    @Request() req: { user: { id: string } },
+  ) {
+    const parsed = createTripBodySchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.tripsService.update(id, req.user.id, parsed.data);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(
+    @Param('id') id: string,
+    @Request() req: { user: { id: string } },
+  ): Promise<void> {
+    await this.tripsService.remove(id, req.user.id);
   }
 }

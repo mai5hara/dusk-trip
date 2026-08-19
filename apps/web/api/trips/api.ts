@@ -1,6 +1,7 @@
 import { apiClient } from '@/api/_common/client';
 import {
   type CreateEntriesBatchBody,
+  type CreateEntryBody,
   type CreateTripBody,
   type Entry,
   type TripListItem,
@@ -28,6 +29,33 @@ export async function createEntries(
 ): Promise<Entry[]> {
   return apiClient<Entry[]>(`/trips/${tripId}/entries/batch`, {
     method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function updateTrip(
+  id: string,
+  body: CreateTripBody,
+): Promise<TripListItem> {
+  return apiClient<TripListItem>(`/trips/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function deleteTrip(id: string): Promise<void> {
+  await apiClient<void>(`/trips/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function updateEntry(
+  tripId: string,
+  entryId: string,
+  body: CreateEntryBody,
+): Promise<Entry> {
+  return apiClient<Entry>(`/trips/${tripId}/entries/${entryId}`, {
+    method: 'PATCH',
     body: JSON.stringify(body),
   });
 }

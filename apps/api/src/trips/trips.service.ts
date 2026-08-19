@@ -44,6 +44,32 @@ export class TripsService {
     return trip;
   }
 
+  async update(
+    id: string,
+    userId: string,
+    body: CreateTripBody,
+  ): Promise<TripListItem> {
+    await this._assertTripOwnedByUser(id, userId);
+
+    const trip = await this.prisma.client.trip.update({
+      where: { id },
+      data: body,
+      include: {
+        _count: { select: { entries: true } },
+      },
+    });
+
+    return {
+      ...trip,
+      entryCount: trip._count.entries,
+    };
+  }
+
+  async remove(id: string, userId: string): Promise<void> {
+    await this._assertTripOwnedByUser(id, userId);
+    await this.prisma.client.trip.delete({ where: { id } });
+  }
+
   async create(userId: string, body: CreateTripBody): Promise<TripListItem> {
     const trip = await this.prisma.client.trip.create({
       data: {
@@ -90,6 +116,35 @@ export class TripsService {
         dayLabel: body.dayLabel ?? null,
         ...(body.timeOfDay ? { timeOfDay: body.timeOfDay } : {}),
         sortOrder: body.sortOrder ?? 0,
+      },
+    });
+  }
+
+  async updateEntry(
+    tripId: string,
+    entryId: string,
+    userId: string,
+    body: CreateEntryBody,
+  ): Promise<Entry> {
+    await this._assertTripOwnedByUser(tripId, userId);
+
+    const entry = await this.prisma.client.entry.findUnique({
+      where: { id: entryId },
+    });
+
+    if (!entry || entry.tripId !== tripId) {
+      throw new NotFoundException(`Entry ${entryId} not found`);
+    }
+
+    return this.prisma.client.entry.update({
+      where: { id: entryId },
+      data: {
+        photoUrl: body.photoUrl,
+        caption: body.caption ?? null,
+        location: body.location ?? null,
+        dayLabel: body.dayLabel ?? null,
+        ...(body.timeOfDay ? { timeOfDay: body.timeOfDay } : {}),
+        ...(body.sortOrder !== undefined ? { sortOrder: body.sortOrder } : {}),
       },
     });
   }

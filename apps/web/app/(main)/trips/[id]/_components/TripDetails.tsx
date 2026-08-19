@@ -72,7 +72,12 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
             </div>
             <div className="flex flex-col gap-6">
               <div className="w-full md:max-w-50">
-                <ButtonLink variant="flat" href="" rounded="full" width="full">
+                <ButtonLink
+                  variant="flat"
+                  href={`/trips/${trip.id}/edit`}
+                  rounded="full"
+                  width="full"
+                >
                   Edit
                   <PenIcon className="size-4" />
                 </ButtonLink>
