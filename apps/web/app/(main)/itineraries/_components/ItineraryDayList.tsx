@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { MapPinIcon } from 'lucide-react';
 import type {
-  PlannedTrip,
-  PlannedTripDay,
-  PlannedTripItem,
+  ItineraryPlan,
+  ItineraryPlanDay,
+  ItineraryPlanItem,
 } from '@mood-trip/validators';
 import {
   getItineraryStopId,
@@ -15,8 +15,8 @@ import { useScrollSpy } from '../_hooks/useScrollSpy';
 
 const SCROLL_CONTAINER_SELECTOR = '.itinerary-scroll';
 
-type TripItineraryListProps = {
-  trip: PlannedTrip;
+type ItineraryDayListProps = {
+  plan: ItineraryPlan;
   stops: ItineraryStop[];
   activeStopId: string | null;
   focusStopId: string | null;
@@ -24,14 +24,14 @@ type TripItineraryListProps = {
   onStopClick: (stopId: string) => void;
 };
 
-const TripItineraryList = ({
-  trip,
+const ItineraryDayList = ({
+  plan,
   stops,
   activeStopId,
   focusStopId,
   onActiveStopChange,
   onStopClick,
-}: TripItineraryListProps) => {
+}: ItineraryDayListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const stopIds = useMemo(() => stops.map((stop) => stop.id), [stops]);
   const { pauseScrollSpy } = useScrollSpy(
@@ -65,7 +65,7 @@ const TripItineraryList = ({
 
     pauseScrollSpy();
     scrollRef.current
-      ?.querySelector(`[data-stop-id="${focusStopId}"]`)
+      ?.querySelector(`[data-stop-id="${CSS.escape(focusStopId)}"]`)
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [focusStopId, pauseScrollSpy]);
 
@@ -73,18 +73,15 @@ const TripItineraryList = ({
     pauseScrollSpy();
     onStopClick(stopId);
     scrollRef.current
-      ?.querySelector(`[data-stop-id="${stopId}"]`)
+      ?.querySelector(`[data-stop-id="${CSS.escape(stopId)}"]`)
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   return (
     <div className="flex flex-col lg:h-full lg:min-h-0">
       <div className="shrink-0 border-b px-5 py-5">
-        <p className="text-xs uppercase tracking-[0.2em] opacity-70 sm:text-sm">
-          Draft itinerary
-        </p>
-        <h2 className="mt-2 text-xl sm:text-2xl">{trip.title}</h2>
-        <p className="mt-2 text-sm opacity-80">{trip.summary}</p>
+        <h2 className="text-2xl font-mono font-medium">{plan.title}</h2>
+        <p className="mt-2 text-sm opacity-70">{plan.summary}</p>
       </div>
 
       {/* No top padding: a sticky `top-0` header cannot rise above its scroll
@@ -94,7 +91,7 @@ const TripItineraryList = ({
         ref={scrollRef}
         className="itinerary-scroll px-5 pb-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
       >
-        {trip.days.map((day: PlannedTripDay) => (
+        {plan.days.map((day: ItineraryPlanDay) => (
           <section key={day.dayLabel} className="mb-6 last:mb-0">
             {/* Full-bleed (-mx-5 + px-5) so the divider stretches edge to edge,
                 matching the header above. The container has no top padding, so
@@ -112,7 +109,7 @@ const TripItineraryList = ({
             {/* mt-3 lives on the (non-sticky) cards, so it scrolls under the
                 header rather than leaving a transparent strip beneath it. */}
             <div className="mt-3 space-y-3">
-              {day.items.map((item: PlannedTripItem) => {
+              {day.items.map((item: ItineraryPlanItem) => {
                 const stopId = getItineraryStopId(day.dayLabel, item.timeOfDay);
                 const isActive = activeStopId === stopId;
 
@@ -170,4 +167,4 @@ const TripItineraryList = ({
   );
 };
 
-export default TripItineraryList;
+export default ItineraryDayList;

@@ -6,14 +6,17 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-  type PlannedTripDraft,
-  type PlanTripBody,
-  plannedTripDraftSchema,
+  type ItineraryPlanDraft,
+  type GenerateItineraryBody,
+  itineraryPlanDraftSchema,
 } from '@mood-trip/validators';
+import type { ItineraryPlanner } from './itinerary-planner';
+
+const REQUEST_TIMEOUT_MS = 30_000;
 
 @Injectable()
-export class GeminiTripPlannerService {
-  private readonly logger = new Logger(GeminiTripPlannerService.name);
+export class GeminiItineraryPlannerService implements ItineraryPlanner {
+  private readonly logger = new Logger(GeminiItineraryPlannerService.name);
   private readonly models = [
     'gemini-2.5-flash',
     'gemini-2.0-flash',
@@ -22,7 +25,9 @@ export class GeminiTripPlannerService {
 
   constructor(private readonly configService: ConfigService) {}
 
-  async generateTripPlan(body: PlanTripBody): Promise<PlannedTripDraft> {
+  async generateItinerary(
+    body: GenerateItineraryBody,
+  ): Promise<ItineraryPlanDraft> {
     const apiKey = this.configService.getOrThrow<string>('GEMINI_API_KEY');
     const ai = await this.createClient(apiKey);
     const prompt = this.buildPrompt(body);
@@ -31,21 +36,28 @@ export class GeminiTripPlannerService {
 
     for (const model of this.models) {
       for (let attempt = 0; attempt < 2; attempt++) {
+        const controller = new AbortController();
+        const timeout = setTimeout(
+          () => controller.abort(),
+          REQUEST_TIMEOUT_MS,
+        );
+
         try {
           const response = await ai.models.generateContent({
             model,
             contents: prompt,
             config: {
               responseMimeType: 'application/json',
+              abortSignal: controller.signal,
             },
           });
 
           const parsedJson = this.parseJsonResponse(response.text ?? '');
-          const parsedPlan = plannedTripDraftSchema.safeParse(parsedJson);
+          const parsedPlan = itineraryPlanDraftSchema.safeParse(parsedJson);
 
           if (!parsedPlan.success) {
             throw new BadGatewayException(
-              'Gemini returned an invalid trip plan',
+              'Gemini returned an invalid itinerary',
             );
           }
 
@@ -58,7 +70,7 @@ export class GeminiTripPlannerService {
           }
 
           if (!this.isRetryableError(error)) {
-            throw new BadGatewayException('Gemini trip planning failed');
+            throw new BadGatewayException('Gemini itinerary planning failed');
           }
 
           const delayMs = 1000 * (attempt + 1);
@@ -66,25 +78,60 @@ export class GeminiTripPlannerService {
             `Gemini ${model} unavailable (attempt ${attempt + 1}). Retrying in ${delayMs}ms.`,
           );
           await this.sleep(delayMs);
+        } finally {
+          clearTimeout(timeout);
         }
       }
 
       this.logger.warn(`Falling back from Gemini model ${model}.`);
     }
 
-    this.logger.error('Gemini trip planning exhausted retries', lastError);
+    this.logger.error('Gemini itinerary planning exhausted retries', lastError);
     throw new ServiceUnavailableException(
       'The AI planner is busy right now. Please try again in a moment.',
     );
   }
 
   private isRetryableError(error: unknown): boolean {
-    if (!error || typeof error !== 'object' || !('status' in error)) {
+    if (!error || typeof error !== 'object') {
       return false;
     }
 
-    const status = (error as { status: number }).status;
-    return status === 429 || status === 500 || status === 503;
+    const status =
+      'status' in error ? (error as { status: unknown }).status : undefined;
+    if (status === 429 || status === 500 || status === 503) {
+      return true;
+    }
+
+    const name =
+      'name' in error ? String((error as { name: unknown }).name) : '';
+    const message =
+      'message' in error ? String((error as { message: unknown }).message) : '';
+    const code =
+      'code' in error ? String((error as { code: unknown }).code) : '';
+    const cause =
+      'cause' in error && (error as { cause: unknown }).cause
+        ? (
+            error as {
+              cause: { name?: unknown; code?: unknown; message?: unknown };
+            }
+          ).cause
+        : undefined;
+
+    if (name === 'AbortError' || name === 'TimeoutError') {
+      return true;
+    }
+
+    if (
+      code === 'ECONNRESET' ||
+      cause?.code === 'ECONNRESET' ||
+      /fetch failed|ECONNRESET/i.test(message) ||
+      (typeof cause?.message === 'string' && /ECONNRESET/i.test(cause.message))
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   private sleep(ms: number) {
@@ -96,7 +143,7 @@ export class GeminiTripPlannerService {
     return new GoogleGenAI({ apiKey });
   }
 
-  private buildPrompt(body: PlanTripBody): string {
+  private buildPrompt(body: GenerateItineraryBody): string {
     const constraints = body.constraints?.trim() || 'No special constraints.';
 
     return `
@@ -141,7 +188,7 @@ Return exactly this JSON shape:
 }
 
 Rules:
-- Include one day object per trip day.
+- Include one day object per itinerary day.
 - Include exactly three items per day: morning, afternoon, and evening.
 - Keep recommendations specific to the destination and aligned with the mood.
 - Use specific, geocodable place names in placeName (real landmarks, neighborhoods, venues).

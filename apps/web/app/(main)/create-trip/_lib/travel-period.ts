@@ -88,9 +88,9 @@ export function buildDayEntries(
       dateKey,
       dayLabel: `Day ${dayIndex + 1}`,
       sortOrder: dayIndex,
-      photoUrl: prev?.photoUrl || existing?.photoUrl || '',
-      caption: prev?.caption || existing?.caption || '',
-      location: prev?.location || existing?.location || '',
+      photoUrl: prev?.photoUrl ?? existing?.photoUrl ?? '',
+      caption: prev?.caption ?? existing?.caption ?? '',
+      location: prev?.location ?? existing?.location ?? '',
     };
   });
 }

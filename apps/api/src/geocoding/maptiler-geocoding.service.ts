@@ -49,6 +49,15 @@ type MapTilerFeature = {
 // centroid. Region/country are only used as a fallback for broad destinations.
 const CITY_AREA_TYPES = 'place,municipality,municipal_district';
 const REGION_AREA_TYPES = 'region,country';
+const REQUEST_TIMEOUT_MS = 10_000;
+const MAX_CACHE_SIZE = 5000;
+const SUCCESS_CACHE_TTL_MS = 60 * 60 * 1000;
+const NEGATIVE_CACHE_TTL_MS = 30 * 1000;
+
+type CacheEntry = {
+  features: MapTilerFeature[];
+  expiresAt: number;
+};
 
 type MapTilerGeocodeResponse = {
   features?: MapTilerFeature[];
@@ -57,7 +66,7 @@ type MapTilerGeocodeResponse = {
 @Injectable()
 export class MapTilerGeocodingService {
   private readonly logger = new Logger(MapTilerGeocodingService.name);
-  private readonly cache = new Map<string, MapTilerFeature[]>();
+  private readonly cache = new Map<string, CacheEntry>();
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -141,7 +150,7 @@ export class MapTilerGeocodingService {
     }
 
     const cacheKey = buildCacheKey(normalized, options);
-    const cached = this.cache.get(cacheKey);
+    const cached = this.getCached(cacheKey);
     if (cached) {
       return cached;
     }
@@ -174,26 +183,83 @@ export class MapTilerGeocodingService {
     try {
       const response = await fetch(url, {
         headers: { Accept: 'application/json' },
+        signal: abortAfter(REQUEST_TIMEOUT_MS),
       });
 
       if (!response.ok) {
         this.logger.warn(
           `Geocoding failed for "${normalized}" (${response.status})`,
         );
-        this.cache.set(cacheKey, []);
+        this.setCached(cacheKey, [], NEGATIVE_CACHE_TTL_MS);
         return [];
       }
 
       const data = (await response.json()) as MapTilerGeocodeResponse;
       const features = data.features ?? [];
-      this.cache.set(cacheKey, features);
+      this.setCached(
+        cacheKey,
+        features,
+        features.length === 0 ? NEGATIVE_CACHE_TTL_MS : SUCCESS_CACHE_TTL_MS,
+      );
       return features;
     } catch (error) {
-      this.logger.warn(`Geocoding error for "${normalized}"`, error);
-      this.cache.set(cacheKey, []);
+      this.logger.warn(
+        isAbortError(error)
+          ? `Geocoding timed out for "${normalized}"`
+          : `Geocoding error for "${normalized}"`,
+        error,
+      );
       return [];
     }
   }
+
+  private getCached(key: string): MapTilerFeature[] | undefined {
+    const entry = this.cache.get(key);
+    if (!entry) {
+      return undefined;
+    }
+    if (Date.now() > entry.expiresAt) {
+      this.cache.delete(key);
+      return undefined;
+    }
+    return entry.features;
+  }
+
+  private setCached(
+    key: string,
+    features: MapTilerFeature[],
+    ttlMs: number,
+  ): void {
+    if (this.cache.has(key)) {
+      this.cache.delete(key);
+    } else if (this.cache.size >= MAX_CACHE_SIZE) {
+      const oldest = this.cache.keys().next().value;
+      if (oldest !== undefined) {
+        this.cache.delete(oldest);
+      }
+    }
+    this.cache.set(key, { features, expiresAt: Date.now() + ttlMs });
+  }
+}
+
+function abortAfter(ms: number): AbortSignal {
+  if (typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(ms);
+  }
+
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), ms);
+  return controller.signal;
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    (error instanceof Error &&
+      (error.name === 'AbortError' || error.name === 'TimeoutError')) ||
+    (typeof DOMException !== 'undefined' &&
+      error instanceof DOMException &&
+      error.name === 'AbortError')
+  );
 }
 
 function featureCoordinates(feature: MapTilerFeature): Coordinates | null {

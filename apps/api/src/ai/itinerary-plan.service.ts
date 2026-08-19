@@ -1,12 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-  type PlanTripBody,
-  type PlanTripResponse,
-  type PlannedTrip,
-  type PlannedTripDraft,
-  plannedTripSchema,
-  planTripResponseSchema,
+  type GenerateItineraryBody,
+  type GenerateItineraryResponse,
+  type ItineraryPlan,
+  type ItineraryPlanDraft,
+  itineraryPlanSchema,
+  generateItineraryResponseSchema,
 } from '@mood-trip/validators';
 import {
   MapTilerGeocodingService,
@@ -20,7 +20,8 @@ import {
 } from '../geocoding/geocoding-utils';
 import { WikimediaImageService } from '../images/wikimedia-image.service';
 import { buildAquarelleStyle } from '../maps/maptiler-map-style';
-import { GeminiTripPlannerService } from './gemini-trip-planner.service';
+import { getMapTilerStyleApiKey } from '../maps/maptiler-style-key';
+import { ITINERARY_PLANNER, type ItineraryPlanner } from './itinerary-planner';
 
 // A real itinerary stop should sit within day-trip range of the destination
 // center. Anything beyond this is treated as a wrong geocoding match.
@@ -35,33 +36,36 @@ const HINT_TRUST_RADIUS_KM = 60;
 // interest over a street or area centroid (expressed as a distance discount).
 const POI_PREFERENCE_KM = 0.5;
 
-type DraftDay = PlannedTripDraft['days'][number];
+type DraftDay = ItineraryPlanDraft['days'][number];
 type DraftItem = DraftDay['items'][number];
 
 @Injectable()
-export class TripPlanService {
+export class ItineraryPlanService {
   constructor(
-    private readonly tripPlannerService: GeminiTripPlannerService,
+    @Inject(ITINERARY_PLANNER)
+    private readonly itineraryPlanner: ItineraryPlanner,
     private readonly geocodingService: MapTilerGeocodingService,
     private readonly imageService: WikimediaImageService,
     private readonly configService: ConfigService,
   ) {}
 
-  async generateTripPlan(body: PlanTripBody): Promise<PlanTripResponse> {
-    const draft = await this.tripPlannerService.generateTripPlan(body);
-    const trip = await this.enrichWithCoordinates(draft, body.destination);
-    const apiKey = this.configService.getOrThrow<string>('MAPTILER_API_KEY');
+  async generateItinerary(
+    body: GenerateItineraryBody,
+  ): Promise<GenerateItineraryResponse> {
+    const draft = await this.itineraryPlanner.generateItinerary(body);
+    const plan = await this.enrichWithCoordinates(draft, body.destination);
+    const apiKey = getMapTilerStyleApiKey(this.configService);
 
-    return planTripResponseSchema.parse({
-      trip,
+    return generateItineraryResponseSchema.parse({
+      plan,
       mapStyle: buildAquarelleStyle(apiKey),
     });
   }
 
   private async enrichWithCoordinates(
-    draft: PlannedTripDraft,
+    draft: ItineraryPlanDraft,
     destination: string,
-  ): Promise<PlannedTrip> {
+  ): Promise<ItineraryPlan> {
     const area =
       (await this.geocodingService.geocodeArea(draft.location)) ??
       (await this.geocodingService.geocodeArea(destination));
@@ -88,37 +92,32 @@ export class TripPlanService {
       ),
     );
 
-    const enrichedDays = [];
+    const enrichedDays = await Promise.all(
+      draft.days.map((day: DraftDay, dayIndex: number) =>
+        Promise.all(
+          day.items.map(async (item: DraftItem, index: number) => {
+            const place = places[dayIndex][index];
+            const coords = await this.locateStop(
+              item,
+              destination,
+              center,
+              country,
+              index,
+              place.coords,
+            );
 
-    for (const [dayIndex, day] of draft.days.entries()) {
-      const enrichedItems = [];
+            return {
+              ...item,
+              lat: coords.lat,
+              lng: coords.lng,
+              image: place.image ?? undefined,
+            };
+          }),
+        ).then((items) => ({ ...day, items })),
+      ),
+    );
 
-      for (const [index, item] of day.items.entries()) {
-        const place = places[dayIndex][index];
-        const coords = await this.locateStop(
-          item,
-          destination,
-          center,
-          country,
-          index,
-          place.coords,
-        );
-
-        enrichedItems.push({
-          ...item,
-          lat: coords.lat,
-          lng: coords.lng,
-          image: place.image ?? undefined,
-        });
-      }
-
-      enrichedDays.push({
-        ...day,
-        items: enrichedItems,
-      });
-    }
-
-    return plannedTripSchema.parse({
+    return itineraryPlanSchema.parse({
       ...draft,
       center,
       days: enrichedDays,

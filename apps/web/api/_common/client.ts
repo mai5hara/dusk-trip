@@ -7,16 +7,18 @@ export async function apiClient<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const fetchWithAuth = () =>
-    fetch(`${getBaseUrl()}${path}`, {
+  const fetchWithAuth = () => {
+    const headers = buildHeaders(init);
+    const token = getAccessToken();
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return fetch(`${getBaseUrl()}${path}`, {
       ...init,
-      headers: {
-        ...buildHeaders(init),
-        ...(getAccessToken()
-          ? { Authorization: `Bearer ${getAccessToken()}` }
-          : {}),
-      },
+      headers,
     });
+  };
 
   let res = await fetchWithAuth();
 

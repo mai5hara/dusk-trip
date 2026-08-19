@@ -13,7 +13,7 @@ app/
     _components/             # shared within (main) (e.g. trip list)
     _hooks/
     _lib/
-    plan-my-trip/
+    itineraries/
       page.tsx
       _components/           # this page only
       _hooks/
@@ -44,7 +44,7 @@ components/                  # truly shared chrome (Header, Footer, theme)
 
 ### Naming
 
-- Route / folder segments: **kebab-case** (`plan-my-trip`)
+- Route / folder segments: **kebab-case** (`itineraries`)
 - React components: **PascalCase** (`TripCard.tsx`)
 - Hooks: **camelCase** `use*.ts` (`useTripsQuery.ts`)
 - Other modules: **kebab-case** (`trip-list-utils.ts`)

@@ -12,7 +12,7 @@ import type { ItineraryMapStyle } from '@mood-trip/validators';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { ItineraryStop } from '../_lib/itinerary-utils';
 
-type TripItineraryMapProps = {
+type ItineraryMapProps = {
   mapStyle: ItineraryMapStyle | null;
   mapError: string | null;
   isMapLoading: boolean;
@@ -75,7 +75,7 @@ function MapViewport({
   return null;
 }
 
-const TripItineraryMap = ({
+const ItineraryMap = ({
   mapStyle,
   mapError,
   isMapLoading,
@@ -83,7 +83,7 @@ const TripItineraryMap = ({
   activeStopId,
   center,
   onMarkerClick,
-}: TripItineraryMapProps) => {
+}: ItineraryMapProps) => {
   const mapRef = useRef<MapRef | null>(null);
   const activeStop =
     stops.find((stop) => stop.id === activeStopId) ?? stops[0] ?? null;
@@ -167,7 +167,18 @@ const TripItineraryMap = ({
               }}
             >
               <div
+                role="button"
+                tabIndex={0}
+                aria-label={stop.placeName}
                 className={`itinerary-marker${isActive ? ' itinerary-marker--active' : ''}`}
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter' && event.key !== ' ') {
+                    return;
+                  }
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onMarkerClick(stop.id);
+                }}
               />
             </Marker>
           );
@@ -183,4 +194,4 @@ const TripItineraryMap = ({
   );
 };
 
-export default TripItineraryMap;
+export default ItineraryMap;

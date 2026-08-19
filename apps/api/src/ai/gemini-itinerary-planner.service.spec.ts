@@ -3,15 +3,15 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GeminiTripPlannerService } from './gemini-trip-planner.service';
-import type { PlanTripBody } from '@mood-trip/validators';
+import { GeminiItineraryPlannerService } from './gemini-itinerary-planner.service';
+import type { GenerateItineraryBody } from '@mood-trip/validators';
 
 const generateContent = jest.fn();
 
-describe('GeminiTripPlannerService', () => {
-  let service: GeminiTripPlannerService;
+describe('GeminiItineraryPlannerService', () => {
+  let service: GeminiItineraryPlannerService;
 
-  const body: PlanTripBody = {
+  const body: GenerateItineraryBody = {
     destination: 'Lisbon',
     mood: 'curious',
     pace: 'balanced',
@@ -26,7 +26,7 @@ describe('GeminiTripPlannerService', () => {
   beforeEach(() => {
     generateContent.mockReset();
 
-    service = new GeminiTripPlannerService({
+    service = new GeminiItineraryPlannerService({
       getOrThrow: jest.fn().mockReturnValue('test-gemini-key'),
     } as unknown as ConfigService);
     jest
@@ -41,7 +41,7 @@ describe('GeminiTripPlannerService', () => {
       .mockResolvedValue({ models: { generateContent } });
   });
 
-  it('returns a validated generated trip plan', async () => {
+  it('returns a validated generated itinerary', async () => {
     generateContent.mockResolvedValue({
       text: JSON.stringify({
         title: 'Curious Lisbon',
@@ -67,13 +67,15 @@ describe('GeminiTripPlannerService', () => {
       }),
     });
 
-    const result = await service.generateTripPlan(body);
+    const result = await service.generateItinerary(body);
 
     expect(result.title).toBe('Curious Lisbon');
     expect(generateContent).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'gemini-2.5-flash',
-        config: { responseMimeType: 'application/json' },
+        config: expect.objectContaining({
+          responseMimeType: 'application/json',
+        }),
       }),
     );
   });
@@ -114,7 +116,7 @@ describe('GeminiTripPlannerService', () => {
       }),
     });
 
-    const result = await service.generateTripPlan(body);
+    const result = await service.generateItinerary(body);
 
     expect(result.title).toBe('Curious Lisbon');
     expect(generateContent).toHaveBeenCalledTimes(2);
@@ -132,7 +134,7 @@ describe('GeminiTripPlannerService', () => {
       )
       .mockResolvedValue(undefined);
 
-    await expect(service.generateTripPlan(body)).rejects.toThrow(
+    await expect(service.generateItinerary(body)).rejects.toThrow(
       ServiceUnavailableException,
     );
   });
@@ -140,17 +142,17 @@ describe('GeminiTripPlannerService', () => {
   it('throws if Gemini returns invalid JSON', async () => {
     generateContent.mockResolvedValue({ text: 'not json' });
 
-    await expect(service.generateTripPlan(body)).rejects.toThrow(
+    await expect(service.generateItinerary(body)).rejects.toThrow(
       BadGatewayException,
     );
   });
 
-  it('throws if Gemini returns an invalid trip shape', async () => {
+  it('throws if Gemini returns an invalid itinerary shape', async () => {
     generateContent.mockResolvedValue({
       text: JSON.stringify({ title: 'Missing required fields' }),
     });
 
-    await expect(service.generateTripPlan(body)).rejects.toThrow(
+    await expect(service.generateItinerary(body)).rejects.toThrow(
       BadGatewayException,
     );
   });

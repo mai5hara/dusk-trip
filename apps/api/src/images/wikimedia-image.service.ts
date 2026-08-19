@@ -2,9 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { ItineraryImage } from '@mood-trip/validators';
 
 // Wikimedia asks every API client to send a descriptive User-Agent.
-const USER_AGENT = 'Mood-Trip/1.0 (https://mood-trip.app; trip planner)';
+const USER_AGENT = 'Mood-Trip/1.0 (https://mood-trip.app; itinerary planner)';
 const ENDPOINT = 'https://en.wikipedia.org/w/api.php';
 const THUMB_SIZE = 800;
+const REQUEST_TIMEOUT_MS = 10_000;
+const MAX_CACHE_SIZE = 5000;
 
 type Coordinates = { lat: number; lng: number };
 
@@ -54,13 +56,19 @@ export class WikimediaImageService {
       return EMPTY;
     }
 
-    const cacheKey = query.toLowerCase();
+    const cacheKey = `${query.toLowerCase()}|${(context ?? '').trim().toLowerCase()}`;
     const cached = this.cache.get(cacheKey);
     if (cached) {
       return cached;
     }
 
     const place = await this.search(query, context);
+    if (this.cache.size >= MAX_CACHE_SIZE && !this.cache.has(cacheKey)) {
+      const oldest = this.cache.keys().next().value;
+      if (oldest !== undefined) {
+        this.cache.delete(oldest);
+      }
+    }
     this.cache.set(cacheKey, place);
     return place;
   }
@@ -85,6 +93,7 @@ export class WikimediaImageService {
     try {
       const response = await fetch(`${ENDPOINT}?${params}`, {
         headers: { Accept: 'application/json', 'User-Agent': USER_AGENT },
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
 
       if (!response.ok) {

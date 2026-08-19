@@ -11,16 +11,18 @@ export async function nextApiClient<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const fetchWithAuth = () =>
-    fetch(path, {
+  const fetchWithAuth = () => {
+    const headers = new Headers(init?.headers);
+    const token = getAccessToken();
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return fetch(path, {
       ...init,
-      headers: {
-        ...(init?.headers as Record<string, string> | undefined),
-        ...(getAccessToken()
-          ? { Authorization: `Bearer ${getAccessToken()}` }
-          : {}),
-      },
+      headers,
     });
+  };
 
   let res = await fetchWithAuth();
 

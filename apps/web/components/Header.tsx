@@ -42,13 +42,13 @@ const Header = () => {
           Add Trip
         </ButtonLink>
         <ButtonLink
-          href="/plan-my-trip"
+          href="/itineraries"
           variant="accent"
           size="sm"
           rounded="full"
         >
           <SparklesIcon className="size-4" />
-          Plan My Trip
+          Itineraries
         </ButtonLink>
         <ButtonLink href="#" variant="outline" size="icon" rounded="full">
           <UserIcon className="size-5" />

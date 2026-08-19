@@ -21,6 +21,7 @@ model User {
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   trips               Trip[]
+  itineraries         Itinerary[]
   passwordResetTokens PasswordResetToken[]
 }
 
@@ -39,6 +40,25 @@ model Trip {
   entries      Entry[]
 
   @@index([userId])
+}
+
+model Itinerary {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  location     String
+  summary      String
+  thumbnailUrl String?
+  startDate    DateTime @db.Date
+  endDate      DateTime @db.Date
+  mood         String
+  dayCount     Int
+  plan         Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId, createdAt])
 }
 
 model Entry {
