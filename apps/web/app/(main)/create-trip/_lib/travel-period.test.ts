@@ -4,6 +4,7 @@ import {
   buildDayEntries,
   eachDayInRange,
   formatDayHeading,
+  getNextMemoryIndex,
   groupEntriesByMonth,
   parseDateKey,
   toDateKey,
@@ -15,8 +16,10 @@ function day(
   overrides: Partial<DayEntryFormValue> = {},
 ): DayEntryFormValue {
   return {
+    clientId: `draft-${dateKey}`,
     dateKey,
     dayLabel: 'Day 1',
+    timeOfDay: 'AFTERNOON',
     sortOrder: 0,
     photoUrl: '',
     caption: '',
@@ -33,6 +36,7 @@ function apiEntry(overrides: Partial<Entry> = {}): Entry {
     caption: 'Saved caption',
     location: 'Kyoto',
     dayLabel: '2026-06-01',
+    timeOfDay: 'AFTERNOON',
     sortOrder: 0,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
@@ -81,7 +85,7 @@ describe('buildDayEntries', () => {
       'Day 2',
       'Day 3',
     ]);
-    expect(entries.map((entry) => entry.sortOrder)).toEqual([0, 1, 2]);
+    expect(entries.map((entry) => entry.sortOrder)).toEqual([0, 100, 200]);
   });
 
   it('keeps previous form values for matching dates', () => {
@@ -101,6 +105,39 @@ describe('buildDayEntries', () => {
     expect(entries[1]?.photoUrl).toBe('');
   });
 
+  it('loads saved memories for dates without previous form values', () => {
+    const entries = buildDayEntries(
+      new Date(2026, 5, 1),
+      new Date(2026, 5, 2),
+      [day('2026-06-01', { caption: 'Draft' })],
+      [
+        apiEntry({
+          id: 'saved-day-2',
+          dayLabel: '2026-06-02',
+          caption: 'Saved',
+        }),
+      ],
+    );
+
+    expect(entries[0]?.caption).toBe('Draft');
+    expect(entries[1]?.id).toBe('saved-day-2');
+    expect(entries[1]?.caption).toBe('Saved');
+  });
+
+  it('recomputes labels and order after narrowing the date range', () => {
+    const entries = buildDayEntries(
+      new Date(2026, 5, 3),
+      new Date(2026, 5, 4),
+      [
+        day('2026-06-03', { dayLabel: 'Day 3', sortOrder: 200 }),
+        day('2026-06-04', { dayLabel: 'Day 4', sortOrder: 300 }),
+      ],
+    );
+
+    expect(entries.map((entry) => entry.dayLabel)).toEqual(['Day 1', 'Day 2']);
+    expect(entries.map((entry) => entry.sortOrder)).toEqual([0, 100]);
+  });
+
   it('fills from saved API entries when the form is empty', () => {
     const entries = buildDayEntries(
       new Date(2026, 5, 1),
@@ -112,6 +149,24 @@ describe('buildDayEntries', () => {
     expect(entries[0]?.id).toBe('entry-1');
     expect(entries[0]?.photoUrl).toBe('https://example.com/saved.jpg');
     expect(entries[1]?.id).toBeUndefined();
+  });
+
+  it('keeps multiple saved memories on the same day', () => {
+    const entries = buildDayEntries(
+      new Date(2026, 5, 1),
+      new Date(2026, 5, 1),
+      [],
+      [
+        apiEntry({ id: 'morning', timeOfDay: 'MORNING' }),
+        apiEntry({ id: 'evening', timeOfDay: 'EVENING' }),
+      ],
+    );
+
+    expect(entries.map((entry) => entry.id)).toEqual(['morning', 'evening']);
+    expect(entries.map((entry) => entry.timeOfDay)).toEqual([
+      'MORNING',
+      'EVENING',
+    ]);
   });
 
   it('prefers previous form values over saved API entries', () => {
@@ -148,6 +203,17 @@ describe('buildDayEntries', () => {
     expect(entries[0]?.photoUrl).toBe('');
     expect(entries[0]?.caption).toBe('');
     expect(entries[0]?.location).toBe('');
+  });
+});
+
+describe('getNextMemoryIndex', () => {
+  it('uses the highest existing order after a middle memory is removed', () => {
+    const entries = [
+      day('2026-06-02', { sortOrder: 100 }),
+      day('2026-06-02', { sortOrder: 102 }),
+    ];
+
+    expect(getNextMemoryIndex(entries, '2026-06-02', 1)).toBe(3);
   });
 });
 

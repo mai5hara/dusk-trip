@@ -13,6 +13,7 @@ function entry(overrides: Partial<Entry> = {}): Entry {
     caption: 'Caption',
     location: 'Kyoto',
     dayLabel: '2026-06-01',
+    timeOfDay: 'AFTERNOON',
     sortOrder: 0,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
@@ -48,6 +49,20 @@ describe('groupEntriesByDay', () => {
     expect(groups[1]?.entries).toHaveLength(1);
     expect(groups[0]?.heading).toBe('Day 1 · Jun 1');
     expect(groups[1]?.heading).toBe('Day 2 · Jun 2');
+  });
+
+  it('orders memories by time of day regardless of insertion order', () => {
+    const groups = groupEntriesByDay([
+      entry({ id: 'evening', timeOfDay: 'EVENING', sortOrder: 0 }),
+      entry({ id: 'morning', timeOfDay: 'MORNING', sortOrder: 3 }),
+      entry({ id: 'afternoon', timeOfDay: 'AFTERNOON', sortOrder: 2 }),
+    ]);
+
+    expect(groups[0]?.entries.map((item) => item.id)).toEqual([
+      'morning',
+      'afternoon',
+      'evening',
+    ]);
   });
 
   it('orders day groups by date label when sortOrder collides', () => {

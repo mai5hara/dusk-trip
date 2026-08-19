@@ -12,7 +12,17 @@ jobs:
       contents: read
       pull-requests: write
       id-token: write
+      checks: read
     steps:
+      - name: Wait for CI
+        uses: lewagon/wait-on-check-action@v1.9.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          check-regexp: '^(format / format|lint / lint|test / test)$'
+          running-workflow-name: review
+          wait-interval: 10
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:

@@ -31,16 +31,27 @@ type MemoriesByMonthProps = {
   control: Control<FieldValues>;
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors<FieldValues>;
+  onAddMemory: (dateKey: string) => string;
+  onRemoveMemory: (clientId: string) => void;
 };
+
+const TIME_OF_DAY_OPTIONS = [
+  ['MORNING', 'Morning'],
+  ['AFTERNOON', 'Afternoon'],
+  ['EVENING', 'Evening'],
+] as const;
 
 const MemoriesByMonth = ({
   entries,
   control,
   register,
   errors,
+  onAddMemory,
+  onRemoveMemory,
 }: MemoriesByMonthProps) => {
   const months = groupEntriesByMonth(entries);
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
 
   // Derive a valid selection from entries so we don't sync with useEffect.
   const effectiveSelectedDateKey =
@@ -50,10 +61,19 @@ const MemoriesByMonth = ({
         ? selectedDateKey
         : entries[0].dateKey;
 
-  const selectedIndex = entries.findIndex(
-    (entry) => entry.dateKey === effectiveSelectedDateKey,
+  const selectedDayEntries = entries
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => entry.dateKey === effectiveSelectedDateKey);
+  const effectiveSelectedClientId = selectedDayEntries.some(
+    ({ entry }) => entry.clientId === selectedClientId,
+  )
+    ? selectedClientId
+    : selectedDayEntries[0]?.entry.clientId;
+  const selected = selectedDayEntries.find(
+    ({ entry }) => entry.clientId === effectiveSelectedClientId,
   );
-  const selectedDay = selectedIndex >= 0 ? entries[selectedIndex] : undefined;
+  const selectedDay = selected?.entry;
+  const selectedIndex = selected?.index ?? -1;
 
   if (months.length === 0) {
     return (
@@ -92,6 +112,15 @@ const MemoriesByMonth = ({
                           ].join(' ')}
                         >
                           <span>{formatDayHeading(day)}</span>
+                          <span className="ml-auto text-xs opacity-60">
+                            {
+                              entries.filter(
+                                (entry) =>
+                                  entry.dateKey === day.dateKey &&
+                                  entry.photoUrl.trim().length > 0,
+                              ).length
+                            }
+                          </span>
                         </button>
                       </li>
                     );
@@ -109,6 +138,66 @@ const MemoriesByMonth = ({
             <h3 className="text-lg font-semibold">
               {formatDayHeading(selectedDay)}
             </h3>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {selectedDayEntries.map(({ entry }, memoryIndex) => (
+                <button
+                  key={entry.clientId}
+                  type="button"
+                  onClick={() => setSelectedClientId(entry.clientId)}
+                  className={[
+                    'rounded-full border px-3 py-1 text-sm',
+                    entry.clientId === effectiveSelectedClientId
+                      ? 'bg-accent/15 font-medium'
+                      : 'hover:bg-black/5',
+                  ].join(' ')}
+                >
+                  Memory {memoryIndex + 1}
+                </button>
+              ))}
+              <button
+                type="button"
+                className="rounded-full border px-3 py-1 text-sm hover:bg-black/5"
+                onClick={() => {
+                  const clientId = onAddMemory(selectedDay.dateKey);
+                  setSelectedClientId(clientId);
+                }}
+              >
+                Add memory
+              </button>
+            </div>
+
+            <Field>
+              <Label htmlFor={`entries.${selectedIndex}.timeOfDay`}>
+                Time of day
+              </Label>
+              <Controller
+                name={`entries.${selectedIndex}.timeOfDay` as Path<FieldValues>}
+                control={control}
+                render={({ field }) => (
+                  <div
+                    id={`entries.${selectedIndex}.timeOfDay`}
+                    className="grid grid-cols-1 gap-2 sm:grid-cols-3"
+                  >
+                    {TIME_OF_DAY_OPTIONS.map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => field.onChange(value)}
+                        className={[
+                          'rounded-full border px-3 py-2 text-sm',
+                          field.value === value
+                            ? 'bg-accent/15 font-medium'
+                            : 'hover:bg-black/5',
+                        ].join(' ')}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              />
+            </Field>
 
             <Field>
               <Label htmlFor={`entries.${selectedIndex}.photoUrl`}>Photo</Label>
@@ -175,6 +264,19 @@ const MemoriesByMonth = ({
                 }
               />
             </Field>
+
+            {selectedDayEntries.length > 1 && (
+              <button
+                type="button"
+                className="self-start text-sm text-red-700 hover:underline"
+                onClick={() => {
+                  onRemoveMemory(selectedDay.clientId);
+                  setSelectedClientId(null);
+                }}
+              >
+                Remove memory
+              </button>
+            )}
           </div>
         ) : (
           <p className="text-sm opacity-70">Select a day to edit memories.</p>

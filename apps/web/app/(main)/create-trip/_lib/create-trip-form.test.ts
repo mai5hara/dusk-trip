@@ -53,8 +53,10 @@ describe('entryFormSchema', () => {
       tripId: 'trip-1',
       entries: [
         {
+          clientId: 'draft-1',
           dateKey: '2026-06-01',
           dayLabel: 'Day 1',
+          timeOfDay: 'AFTERNOON',
           sortOrder: 0,
           photoUrl: '',
         },
@@ -69,8 +71,10 @@ describe('entryFormSchema', () => {
       tripId: 'trip-1',
       entries: [
         {
+          clientId: 'draft-1',
           dateKey: '2026-06-01',
           dayLabel: 'Day 1',
+          timeOfDay: 'AFTERNOON',
           sortOrder: 0,
           photoUrl: 'not-a-url',
         },
@@ -92,8 +96,10 @@ describe('entryFormSchema', () => {
       tripId: 'trip-1',
       entries: [
         {
+          clientId: 'draft-1',
           dateKey: '2026-06-01',
           dayLabel: 'Day 1',
+          timeOfDay: 'MORNING',
           sortOrder: 0,
           photoUrl: 'https://example.com/photo.jpg',
           caption: 'First morning',

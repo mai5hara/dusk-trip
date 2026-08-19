@@ -40,28 +40,58 @@ export function eachDayInRange(start: Date, end: Date): Date[] {
   return days;
 }
 
-function emptyDayEntry(date: Date, dayIndex: number): DayEntryFormValue {
-  const dateKey = toDateKey(date);
+export function createDayEntry(
+  dateKey: string,
+  dayIndex: number,
+  memoryIndex = 0,
+): DayEntryFormValue {
   return {
+    clientId: crypto.randomUUID(),
     dateKey,
     dayLabel: `Day ${dayIndex + 1}`,
-    sortOrder: dayIndex,
+    timeOfDay: 'AFTERNOON',
+    sortOrder: dayIndex * 100 + memoryIndex,
     photoUrl: '',
     caption: '',
     location: '',
   };
 }
 
-function matchExistingEntry(
+export function getNextMemoryIndex(
+  entries: DayEntryFormValue[],
+  dateKey: string,
+  dayIndex: number,
+): number {
+  const dayBaseSortOrder = dayIndex * 100;
+  const highestSortOrder = Math.max(
+    dayBaseSortOrder - 1,
+    ...entries
+      .filter((entry) => entry.dateKey === dateKey)
+      .map((entry) => entry.sortOrder),
+  );
+  return highestSortOrder - dayBaseSortOrder + 1;
+}
+
+function _emptyDayEntry(date: Date, dayIndex: number): DayEntryFormValue {
+  const dateKey = toDateKey(date);
+  return createDayEntry(dateKey, dayIndex);
+}
+
+function _matchExistingEntries(
   dateKey: string,
   dayIndex: number,
   existingEntries: Entry[],
-): Entry | undefined {
-  return (
-    existingEntries.find((entry) => entry.dayLabel === dateKey) ??
-    existingEntries.find((entry) => entry.dayLabel === `Day ${dayIndex + 1}`) ??
-    existingEntries.find((entry) => entry.sortOrder === dayIndex)
+): Entry[] {
+  const byLabel = existingEntries.filter(
+    (entry) =>
+      entry.dayLabel === dateKey || entry.dayLabel === `Day ${dayIndex + 1}`,
   );
+  if (byLabel.length > 0) return byLabel;
+
+  const legacyEntry = existingEntries.find(
+    (entry) => entry.sortOrder === dayIndex,
+  );
+  return legacyEntry ? [legacyEntry] : [];
 }
 
 /**
@@ -74,24 +104,34 @@ export function buildDayEntries(
   previous: DayEntryFormValue[] = [],
   existingEntries: Entry[] = [],
 ): DayEntryFormValue[] {
-  const previousByDate = new Map(
-    previous.map((entry) => [entry.dateKey, entry]),
-  );
-
-  return eachDayInRange(start, end).map((date, dayIndex) => {
+  return eachDayInRange(start, end).flatMap((date, dayIndex) => {
     const dateKey = toDateKey(date);
-    const prev = previousByDate.get(dateKey);
-    const existing = matchExistingEntry(dateKey, dayIndex, existingEntries);
+    const previousForDate = previous.filter(
+      (entry) => entry.dateKey === dateKey,
+    );
+    if (previousForDate.length > 0) {
+      return previousForDate.map((entry, memoryIndex) => ({
+        ...entry,
+        dayLabel: `Day ${dayIndex + 1}`,
+        sortOrder: dayIndex * 100 + memoryIndex,
+      }));
+    }
 
-    return {
-      id: prev?.id ?? existing?.id,
+    const existing = _matchExistingEntries(dateKey, dayIndex, existingEntries);
+
+    if (existing.length === 0) return [_emptyDayEntry(date, dayIndex)];
+
+    return existing.map((entry, memoryIndex) => ({
+      clientId: entry.id,
+      id: entry.id,
       dateKey,
       dayLabel: `Day ${dayIndex + 1}`,
-      sortOrder: dayIndex,
-      photoUrl: prev?.photoUrl ?? existing?.photoUrl ?? '',
-      caption: prev?.caption ?? existing?.caption ?? '',
-      location: prev?.location ?? existing?.location ?? '',
-    };
+      timeOfDay: entry.timeOfDay,
+      sortOrder: dayIndex * 100 + memoryIndex,
+      photoUrl: entry.photoUrl,
+      caption: entry.caption ?? '',
+      location: entry.location ?? '',
+    }));
   });
 }
 
@@ -113,7 +153,9 @@ export function groupEntriesByMonth(
       label,
       days: [],
     };
-    group.days.push(entry);
+    if (!group.days.some((day) => day.dateKey === entry.dateKey)) {
+      group.days.push(entry);
+    }
     groups.set(monthKey, group);
   }
 
