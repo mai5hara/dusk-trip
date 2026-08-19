@@ -12,7 +12,14 @@ import {
 } from 'react-hook-form';
 import { toast } from 'sonner';
 import { CREATE_ENTRIES_BATCH_MAX } from '@mood-trip/validators';
-import { Button, Input, Label, Field, DateRangePicker } from '@mood-trip/ui';
+import {
+  Button,
+  Input,
+  Label,
+  Field,
+  DateRangePicker,
+  Textarea,
+} from '@mood-trip/ui';
 import { useCreateTripMutation } from '../_hooks/useTripMutation';
 import { useCreateEntriesMutation } from '../_hooks/useEntryMutation';
 import { buildDayEntries } from '../_lib/travel-period';
@@ -226,7 +233,16 @@ const CreateTrip = () => {
                     errorMessage={errors.newTrip?.title?.message}
                   />
                 </Field>
-
+                <Field>
+                  <Label htmlFor="newTrip.description">Description</Label>
+                  <Textarea
+                    type="text"
+                    variant="inset"
+                    placeholder="Enter description"
+                    {...register('newTrip.description')}
+                    errorMessage={errors.newTrip?.description?.message}
+                  />
+                </Field>
                 <Field>
                   <Label htmlFor="newTrip.location">Location</Label>
                   <Input

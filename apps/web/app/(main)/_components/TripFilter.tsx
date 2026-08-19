@@ -14,7 +14,7 @@ const TripFilter = () => {
   return (
     <div className="flex flex-col gap-2 items-end">
       <div className="flex justify-between w-full">
-        <div className="max-w-[150px] w-full">
+        <div className="max-w-37.5 w-full">
           <Select
             variant="border"
             options={TRIP_SORT_OPTIONS.map((option) => ({
@@ -24,7 +24,7 @@ const TripFilter = () => {
             placeholder="Sort by"
             rounded="lg"
             value={sort}
-            onValueChange={(value: string) => setSort(value as TripSort)}
+            onValueChange={(value) => setSort(value as TripSort)}
           />
         </div>
         <Button
@@ -37,7 +37,7 @@ const TripFilter = () => {
         </Button>
       </div>
       {isFilterOpen && (
-        <div className="w-full max-w-[300px]">
+        <div className="w-full max-w-75">
           <DateRangePicker value={dateRange} onValueChange={setDateRange} />
         </div>
       )}
