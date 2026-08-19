@@ -28,7 +28,7 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
   const dayGroups = groupEntriesByDay(trip.entries, trip.startDate);
 
   return (
-    <section className="flex flex-col gap-5 max-w-312">
+    <section className="mx-auto flex w-full max-w-312 flex-col gap-5">
       <Link
         className="font-mono flex gap-3 items-center hover:opacity-70 w-fit transition-opacity"
         href="/"
