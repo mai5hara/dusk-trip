@@ -200,7 +200,7 @@ const CreateTrip = () => {
 
         {step === 1 ? (
           <section className="flex w-full flex-col gap-9">
-            <h1 className="text-2xl font-mono font-medium">Add Trip</h1>
+            <h1 className="text-2xl font-mono font-medium">Create Album</h1>
             <div className="grid grid-cols-16 gap-4">
               <div className="col-span-7">
                 <Field>

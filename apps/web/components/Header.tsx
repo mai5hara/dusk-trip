@@ -39,7 +39,7 @@ const Header = () => {
           rounded="full"
         >
           <PlusIcon className="size-5" />
-          Add Trip
+          Create Album
         </ButtonLink>
         <ButtonLink
           href="/itineraries"
@@ -48,7 +48,7 @@ const Header = () => {
           rounded="full"
         >
           <SparklesIcon className="size-4" />
-          Itineraries
+          Trip Planner
         </ButtonLink>
         <ButtonLink href="#" variant="outline" size="icon" rounded="full">
           <UserIcon className="size-5" />
