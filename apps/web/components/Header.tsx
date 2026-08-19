@@ -11,8 +11,12 @@ const Header = () => {
   const { logout } = useAuth();
 
   return (
-    <header className="shrink-0 py-4 flex justify-between items-center">
-      <h1 className="flex-1">Mood-Trip</h1>
+    <header className="tokonoma-raised-panel w-full max-w-312 bg-surface shrink-0 py-4 mt-6 flex justify-between items-center fixed rounded-full p-4 z-10">
+      <h1 className="flex-1">
+        <ButtonLink href="/" variant="ghost">
+          Mood-Trip
+        </ButtonLink>
+      </h1>
       <div className="flex-1 flex justify-center">
         <div className="w-full max-w-xs">
           <Input

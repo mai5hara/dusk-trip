@@ -10,15 +10,16 @@ export default function MainLayout({
 }>) {
   return (
     <TripListProvider>
-      {/* Desktop: lock to a definite viewport height (app-shell) so pages like
-          the trip explorer fit within 100vh and only the content region scrolls.
-          Mobile: natural height, the page scrolls normally. */}
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 lg:h-screen lg:flex-none lg:overflow-hidden">
-        <Header />
-        <div className="flex min-h-0 flex-1 flex-col lg:overflow-y-auto">
+      <div className="mx-auto flex w-full max-w-324 flex-1 flex-col">
+        <div className="px-6">
+          <Header />
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col px-6 pt-36 pb-40 lg:overflow-y-auto">
           <AuthGate>{children}</AuthGate>
         </div>
-        <Footer />
+        <div className="px-6">
+          <Footer />
+        </div>
       </div>
     </TripListProvider>
   );
