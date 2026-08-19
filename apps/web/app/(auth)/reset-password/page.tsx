@@ -8,12 +8,12 @@ import { resetPassword } from '@/api/auth/api';
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={null}>
-      <_ResetPasswordForm />
+      <ResetPasswordForm />
     </Suspense>
   );
 }
 
-function _ResetPasswordForm() {
+function ResetPasswordForm() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
