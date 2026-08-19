@@ -268,7 +268,6 @@ const CreateTrip = () => {
                 <Field>
                   <Label htmlFor="newTrip.description">Description</Label>
                   <Textarea
-                    type="text"
                     variant="inset"
                     placeholder="Enter description"
                     {...register('newTrip.description')}
