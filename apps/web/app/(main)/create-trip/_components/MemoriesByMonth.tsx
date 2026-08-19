@@ -37,9 +37,8 @@ type MemoriesByMonthProps = {
 
 const TIME_OF_DAY_OPTIONS = [
   ['MORNING', 'Morning'],
-  ['DAY', 'Day'],
+  ['AFTERNOON', 'Afternoon'],
   ['EVENING', 'Evening'],
-  ['NIGHT', 'Night'],
 ] as const;
 
 const MemoriesByMonth = ({
@@ -178,7 +177,7 @@ const MemoriesByMonth = ({
                 render={({ field }) => (
                   <div
                     id={`entries.${selectedIndex}.timeOfDay`}
-                    className="grid grid-cols-2 gap-2 sm:grid-cols-4"
+                    className="grid grid-cols-1 gap-2 sm:grid-cols-3"
                   >
                     {TIME_OF_DAY_OPTIONS.map(([value, label]) => (
                       <button

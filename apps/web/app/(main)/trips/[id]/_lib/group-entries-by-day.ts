@@ -10,9 +10,8 @@ const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DAY_LABEL_RE = /^Day\s+(\d+)$/i;
 const TIME_OF_DAY_ORDER = {
   MORNING: 0,
-  DAY: 1,
+  AFTERNOON: 1,
   EVENING: 2,
-  NIGHT: 3,
 } as const;
 
 export function formatTimeOfDay(timeOfDay: Entry['timeOfDay']): string {

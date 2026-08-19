@@ -2,9 +2,8 @@ import { z } from 'zod';
 
 export const memoryTimeOfDaySchema = z.enum([
   'MORNING',
-  'DAY',
+  'AFTERNOON',
   'EVENING',
-  'NIGHT',
 ]);
 
 export type MemoryTimeOfDay = z.infer<typeof memoryTimeOfDaySchema>;

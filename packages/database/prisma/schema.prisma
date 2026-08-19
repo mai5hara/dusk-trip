@@ -69,7 +69,7 @@ model Entry {
   caption   String?
   location  String?
   dayLabel  String?
-  timeOfDay MemoryTimeOfDay @default(DAY)
+  timeOfDay MemoryTimeOfDay @default(AFTERNOON)
   sortOrder Int             @default(0)
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
@@ -77,9 +77,8 @@ model Entry {
 
 enum MemoryTimeOfDay {
   MORNING
-  DAY
+  AFTERNOON
   EVENING
-  NIGHT
 }
 
 model PasswordResetToken {

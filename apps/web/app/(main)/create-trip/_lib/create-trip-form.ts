@@ -9,7 +9,7 @@ export const dayEntryFormSchema = z.object({
   id: z.string().optional(),
   dateKey: z.string(),
   dayLabel: z.string(),
-  timeOfDay: z.enum(['MORNING', 'DAY', 'EVENING', 'NIGHT']),
+  timeOfDay: z.enum(['MORNING', 'AFTERNOON', 'EVENING']),
   sortOrder: z.number().int(),
   photoUrl: z.string(),
   caption: z.string().optional(),

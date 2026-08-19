@@ -49,7 +49,7 @@ export function createDayEntry(
     clientId: crypto.randomUUID(),
     dateKey,
     dayLabel: `Day ${dayIndex + 1}`,
-    timeOfDay: 'DAY',
+    timeOfDay: 'AFTERNOON',
     sortOrder: dayIndex * 100 + memoryIndex,
     photoUrl: '',
     caption: '',

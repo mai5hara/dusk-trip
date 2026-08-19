@@ -18,7 +18,7 @@ function day(
     clientId: `draft-${dateKey}`,
     dateKey,
     dayLabel: 'Day 1',
-    timeOfDay: 'DAY',
+    timeOfDay: 'AFTERNOON',
     sortOrder: 0,
     photoUrl: '',
     caption: '',
@@ -35,7 +35,7 @@ function apiEntry(overrides: Partial<Entry> = {}): Entry {
     caption: 'Saved caption',
     location: 'Kyoto',
     dayLabel: '2026-06-01',
-    timeOfDay: 'DAY',
+    timeOfDay: 'AFTERNOON',
     sortOrder: 0,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
@@ -124,14 +124,14 @@ describe('buildDayEntries', () => {
       [],
       [
         apiEntry({ id: 'morning', timeOfDay: 'MORNING' }),
-        apiEntry({ id: 'night', timeOfDay: 'NIGHT' }),
+        apiEntry({ id: 'evening', timeOfDay: 'EVENING' }),
       ],
     );
 
-    expect(entries.map((entry) => entry.id)).toEqual(['morning', 'night']);
+    expect(entries.map((entry) => entry.id)).toEqual(['morning', 'evening']);
     expect(entries.map((entry) => entry.timeOfDay)).toEqual([
       'MORNING',
-      'NIGHT',
+      'EVENING',
     ]);
   });
 
