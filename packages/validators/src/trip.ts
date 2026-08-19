@@ -36,7 +36,7 @@ export const createTripBodySchema = z
   .object({
     title: z.string().min(1),
     thumbnailUrl: z.string().url(),
-    description: z.string().min(1).max(500).optional(),
+    description: z.string().max(500).optional(),
     location: z.string().min(1),
     startDate: z.coerce.date(),
     endDate: z.coerce.date(),
