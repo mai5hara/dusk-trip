@@ -87,3 +87,13 @@ export const signupResponseSchema = z.object({
 });
 
 export type SignupResponse = z.infer<typeof signupResponseSchema>;
+
+export const googleLoginBodySchema = z.object({
+  idToken: z.string().min(1),
+});
+
+export type GoogleLoginBody = z.infer<typeof googleLoginBodySchema>;
+
+export const googleLoginResponseSchema = loginResponseSchema;
+
+export type GoogleLoginResponse = LoginResponse;

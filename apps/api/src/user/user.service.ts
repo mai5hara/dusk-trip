@@ -45,4 +45,18 @@ export class UserService {
 
     return user;
   }
+
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    return this.prisma.client.user.findUnique({ where: { googleId } });
+  }
+
+  async createWithGoogle(
+    name: string,
+    email: string,
+    googleId: string,
+  ): Promise<User> {
+    return this.prisma.client.user.create({
+      data: { name, email, googleId },
+    });
+  }
 }
