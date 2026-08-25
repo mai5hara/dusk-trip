@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import type { TripListItem } from '@mood-trip/validators';
 import {
   Card,
@@ -15,9 +16,11 @@ import Link from 'next/link';
 import TripCardMenu from './TripCardMenu';
 
 const TripCard = ({ trip }: { trip: TripListItem }): React.JSX.Element => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className="relative">
-      <TripCardMenu />
+    <div ref={cardRef} className="relative">
+      <TripCardMenu cardRef={cardRef} />
       <Link href={`/trips/${trip.id}`}>
         <Card variant="raised" size="sm">
           <CardMedia>

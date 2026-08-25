@@ -6,26 +6,36 @@ import { Button } from '@mood-trip/ui';
 
 const MENU_ITEMS = ['Delete Album', 'Edit Album', 'Edit Memories'] as const;
 
-const TripCardMenu = (): React.JSX.Element => {
+type TripCardMenuProps = {
+  cardRef: React.RefObject<HTMLDivElement | null>;
+};
+
+const TripCardMenu = ({ cardRef }: TripCardMenuProps): React.JSX.Element => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
 
+    const card = cardRef.current;
+    if (!card) return;
+
     const onClickCapture = (event: MouseEvent): void => {
       if (menuRef.current?.contains(event.target as Node)) {
         return;
       }
 
-      event.preventDefault();
-      event.stopPropagation();
+      if (card.contains(event.target as Node)) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
       setIsOpen(false);
     };
 
     document.addEventListener('click', onClickCapture, true);
     return () => document.removeEventListener('click', onClickCapture, true);
-  }, [isOpen]);
+  }, [cardRef, isOpen]);
 
   return (
     <div ref={menuRef} className="absolute top-3 right-3 z-10">
