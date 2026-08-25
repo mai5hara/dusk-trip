@@ -303,6 +303,18 @@ describe('TripsService', () => {
     expect(result.userId).toBe('user-1');
     expect(result.entries).toHaveLength(1);
     expect(result.entries[0].id).toBe('entry-1');
+    expect(prismaService.client.trip.findUnique).toHaveBeenCalledWith({
+      where: { id: 'trip-1' },
+      include: {
+        entries: {
+          orderBy: [
+            { sortOrder: 'asc' },
+            { timeOfDay: 'asc' },
+            { createdAt: 'asc' },
+          ],
+        },
+      },
+    });
   });
 
   it('create: returns TripListItem with entryCount 0', async () => {

@@ -72,4 +72,53 @@ describe('groupEntriesByDay', () => {
 
     expect(groups.map((group) => group.key)).toEqual(['Day 1', 'Day 2']);
   });
+
+  it('orders memories within a day by time of day, not insert order', () => {
+    const groups = groupEntriesByDay([
+      entry({
+        id: 'night',
+        dayLabel: '2026-06-01',
+        timeOfDay: 'night',
+        sortOrder: 0,
+        createdAt: new Date('2026-01-01T10:00:00'),
+      }),
+      entry({
+        id: 'morning',
+        dayLabel: '2026-06-01',
+        timeOfDay: 'morning',
+        sortOrder: 3,
+        createdAt: new Date('2026-01-01T12:00:00'),
+      }),
+      entry({
+        id: 'evening',
+        dayLabel: '2026-06-01',
+        timeOfDay: 'evening',
+        sortOrder: 1,
+        createdAt: new Date('2026-01-01T11:00:00'),
+      }),
+      entry({
+        id: 'afternoon',
+        dayLabel: '2026-06-01',
+        timeOfDay: 'afternoon',
+        sortOrder: 2,
+        createdAt: new Date('2026-01-01T09:00:00'),
+      }),
+      entry({
+        id: 'untagged',
+        dayLabel: '2026-06-01',
+        timeOfDay: null,
+        sortOrder: 0,
+        createdAt: new Date('2026-01-01T08:00:00'),
+      }),
+    ]);
+
+    expect(groups).toHaveLength(1);
+    expect(groups[0]?.entries.map((item) => item.id)).toEqual([
+      'morning',
+      'afternoon',
+      'evening',
+      'night',
+      'untagged',
+    ]);
+  });
 });
