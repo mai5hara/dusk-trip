@@ -13,14 +13,18 @@ const TripCardMenu = (): React.JSX.Element => {
   useEffect(() => {
     if (!isOpen) return;
 
-    const onPointerDown = (event: PointerEvent): void => {
-      if (!menuRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
+    const onClickCapture = (event: MouseEvent): void => {
+      if (menuRef.current?.contains(event.target as Node)) {
+        return;
       }
+
+      event.preventDefault();
+      event.stopPropagation();
+      setIsOpen(false);
     };
 
-    document.addEventListener('pointerdown', onPointerDown);
-    return () => document.removeEventListener('pointerdown', onPointerDown);
+    document.addEventListener('click', onClickCapture, true);
+    return () => document.removeEventListener('click', onClickCapture, true);
   }, [isOpen]);
 
   return (
@@ -48,7 +52,10 @@ const TripCardMenu = (): React.JSX.Element => {
               role="menuitem"
               href="#"
               className="rounded-lg px-3 py-2 text-sm hover:bg-black/5"
-              onClick={() => setIsOpen(false)}
+              onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
+                event.preventDefault();
+                setIsOpen(false);
+              }}
             >
               {label}
             </a>
