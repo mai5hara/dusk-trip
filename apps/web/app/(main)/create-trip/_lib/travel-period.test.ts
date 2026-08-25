@@ -33,6 +33,7 @@ function apiEntry(overrides: Partial<Entry> = {}): Entry {
     caption: 'Saved caption',
     location: 'Kyoto',
     dayLabel: '2026-06-01',
+    timeOfDay: null,
     sortOrder: 0,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),
@@ -112,6 +113,23 @@ describe('buildDayEntries', () => {
     expect(entries[0]?.id).toBe('entry-1');
     expect(entries[0]?.photoUrl).toBe('https://example.com/saved.jpg');
     expect(entries[1]?.id).toBeUndefined();
+  });
+
+  it('copies timeOfDay from previous form values and saved entries', () => {
+    const fromPrevious = buildDayEntries(
+      new Date(2026, 5, 1),
+      new Date(2026, 5, 1),
+      [day('2026-06-01', { timeOfDay: 'evening' })],
+    );
+    const fromSaved = buildDayEntries(
+      new Date(2026, 5, 1),
+      new Date(2026, 5, 1),
+      [],
+      [apiEntry({ dayLabel: '2026-06-01', timeOfDay: 'night' })],
+    );
+
+    expect(fromPrevious[0]?.timeOfDay).toBe('evening');
+    expect(fromSaved[0]?.timeOfDay).toBe('night');
   });
 
   it('prefers previous form values over saved API entries', () => {

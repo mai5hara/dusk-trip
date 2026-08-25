@@ -12,10 +12,20 @@ describe('createEntryBodySchema', () => {
       caption: 'Test Caption',
       location: 'Test Location',
       dayLabel: 'Test Day Label',
+      timeOfDay: 'afternoon',
       sortOrder: 0,
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it('rejects an invalid timeOfDay', () => {
+    const result = createEntryBodySchema.safeParse({
+      photoUrl: 'https://example.com/photo.jpg',
+      timeOfDay: 'day',
+    });
+
+    expect(result.success).toBe(false);
   });
 
   it('rejects invalid input', () => {

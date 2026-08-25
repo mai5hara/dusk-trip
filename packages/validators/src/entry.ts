@@ -1,5 +1,16 @@
 import { z } from 'zod';
 
+export const ENTRY_TIME_OF_DAY_VALUES = [
+  'morning',
+  'afternoon',
+  'evening',
+  'night',
+] as const;
+
+export const entryTimeOfDaySchema = z.enum(ENTRY_TIME_OF_DAY_VALUES);
+
+export type EntryTimeOfDay = z.infer<typeof entryTimeOfDaySchema>;
+
 export const entrySchema = z.object({
   id: z.string(),
   tripId: z.string(),
@@ -7,6 +18,7 @@ export const entrySchema = z.object({
   caption: z.string().nullable(),
   location: z.string().nullable(),
   dayLabel: z.string().nullable(),
+  timeOfDay: entryTimeOfDaySchema.nullable(),
   sortOrder: z.number().int(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -19,6 +31,7 @@ export const createEntryBodySchema = z.object({
   caption: z.string().max(300).optional(),
   location: z.string().optional(),
   dayLabel: z.string().max(300).optional(),
+  timeOfDay: entryTimeOfDaySchema.optional(),
   sortOrder: z.number().int().optional(),
 });
 

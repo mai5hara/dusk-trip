@@ -145,6 +145,49 @@ describe('TripsService', () => {
     expect(result.sortOrder).toBe(0);
   });
 
+  it('createEntry: persists timeOfDay', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-1',
+      title: 'Trip 1',
+      thumbnailUrl: 'https://example.com/thumbnail.jpg',
+      location: 'Location 1',
+      startDate: new Date(),
+      endDate: new Date(),
+    });
+
+    prismaService.client.entry.create.mockResolvedValue({
+      id: 'entry-1',
+      tripId: 'trip-1',
+      photoUrl: 'https://example.com/photo.jpg',
+      caption: null,
+      location: null,
+      dayLabel: null,
+      timeOfDay: 'evening',
+      sortOrder: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const result = await service.createEntry('trip-1', 'user-1', {
+      photoUrl: 'https://example.com/photo.jpg',
+      timeOfDay: 'evening',
+    });
+
+    expect(prismaService.client.entry.create).toHaveBeenCalledWith({
+      data: {
+        tripId: 'trip-1',
+        photoUrl: 'https://example.com/photo.jpg',
+        caption: null,
+        location: null,
+        dayLabel: null,
+        timeOfDay: 'evening',
+        sortOrder: 0,
+      },
+    });
+    expect(result.timeOfDay).toBe('evening');
+  });
+
   it('createEntries: throws NotFoundException if trip not found', async () => {
     prismaService.client.trip.findUnique.mockResolvedValue(null);
 

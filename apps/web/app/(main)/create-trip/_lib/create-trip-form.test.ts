@@ -97,6 +97,7 @@ describe('entryFormSchema', () => {
           sortOrder: 0,
           photoUrl: 'https://example.com/photo.jpg',
           caption: 'First morning',
+          timeOfDay: 'morning',
         },
       ],
     });

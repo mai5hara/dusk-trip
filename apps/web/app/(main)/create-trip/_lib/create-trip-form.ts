@@ -2,6 +2,7 @@ import {
   z,
   createTripBodySchema,
   createEntryBodySchema,
+  entryTimeOfDaySchema,
 } from '@mood-trip/validators';
 
 export const dayEntryFormSchema = z.object({
@@ -12,6 +13,7 @@ export const dayEntryFormSchema = z.object({
   photoUrl: z.string(),
   caption: z.string().optional(),
   location: z.string().optional(),
+  timeOfDay: entryTimeOfDaySchema.optional(),
 });
 
 export const entryFormSchema = z
@@ -40,6 +42,7 @@ export const entryFormSchema = z
         caption: entry.caption || undefined,
         location: entry.location || undefined,
         dayLabel: entry.dateKey,
+        timeOfDay: entry.timeOfDay,
         sortOrder: entry.sortOrder,
       });
       if (!result.success) {

@@ -41,10 +41,13 @@ export {
   type CreateItineraryBody,
 } from './itinerary';
 export {
+  ENTRY_TIME_OF_DAY_VALUES,
+  entryTimeOfDaySchema,
   entrySchema,
   createEntryBodySchema,
   createEntriesBatchBodySchema,
   CREATE_ENTRIES_BATCH_MAX,
+  type EntryTimeOfDay,
   type Entry,
   type CreateEntryBody,
   type CreateEntriesBatchBody,

@@ -139,6 +139,7 @@ const CreateTrip = () => {
           caption: entry.caption || undefined,
           location: entry.location || undefined,
           dayLabel: entry.dateKey,
+          timeOfDay: entry.timeOfDay,
           sortOrder: entry.sortOrder,
         }));
 
