@@ -48,35 +48,7 @@ export class AuthService {
       throw new UnauthorizedException(`Invalid email or password`);
     }
 
-    const accessToken = await this.jwtService.signAsync(
-      { sub: user.id, email: user.email } satisfies JwtPayload,
-      {
-        secret: this.configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
-        expiresIn: this.configService.getOrThrow<ms.StringValue>(
-          'JWT_ACCESS_EXPIRES_IN',
-        ),
-      },
-    );
-
-    const refreshToken = await this.jwtService.signAsync(
-      { sub: user.id } satisfies JwtPayload,
-      {
-        secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
-        expiresIn: this.configService.getOrThrow<ms.StringValue>(
-          'JWT_REFRESH_EXPIRES_IN',
-        ),
-      },
-    );
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
-    };
+    return this.issueTokenPair(user);
   }
 
   async refresh(refreshToken: string): Promise<{ accessToken: string }> {
@@ -138,35 +110,7 @@ export class AuthService {
 
     const newUser = await this.userService.create(name, email, passwordHash);
 
-    const accessToken = await this.jwtService.signAsync(
-      { sub: newUser.id, email: newUser.email } satisfies JwtPayload,
-      {
-        secret: this.configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
-        expiresIn: this.configService.getOrThrow<ms.StringValue>(
-          'JWT_ACCESS_EXPIRES_IN',
-        ),
-      },
-    );
-
-    const refreshToken = await this.jwtService.signAsync(
-      { sub: newUser.id } satisfies JwtPayload,
-      {
-        secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
-        expiresIn: this.configService.getOrThrow<ms.StringValue>(
-          'JWT_REFRESH_EXPIRES_IN',
-        ),
-      },
-    );
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: newUser.id,
-        email: newUser.email,
-        name: newUser.name,
-      },
-    };
+    return this.issueTokenPair(newUser);
   }
 
   async googleLogin(idToken: string): Promise<LoginResponse> {
