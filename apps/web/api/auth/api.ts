@@ -68,3 +68,16 @@ export async function signup(body: SignupBody): Promise<SignupResponse> {
     'Invalid email or password',
   );
 }
+
+export async function googleLogin(idToken: string): Promise<LoginResponse> {
+  return publicApi<LoginResponse>(
+    '/auth/google',
+    { method: 'POST', body: JSON.stringify({ idToken }) },
+    {
+      default: 'Failed to sign in with Google',
+      status: {
+        409: 'An account with this email already exists. Log in with your password instead.',
+      },
+    },
+  );
+}
