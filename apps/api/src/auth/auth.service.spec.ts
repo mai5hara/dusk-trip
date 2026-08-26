@@ -6,12 +6,22 @@ import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 
+const mockVerifyIdToken = jest.fn();
+
+jest.mock('google-auth-library', () => ({
+  OAuth2Client: jest.fn().mockImplementation(() => ({
+    verifyIdToken: mockVerifyIdToken,
+  })),
+}));
+
 describe('AuthService', () => {
   let service: AuthService;
   let userService: {
     findByEmailForAuth: jest.Mock;
     findByIdForAuth: jest.Mock;
     create: jest.Mock;
+    findByGoogleId: jest.Mock;
+    createWithGoogle: jest.Mock;
   };
   let jwtService: {
     signAsync: jest.Mock;
@@ -19,10 +29,14 @@ describe('AuthService', () => {
   };
 
   beforeEach(async () => {
+    mockVerifyIdToken.mockReset();
+
     userService = {
       findByEmailForAuth: jest.fn(),
       findByIdForAuth: jest.fn(),
       create: jest.fn(),
+      findByGoogleId: jest.fn(),
+      createWithGoogle: jest.fn(),
     };
     jwtService = {
       signAsync: jest.fn().mockResolvedValue('mock-token'),
@@ -49,6 +63,7 @@ describe('AuthService', () => {
                 JWT_ACCESS_EXPIRES_IN: '1h',
                 JWT_REFRESH_SECRET: 'mock-refresh-secret',
                 JWT_REFRESH_EXPIRES_IN: '7d',
+                GOOGLE_CLIENT_ID: 'mock-google-client-id',
               };
               return config[key];
             }),
@@ -172,5 +187,111 @@ describe('AuthService', () => {
     expect(result.id).toBe('1');
     expect(result.email).toBe('test@test.com');
     expect(result).not.toHaveProperty('passwordHash');
+  });
+
+  describe('googleLogin', () => {
+    it('throws UnauthorizedException if the ID token is invalid', async () => {
+      mockVerifyIdToken.mockRejectedValue(new Error('bad token'));
+
+      await expect(service.googleLogin('invalid-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('throws UnauthorizedException if the payload is missing sub or email', async () => {
+      mockVerifyIdToken.mockResolvedValue({
+        getPayload: () => ({ email_verified: true }),
+      });
+
+      await expect(service.googleLogin('token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('throws UnauthorizedException if the Google email is not verified', async () => {
+      mockVerifyIdToken.mockResolvedValue({
+        getPayload: () => ({
+          sub: 'google-1',
+          email: 'test@test.com',
+          email_verified: false,
+        }),
+      });
+
+      await expect(service.googleLogin('token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('throws ConflictException if the email already belongs to a password account', async () => {
+      mockVerifyIdToken.mockResolvedValue({
+        getPayload: () => ({
+          sub: 'google-1',
+          email: 'test@test.com',
+          email_verified: true,
+          name: 'Test User',
+        }),
+      });
+      userService.findByGoogleId.mockResolvedValue(null);
+      userService.findByEmailForAuth.mockResolvedValue({
+        id: '1',
+        email: 'test@test.com',
+        passwordHash: 'hashed-password',
+      });
+
+      await expect(service.googleLogin('token')).rejects.toThrow(
+        ConflictException,
+      );
+      expect(userService.createWithGoogle).not.toHaveBeenCalled();
+    });
+
+    it('creates a new user and returns tokens for a brand-new Google account', async () => {
+      mockVerifyIdToken.mockResolvedValue({
+        getPayload: () => ({
+          sub: 'google-1',
+          email: 'new@test.com',
+          email_verified: true,
+          name: 'New User',
+        }),
+      });
+      userService.findByGoogleId.mockResolvedValue(null);
+      userService.findByEmailForAuth.mockResolvedValue(null);
+      userService.createWithGoogle.mockResolvedValue({
+        id: 'new-id',
+        email: 'new@test.com',
+        name: 'New User',
+      });
+
+      const result = await service.googleLogin('token');
+
+      expect(userService.createWithGoogle).toHaveBeenCalledWith(
+        'New User',
+        'new@test.com',
+        'google-1',
+      );
+      expect(result.accessToken).toBe('mock-token');
+      expect(result.user.email).toBe('new@test.com');
+    });
+
+    it('returns tokens for an existing Google account without creating a user', async () => {
+      mockVerifyIdToken.mockResolvedValue({
+        getPayload: () => ({
+          sub: 'google-1',
+          email: 'test@test.com',
+          email_verified: true,
+          name: 'Test User',
+        }),
+      });
+      userService.findByGoogleId.mockResolvedValue({
+        id: '1',
+        email: 'test@test.com',
+        name: 'Test User',
+      });
+
+      const result = await service.googleLogin('token');
+
+      expect(userService.createWithGoogle).not.toHaveBeenCalled();
+      expect(result.accessToken).toBe('mock-token');
+      expect(result.user.email).toBe('test@test.com');
+    });
   });
 });
