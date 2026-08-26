@@ -33,8 +33,8 @@ export class TripsService {
       include: {
         entries: {
           orderBy: [
-            { sortOrder: 'asc' },
             { timeOfDay: 'asc' },
+            { sortOrder: 'asc' },
             { createdAt: 'asc' },
           ],
         },
