@@ -9,5 +9,5 @@ export function createPrismaClient(connectionString: string) {
   });
 }
 
-export { PrismaClient } from './generated/prisma/client';
+export { PrismaClient, Prisma } from './generated/prisma/client';
 export type { User } from './generated/prisma/client';
