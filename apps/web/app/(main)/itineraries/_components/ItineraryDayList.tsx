@@ -1,19 +1,32 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
-import { MapPinIcon } from 'lucide-react';
-import type {
-  ItineraryPlan,
-  ItineraryPlanDay,
-  ItineraryPlanItem,
-} from '@mood-trip/validators';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  getItineraryStopId,
-  type ItineraryStop,
-} from '../_lib/itinerary-utils';
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@mood-trip/ui';
+import type { ItineraryPlan, ItineraryPlanDay } from '@mood-trip/validators';
+import { getItineraryStopId, type ItineraryStop } from '../_lib/itinerary-utils';
 import { useScrollSpy } from '../_hooks/useScrollSpy';
+import ItineraryStopCard from './ItineraryStopCard';
 
 const SCROLL_CONTAINER_SELECTOR = '.itinerary-scroll';
+const SCROLL_END_EPSILON_PX = 4;
+
+function _shouldShowOverflowFade(element: HTMLElement): boolean {
+  const overflowPx = element.scrollHeight - element.clientHeight;
+  if (overflowPx <= SCROLL_END_EPSILON_PX) {
+    return false;
+  }
+
+  return (
+    element.scrollTop + element.clientHeight <
+    element.scrollHeight - SCROLL_END_EPSILON_PX
+  );
+}
 
 type ItineraryDayListProps = {
   plan: ItineraryPlan;
@@ -22,6 +35,7 @@ type ItineraryDayListProps = {
   focusStopId: string | null;
   onActiveStopChange: (stopId: string) => void;
   onStopClick: (stopId: string) => void;
+  onLocationClick: (stopId: string) => void;
 };
 
 const ItineraryDayList = ({
@@ -31,8 +45,11 @@ const ItineraryDayList = ({
   focusStopId,
   onActiveStopChange,
   onStopClick,
+  onLocationClick,
 }: ItineraryDayListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [showOverflowFade, setShowOverflowFade] = useState(false);
   const stopIds = useMemo(() => stops.map((stop) => stop.id), [stops]);
   const { pauseScrollSpy } = useScrollSpy(
     SCROLL_CONTAINER_SELECTOR,
@@ -40,6 +57,35 @@ const ItineraryDayList = ({
     onActiveStopChange,
     stops.length > 0,
   );
+
+  const syncOverflowFade = (): void => {
+    const container = scrollRef.current;
+    if (!container) {
+      return;
+    }
+
+    setShowOverflowFade(_shouldShowOverflowFade(container));
+  };
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    const content = contentRef.current;
+    if (!container || !content) {
+      return;
+    }
+
+    syncOverflowFade();
+    container.addEventListener('scroll', syncOverflowFade, { passive: true });
+
+    const observer = new ResizeObserver(syncOverflowFade);
+    observer.observe(container);
+    observer.observe(content);
+
+    return () => {
+      container.removeEventListener('scroll', syncOverflowFade);
+      observer.disconnect();
+    };
+  }, [plan]);
 
   // A freshly generated plan must start at the very top — reset this list's
   // scroll, every scrollable ancestor (the page shell), and the window.
@@ -56,6 +102,7 @@ const ItineraryDayList = ({
       ancestor = ancestor.parentElement;
     }
     window.scrollTo(0, 0);
+    syncOverflowFade();
   }, []);
 
   useEffect(() => {
@@ -69,7 +116,7 @@ const ItineraryDayList = ({
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [focusStopId, pauseScrollSpy]);
 
-  const handleStopClick = (stopId: string) => {
+  const handleStopClick = (stopId: string): void => {
     pauseScrollSpy();
     onStopClick(stopId);
     scrollRef.current
@@ -77,92 +124,68 @@ const ItineraryDayList = ({
       ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
+  const handleLocationClick = (stopId: string): void => {
+    pauseScrollSpy();
+    onLocationClick(stopId);
+  };
+
   return (
-    <div className="flex flex-col lg:h-full lg:min-h-0">
-      <div className="shrink-0 border-b px-5 py-5">
-        <h2 className="text-2xl font-mono font-medium">{plan.title}</h2>
-        <p className="mt-2 text-sm opacity-70">{plan.summary}</p>
-      </div>
-
-      {/* No top padding: a sticky `top-0` header cannot rise above its scroll
-          container's content box, so any padding-top here would pin the header
-          that far down and leave a gap above it. */}
-      <div
-        ref={scrollRef}
-        className="itinerary-scroll px-5 pb-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
-      >
-        {plan.days.map((day: ItineraryPlanDay) => (
-          <section key={day.dayLabel} className="mb-6 last:mb-0">
-            {/* Full-bleed (-mx-5 + px-5) so the divider stretches edge to edge,
-                matching the header above. The container has no top padding, so
-                the sticky header still pins flush with no gap. */}
-            <div className="sticky top-0 z-20 -mx-5 flex items-baseline gap-2 border-b border-border/60 bg-surface px-5 pb-3 pt-2.5">
-              <h3 className="shrink-0 text-sm font-semibold tracking-wide">
-                {day.dayLabel}
-              </h3>
-              <span aria-hidden className="opacity-30">
-                ·
-              </span>
-              <p className="truncate text-sm opacity-60">{day.theme}</p>
-            </div>
-
-            {/* mt-3 lives on the (non-sticky) cards, so it scrolls under the
-                header rather than leaving a transparent strip beneath it. */}
-            <div className="mt-3 space-y-3">
-              {day.items.map((item: ItineraryPlanItem) => {
-                const stopId = getItineraryStopId(day.dayLabel, item.timeOfDay);
-                const isActive = activeStopId === stopId;
-
-                return (
-                  <button
-                    key={stopId}
-                    type="button"
-                    data-stop-id={stopId}
-                    onClick={() => handleStopClick(stopId)}
-                    className={`itinerary-stop w-full overflow-hidden rounded-2xl border text-left transition-all duration-300 ${
-                      isActive
-                        ? 'border-accent bg-accent/10 shadow-[0_12px_40px_-24px_var(--color-accent)]'
-                        : 'border-border hover:border-accent/40 hover:bg-accent/5'
-                    }`}
-                  >
-                    {item.image ? (
-                      <figure className="relative m-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={item.image.url}
-                          alt={item.placeName}
-                          loading="lazy"
-                          className="h-36 w-full object-cover"
-                        />
-                        {/* Gradient scrim keeps the credit legible over any photo. */}
-                        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/55 to-transparent" />
-                        <figcaption className="absolute bottom-1.5 right-2 text-[10px] font-medium leading-none text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                          {item.image.attribution} · Wikipedia
-                        </figcaption>
-                      </figure>
-                    ) : null}
-                    <div className="p-4">
-                      <p className="text-xs uppercase tracking-[0.2em] opacity-60">
-                        {item.timeOfDay}
-                      </p>
-                      <h4 className="mt-2 text-base font-medium">
-                        {item.title}
-                      </h4>
-                      <p className="mt-2 text-sm leading-relaxed opacity-75">
-                        {item.description}
-                      </p>
-                      <p className="mt-3 flex items-center gap-1.5 text-xs opacity-60">
-                        <MapPinIcon className="size-3.5" />
-                        {item.placeName}
-                      </p>
+    <div className="itinerary-day-list">
+      <Card variant="inset">
+        <CardHeader>
+          <CardTitle as="h2">{plan.title}</CardTitle>
+          <CardDescription>{plan.summary}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="itinerary-day-body">
+            <div
+              ref={scrollRef}
+              className="itinerary-scroll itinerary-day-scroll"
+            >
+              <div ref={contentRef} className="pb-6">
+                {plan.days.map((day: ItineraryPlanDay) => (
+                  <section key={day.dayLabel} className="mb-6 last:mb-0">
+                    <div className="sticky top-0 z-20 flex items-baseline gap-2 border-b border-border/60 bg-surface pb-3 pt-2.5">
+                      <h3 className="shrink-0 text-sm font-semibold tracking-wide">
+                        {day.dayLabel}
+                      </h3>
+                      <span aria-hidden className="opacity-30">
+                        ·
+                      </span>
+                      <p className="truncate text-sm opacity-60">{day.theme}</p>
                     </div>
-                  </button>
-                );
-              })}
+
+                    <div className="mt-3 space-y-3">
+                      {day.items.map((item) => {
+                        const stopId = getItineraryStopId(
+                          day.dayLabel,
+                          item.timeOfDay,
+                        );
+
+                        return (
+                          <ItineraryStopCard
+                            key={stopId}
+                            item={item}
+                            stopId={stopId}
+                            isActive={activeStopId === stopId}
+                            onClick={handleStopClick}
+                            onLocationClick={handleLocationClick}
+                          />
+                        );
+                      })}
+                    </div>
+                  </section>
+                ))}
+              </div>
             </div>
-          </section>
-        ))}
-      </div>
+            <div
+              aria-hidden
+              className="itinerary-overflow-fade"
+              style={{ opacity: showOverflowFade ? 1 : 0 }}
+            />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

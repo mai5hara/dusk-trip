@@ -10,11 +10,15 @@ export default function MainLayout({
 }>) {
   return (
     <TripListProvider>
-      <div className="mx-auto flex w-full max-w-324 flex-1 flex-col">
+      {/* Desktop: lock to a definite viewport height so the itinerary explorer
+          stays within 100vh and only the day list scrolls. Mobile: natural
+          document height. `flex-none` + `min-h-0` override the flex default
+          min-height:auto, which would otherwise stretch the shell with content. */}
+      <div className="mx-auto flex w-full max-w-324 flex-1 flex-col lg:h-screen lg:min-h-0 lg:flex-none lg:overflow-hidden">
         <div className="px-6">
           <Header />
         </div>
-        <div className="flex min-h-0 flex-1 flex-col px-6 pt-36 pb-40 lg:overflow-y-auto">
+        <div className="flex min-h-0 flex-1 flex-col px-6 pt-36 pb-10 lg:overflow-y-auto lg:pb-4">
           <AuthGate>{children}</AuthGate>
         </div>
         <div className="px-6">

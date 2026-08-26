@@ -40,6 +40,68 @@
 
 .itinerary-scroll {
   scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.itinerary-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.itinerary-overflow-fade {
+  display: none;
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 10;
+  height: 4rem;
+  background: linear-gradient(to top, var(--color-surface), transparent);
+  transition: opacity 300ms ease;
+}
+
+.itinerary-day-list {
+  min-height: 0;
+}
+
+.itinerary-day-body {
+  position: relative;
+}
+
+.itinerary-day-scroll {
+  overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+  .itinerary-day-list {
+    height: 100%;
+  }
+
+  .itinerary-day-list > * {
+    height: 100%;
+    min-height: 0;
+    padding-bottom: 0;
+  }
+
+  .itinerary-day-list > * > :last-child {
+    flex: 1 1 0%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .itinerary-day-body {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .itinerary-day-scroll {
+    position: absolute;
+    inset: 0;
+  }
+
+  .itinerary-overflow-fade {
+    display: block;
+  }
 }
 
 .itinerary-map-shell .maplibregl-map {
