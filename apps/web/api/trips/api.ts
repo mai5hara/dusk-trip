@@ -6,6 +6,7 @@ import {
   type TripListItem,
   type TripWithEntries,
   type UpdateEntriesBatchBody,
+  type UpdateTripBody,
 } from '@mood-trip/validators';
 
 export async function getTrips(): Promise<TripListItem[]> {
@@ -35,7 +36,7 @@ export async function createEntries(
 
 export async function updateTrip(
   id: string,
-  body: CreateTripBody,
+  body: UpdateTripBody,
 ): Promise<TripListItem> {
   return apiClient<TripListItem>(`/trips/${id}`, {
     method: 'PATCH',

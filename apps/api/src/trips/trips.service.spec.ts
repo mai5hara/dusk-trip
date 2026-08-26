@@ -386,6 +386,33 @@ describe('TripsService', () => {
     expect(result.entryCount).toBe(2);
   });
 
+  it('update: writes only the fields in a partial payload', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-1',
+    });
+    prismaService.client.trip.update.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-1',
+      title: 'Updated',
+      thumbnailUrl: 'https://example.com/thumbnail.jpg',
+      location: 'Kyoto',
+      startDate: new Date(),
+      endDate: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      _count: { entries: 2 },
+    });
+
+    await service.update('trip-1', 'user-1', { title: 'Updated' });
+
+    expect(prismaService.client.trip.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: { title: 'Updated' },
+      }),
+    );
+  });
+
   it('updateEntries: throws NotFoundException if an entry is missing', async () => {
     prismaService.client.trip.findUnique.mockResolvedValue({
       id: 'trip-1',

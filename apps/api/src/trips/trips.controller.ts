@@ -16,6 +16,7 @@ import {
   createEntryBodySchema,
   createEntriesBatchBodySchema,
   updateEntriesBatchBodySchema,
+  updateTripBodySchema,
 } from '@mood-trip/validators';
 
 @Controller('trips')
@@ -93,7 +94,7 @@ export class TripsController {
     @Body() body: unknown,
     @Request() req: { user: { id: string } },
   ) {
-    const parsed = createTripBodySchema.safeParse(body);
+    const parsed = updateTripBodySchema.safeParse(body);
     if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
     return this.tripsService.update(id, req.user.id, parsed.data);
   }

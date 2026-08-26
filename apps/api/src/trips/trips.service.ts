@@ -5,6 +5,7 @@ import type {
   CreateTripBody,
   CreateEntryBody,
   UpdateEntryBody,
+  UpdateTripBody,
   Entry,
 } from '@mood-trip/validators';
 import { PrismaService } from '../prisma/prisma.service';
@@ -59,7 +60,7 @@ export class TripsService {
   async update(
     id: string,
     userId: string,
-    body: CreateTripBody,
+    body: UpdateTripBody,
   ): Promise<TripListItem> {
     await this._assertTripOwnedByUser(id, userId);
 

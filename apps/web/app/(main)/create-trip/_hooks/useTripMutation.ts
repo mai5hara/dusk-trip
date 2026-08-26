@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { CreateTripBody } from '@mood-trip/validators';
+import type { UpdateTripBody } from '@mood-trip/validators';
 import { queryKeys } from '@/lib/query/query-keys';
 import { createTrip, updateTrip } from '@/api/trips/api';
 
@@ -18,7 +18,7 @@ export function useCreateTripMutation() {
 
 type UpdateTripVariables = {
   id: string;
-  body: CreateTripBody;
+  body: UpdateTripBody;
 };
 
 export function useUpdateTripMutation() {

@@ -6,10 +6,12 @@ export {
   tripWithEntriesSchema,
   listTripsQuerySchema,
   createTripBodySchema,
+  updateTripBodySchema,
   type Trip,
   type TripListItem,
   type TripWithEntries,
   type CreateTripBody,
+  type UpdateTripBody,
 } from './trip';
 export {
   moodSchema,
