@@ -167,6 +167,46 @@ describe('buildDayEntries', () => {
     expect(entries[0]?.caption).toBe('');
     expect(entries[0]?.location).toBe('');
   });
+
+  it('keeps every memory that shares a day label', () => {
+    const entries = buildDayEntries(
+      new Date(2026, 5, 1),
+      new Date(2026, 5, 3),
+      [],
+      [
+        apiEntry({
+          id: 'night',
+          caption: 'Night',
+          dayLabel: 'Day 1',
+          sortOrder: 1,
+        }),
+        apiEntry({
+          id: 'morning',
+          caption: 'Morning',
+          dayLabel: 'Day 1',
+          sortOrder: 0,
+        }),
+        apiEntry({
+          id: 'day-2',
+          caption: 'Later',
+          dayLabel: 'Day 2',
+          sortOrder: 2,
+        }),
+      ],
+    );
+
+    expect(entries.filter((entry) => entry.dateKey === '2026-06-01')).toEqual([
+      expect.objectContaining({ id: 'morning', caption: 'Morning' }),
+      expect.objectContaining({ id: 'night', caption: 'Night' }),
+    ]);
+    expect(entries.filter((entry) => entry.dateKey === '2026-06-02')).toEqual([
+      expect.objectContaining({ id: 'day-2' }),
+    ]);
+    expect(
+      entries.filter((entry) => entry.dateKey === '2026-06-03'),
+    ).toHaveLength(1);
+    expect(entries[entries.length - 1]?.id).toBeUndefined();
+  });
 });
 
 describe('groupEntriesByMonth', () => {
@@ -183,6 +223,20 @@ describe('groupEntriesByMonth', () => {
     ]);
     expect(groups[0]?.days).toHaveLength(1);
     expect(groups[1]?.days).toHaveLength(2);
+  });
+
+  it('keeps one sidebar row when a day has multiple memories', () => {
+    const groups = groupEntriesByMonth([
+      day('2026-06-01', { id: 'a', dayLabel: 'Day 1', sortOrder: 0 }),
+      day('2026-06-01', { id: 'b', dayLabel: 'Day 1', sortOrder: 1 }),
+      day('2026-06-02', { id: 'c', dayLabel: 'Day 2', sortOrder: 2 }),
+    ]);
+
+    expect(groups[0]?.days).toHaveLength(2);
+    expect(groups[0]?.days.map((entry) => entry.dateKey)).toEqual([
+      '2026-06-01',
+      '2026-06-02',
+    ]);
   });
 });
 

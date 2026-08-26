@@ -4,6 +4,7 @@ import type {
   TripWithEntries,
   CreateTripBody,
   CreateEntryBody,
+  UpdateEntryBody,
   Entry,
 } from '@mood-trip/validators';
 import { PrismaService } from '../prisma/prisma.service';
@@ -21,10 +22,7 @@ export class TripsService {
       },
     });
 
-    return trips.map((trip) => ({
-      ...trip,
-      entryCount: trip._count.entries,
-    }));
+    return trips.map(_toTripListItem);
   }
 
   async findOne(id: string, userId: string): Promise<TripWithEntries> {
@@ -55,10 +53,25 @@ export class TripsService {
       },
     });
 
-    return {
-      ...trip,
-      entryCount: trip._count.entries,
-    };
+    return _toTripListItem(trip);
+  }
+
+  async update(
+    id: string,
+    userId: string,
+    body: CreateTripBody,
+  ): Promise<TripListItem> {
+    await this._assertTripOwnedByUser(id, userId);
+
+    const trip = await this.prisma.client.trip.update({
+      where: { id },
+      data: body,
+      include: {
+        _count: { select: { entries: true } },
+      },
+    });
+
+    return _toTripListItem(trip);
   }
 
   private async _assertTripOwnedByUser(
@@ -84,12 +97,7 @@ export class TripsService {
     return this.prisma.client.entry.create({
       data: {
         tripId,
-        photoUrl: body.photoUrl,
-        caption: body.caption ?? null,
-        location: body.location ?? null,
-        dayLabel: body.dayLabel ?? null,
-        timeOfDay: body.timeOfDay ?? null,
-        sortOrder: body.sortOrder ?? 0,
+        ..._entryWriteData(body),
       },
     });
   }
@@ -106,15 +114,66 @@ export class TripsService {
         this.prisma.client.entry.create({
           data: {
             tripId,
-            photoUrl: body.photoUrl,
-            caption: body.caption ?? null,
-            location: body.location ?? null,
-            dayLabel: body.dayLabel ?? null,
-            timeOfDay: body.timeOfDay ?? null,
-            sortOrder: body.sortOrder ?? 0,
+            ..._entryWriteData(body),
           },
         }),
       ),
     );
   }
+
+  async updateEntries(
+    tripId: string,
+    userId: string,
+    bodies: UpdateEntryBody[],
+  ): Promise<Entry[]> {
+    await this._assertTripOwnedByUser(tripId, userId);
+
+    const ids = bodies.map((body) => body.id);
+    const existing = await this.prisma.client.entry.findMany({
+      where: { tripId, id: { in: ids } },
+      select: { id: true },
+    });
+
+    if (existing.length !== ids.length) {
+      throw new NotFoundException(`Entry not found for trip ${tripId}`);
+    }
+
+    return this.prisma.client.$transaction(
+      bodies.map((body) =>
+        this.prisma.client.entry.update({
+          where: { id: body.id },
+          data: _entryWriteData(body),
+        }),
+      ),
+    );
+  }
+}
+
+type TripListRecord = Omit<TripListItem, 'entryCount'> & {
+  _count: { entries: number };
+};
+
+function _toTripListItem(trip: TripListRecord): TripListItem {
+  return {
+    ...trip,
+    entryCount: trip._count.entries,
+  };
+}
+
+function _entryWriteData(body: CreateEntryBody | UpdateEntryBody): {
+  photoUrl: string;
+  caption: string | null;
+  location: string | null;
+  dayLabel: string | null;
+  timeOfDay: CreateEntryBody['timeOfDay'] | null;
+  sortOrder: number;
+} {
+  return {
+    photoUrl: body.photoUrl,
+    caption: body.caption ?? null,
+    location: body.location ?? null,
+    dayLabel: body.dayLabel ?? null,
+    timeOfDay: body.timeOfDay ?? null,
+    sortOrder: body.sortOrder ?? 0,
+  };
 }

@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   createEntryBodySchema,
   createEntriesBatchBodySchema,
+  updateEntryBodySchema,
+  updateEntriesBatchBodySchema,
   CREATE_ENTRIES_BATCH_MAX,
 } from './entry';
 
@@ -74,6 +76,44 @@ describe('createEntriesBatchBodySchema', () => {
       })),
     });
 
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('updateEntryBodySchema', () => {
+  it('requires an id with a valid photoUrl', () => {
+    const result = updateEntryBodySchema.safeParse({
+      id: 'entry-1',
+      photoUrl: 'https://example.com/photo.jpg',
+      caption: 'Updated caption',
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects a missing id', () => {
+    const result = updateEntryBodySchema.safeParse({
+      photoUrl: 'https://example.com/photo.jpg',
+    });
+
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('updateEntriesBatchBodySchema', () => {
+  it('accepts a non-empty entries array', () => {
+    const result = updateEntriesBatchBodySchema.safeParse({
+      entries: [
+        { id: 'entry-1', photoUrl: 'https://example.com/a.jpg' },
+        { id: 'entry-2', photoUrl: 'https://example.com/b.jpg' },
+      ],
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects an empty entries array', () => {
+    const result = updateEntriesBatchBodySchema.safeParse({ entries: [] });
     expect(result.success).toBe(false);
   });
 });

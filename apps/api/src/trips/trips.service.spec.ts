@@ -11,9 +11,12 @@ describe('TripsService', () => {
         findMany: jest.Mock;
         findUnique: jest.Mock;
         create: jest.Mock;
+        update: jest.Mock;
       };
       entry: {
         create: jest.Mock;
+        findMany: jest.Mock;
+        update: jest.Mock;
       };
       $transaction: jest.Mock;
     };
@@ -26,9 +29,12 @@ describe('TripsService', () => {
           findMany: jest.fn(),
           findUnique: jest.fn(),
           create: jest.fn(),
+          update: jest.fn(),
         },
         entry: {
           create: jest.fn(),
+          findMany: jest.fn(),
+          update: jest.fn(),
         },
         $transaction: jest.fn(),
       },
@@ -329,5 +335,113 @@ describe('TripsService', () => {
 
     expect(result.id).toBe('trip-1');
     expect(result.entryCount).toBe(0);
+  });
+
+  it('update: throws NotFoundException if trip is not owned by user', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-2',
+    });
+
+    await expect(
+      service.update('trip-1', 'user-1', {
+        title: 'Updated',
+        thumbnailUrl: 'https://example.com/thumbnail.jpg',
+        location: 'Kyoto',
+        startDate: new Date(),
+        endDate: new Date(),
+      }),
+    ).rejects.toThrow(NotFoundException);
+
+    expect(prismaService.client.trip.update).not.toHaveBeenCalled();
+  });
+
+  it('update: updates album fields', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-1',
+    });
+    prismaService.client.trip.update.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-1',
+      title: 'Updated',
+      thumbnailUrl: 'https://example.com/thumbnail.jpg',
+      location: 'Kyoto',
+      startDate: new Date(),
+      endDate: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      _count: { entries: 2 },
+    });
+
+    const result = await service.update('trip-1', 'user-1', {
+      title: 'Updated',
+      thumbnailUrl: 'https://example.com/thumbnail.jpg',
+      location: 'Kyoto',
+      startDate: new Date(),
+      endDate: new Date(),
+    });
+
+    expect(result.title).toBe('Updated');
+    expect(result.entryCount).toBe(2);
+  });
+
+  it('updateEntries: throws NotFoundException if an entry is missing', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-1',
+    });
+    prismaService.client.entry.findMany.mockResolvedValue([{ id: 'entry-1' }]);
+
+    await expect(
+      service.updateEntries('trip-1', 'user-1', [
+        { id: 'entry-1', photoUrl: 'https://example.com/a.jpg' },
+        { id: 'entry-2', photoUrl: 'https://example.com/b.jpg' },
+      ]),
+    ).rejects.toThrow(NotFoundException);
+
+    expect(prismaService.client.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('updateEntries: updates entries in a transaction', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-1',
+    });
+    prismaService.client.entry.findMany.mockResolvedValue([
+      { id: 'entry-1' },
+      { id: 'entry-2' },
+    ]);
+    prismaService.client.$transaction.mockResolvedValue([
+      {
+        id: 'entry-1',
+        tripId: 'trip-1',
+        photoUrl: 'https://example.com/a.jpg',
+        caption: 'Updated',
+        location: 'Kyoto',
+        dayLabel: '2026-06-01',
+        sortOrder: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]);
+
+    const result = await service.updateEntries('trip-1', 'user-1', [
+      {
+        id: 'entry-1',
+        photoUrl: 'https://example.com/a.jpg',
+        caption: 'Updated',
+        location: 'Kyoto',
+        dayLabel: '2026-06-01',
+        sortOrder: 0,
+      },
+      {
+        id: 'entry-2',
+        photoUrl: 'https://example.com/b.jpg',
+      },
+    ]);
+
+    expect(prismaService.client.$transaction).toHaveBeenCalled();
+    expect(result[0].caption).toBe('Updated');
   });
 });

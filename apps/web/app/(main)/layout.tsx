@@ -10,11 +10,11 @@ export default function MainLayout({
 }>) {
   return (
     <TripListProvider>
-      <div className="mx-auto flex w-full max-w-324 flex-1 flex-col">
+      <div className="mx-auto flex w-full max-w-324 flex-1 flex-col overflow-x-clip">
         <div className="px-6">
           <Header />
         </div>
-        <div className="flex min-h-0 flex-1 flex-col px-6 pt-36 pb-40 lg:overflow-y-auto">
+        <div className="flex min-h-0 flex-1 flex-col overflow-x-clip px-6 pt-36 pb-40 lg:overflow-y-auto">
           <AuthGate>{children}</AuthGate>
         </div>
         <div className="px-6">

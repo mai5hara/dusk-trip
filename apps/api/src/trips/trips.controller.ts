@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Request,
   UseGuards,
@@ -14,6 +15,7 @@ import {
   createTripBodySchema,
   createEntryBodySchema,
   createEntriesBatchBodySchema,
+  updateEntriesBatchBodySchema,
 } from '@mood-trip/validators';
 
 @Controller('trips')
@@ -51,6 +53,22 @@ export class TripsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Patch(':tripId/entries/batch')
+  updateEntries(
+    @Param('tripId') tripId: string,
+    @Body() body: unknown,
+    @Request() req: { user: { id: string } },
+  ) {
+    const parsed = updateEntriesBatchBodySchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.tripsService.updateEntries(
+      tripId,
+      req.user.id,
+      parsed.data.entries,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post(':tripId/entries')
   createEntry(
     @Param('tripId') tripId: string,
@@ -66,5 +84,17 @@ export class TripsController {
   @Get(':id')
   findOne(@Param('id') id: string, @Request() req: { user: { id: string } }) {
     return this.tripsService.findOne(id, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() body: unknown,
+    @Request() req: { user: { id: string } },
+  ) {
+    const parsed = createTripBodySchema.safeParse(body);
+    if (!parsed.success) throw new BadRequestException(parsed.error.flatten());
+    return this.tripsService.update(id, req.user.id, parsed.data);
   }
 }
