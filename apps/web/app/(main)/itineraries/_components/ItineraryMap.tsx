@@ -10,7 +10,7 @@ import type { MapRef } from 'react-map-gl/maplibre';
 import type { StyleSpecification } from 'maplibre-gl';
 import type { ItineraryMapStyle } from '@mood-trip/validators';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import type { ItineraryStop } from '../_lib/itinerary-utils';
+import { findItineraryStop, type ItineraryStop } from '../_lib/itinerary-utils';
 
 type ItineraryMapProps = {
   mapStyle: ItineraryMapStyle | null;
@@ -95,8 +95,7 @@ const ItineraryMap = ({
   onMarkerClick,
 }: ItineraryMapProps) => {
   const mapRef = useRef<MapRef | null>(null);
-  const activeStop =
-    stops.find((stop) => stop.id === activeStopId) ?? stops[0] ?? null;
+  const activeStop = findItineraryStop(stops, activeStopId);
 
   // Guarantee the compact attribution starts collapsed (just the ⓘ button);
   // some maplibre builds initialise it expanded. Clicking ⓘ still opens it.

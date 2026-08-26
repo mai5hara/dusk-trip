@@ -145,7 +145,7 @@ const ItineraryDayList = ({
           <CardTitle as="h2">{plan.title}</CardTitle>
           <CardDescription>{plan.summary}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent data-itinerary-day-content="">
           <div className="itinerary-day-body">
             <div
               ref={scrollRef}

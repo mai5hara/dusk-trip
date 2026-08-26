@@ -1,6 +1,6 @@
 'use client';
 
-import type { MouseEvent } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { MapPinIcon } from 'lucide-react';
 import {
   Card,
@@ -27,6 +27,23 @@ const ItineraryStopCard = ({
   onClick,
   onLocationClick,
 }: ItineraryStopCardProps) => {
+  const selectStop = (): void => {
+    onClick(stopId);
+  };
+
+  const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    event.preventDefault();
+    selectStop();
+  };
+
   const handleLocationClick = (event: MouseEvent<HTMLButtonElement>): void => {
     event.stopPropagation();
     onLocationClick(stopId);
@@ -37,7 +54,12 @@ const ItineraryStopCard = ({
       <Card
         variant={isActive ? 'raised' : 'flat'}
         size="sm"
-        onClick={() => onClick(stopId)}
+        role="button"
+        tabIndex={0}
+        aria-pressed={isActive}
+        aria-label={item.title}
+        onClick={selectStop}
+        onKeyDown={handleCardKeyDown}
       >
         {item.image ? (
           <CardMedia>

@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import {
   Button,
   Modal,
@@ -12,6 +12,7 @@ import {
 import { ArrowLeftIcon, LoaderCircleIcon } from 'lucide-react';
 import type { ItineraryMapStyle, ItineraryPlan } from '@mood-trip/validators';
 import ItineraryDayList from './ItineraryDayList';
+import { findItineraryStop } from '../_lib/itinerary-utils';
 import { useItineraryStops } from '../_hooks/useItineraryStops';
 
 const DESKTOP_QUERY = '(min-width: 1024px)';
@@ -33,23 +34,20 @@ type ItineraryExplorerProps = {
   isSaving?: boolean;
 };
 
+function _subscribeIsDesktop(onStoreChange: () => void): () => void {
+  const media = window.matchMedia(DESKTOP_QUERY);
+  media.addEventListener('change', onStoreChange);
+  return () => {
+    media.removeEventListener('change', onStoreChange);
+  };
+}
+
+function _getIsDesktop(): boolean {
+  return window.matchMedia(DESKTOP_QUERY).matches;
+}
+
 function useIsDesktop(): boolean {
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia(DESKTOP_QUERY);
-    const sync = (): void => {
-      setIsDesktop(media.matches);
-    };
-
-    sync();
-    media.addEventListener('change', sync);
-    return () => {
-      media.removeEventListener('change', sync);
-    };
-  }, []);
-
-  return isDesktop;
+  return useSyncExternalStore(_subscribeIsDesktop, _getIsDesktop, () => false);
 }
 
 const ItineraryExplorer = ({
@@ -66,8 +64,11 @@ const ItineraryExplorer = ({
   const [flyToEnabled, setFlyToEnabled] = useState(true);
   const [mapOpen, setMapOpen] = useState(false);
   const activeStopId = selectedStopId ?? stops[0]?.id ?? null;
-  const activeStop =
-    stops.find((stop) => stop.id === activeStopId) ?? stops[0] ?? null;
+  const activeStop = findItineraryStop(stops, activeStopId);
+
+  if (isDesktop && mapOpen) {
+    setMapOpen(false);
+  }
 
   const selectStop = (stopId: string): void => {
     setSelectedStopId(stopId);
@@ -108,7 +109,7 @@ const ItineraryExplorer = ({
               Loading itinerary map...
             </p>
           ) : null}
-          {isDesktop ? (
+          <div className="hidden lg:block">
             <Button
               type="button"
               variant={flyToEnabled ? 'accent' : 'outline'}
@@ -117,7 +118,7 @@ const ItineraryExplorer = ({
             >
               Fly to stop
             </Button>
-          ) : null}
+          </div>
           {onSave ? (
             <Button
               type="button"
@@ -150,9 +151,10 @@ const ItineraryExplorer = ({
           />
         </div>
 
-        {isDesktop ? (
-          <div className="h-full min-h-0 overflow-hidden">{map}</div>
-        ) : (
+        <div className="hidden h-full min-h-0 overflow-hidden lg:block">
+          {isDesktop ? map : null}
+        </div>
+        {isDesktop ? null : (
           <Modal open={mapOpen} onOpenChange={setMapOpen}>
             <ModalContent size="lg">
               <ModalHeader
