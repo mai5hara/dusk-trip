@@ -61,7 +61,7 @@ function _compareEntriesWithinDay(a: Entry, b: Entry): number {
     return sortDiff;
   }
 
-  return a.createdAt.getTime() - b.createdAt.getTime();
+  return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
 }
 
 export function formatEntryDayHeading(

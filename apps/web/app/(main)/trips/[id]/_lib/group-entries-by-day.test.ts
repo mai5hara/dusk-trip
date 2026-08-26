@@ -121,4 +121,27 @@ describe('groupEntriesByDay', () => {
       'untagged',
     ]);
   });
+
+  it('orders same-time memories by createdAt when API sends ISO strings', () => {
+    const groups = groupEntriesByDay([
+      entry({
+        id: 'later',
+        timeOfDay: 'morning',
+        sortOrder: 0,
+        createdAt: '2026-01-01T12:00:00.000Z' as unknown as Date,
+      }),
+      entry({
+        id: 'earlier',
+        timeOfDay: 'morning',
+        sortOrder: 0,
+        createdAt: '2026-01-01T08:00:00.000Z' as unknown as Date,
+      }),
+    ]);
+
+    expect(groups).toHaveLength(1);
+    expect(groups[0]?.entries.map((item) => item.id)).toEqual([
+      'earlier',
+      'later',
+    ]);
+  });
 });
