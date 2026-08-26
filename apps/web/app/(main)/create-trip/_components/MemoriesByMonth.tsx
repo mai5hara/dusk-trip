@@ -24,6 +24,7 @@ import {
   type DayEntryFormValue,
 } from '../_lib/travel-period';
 import PhotoUrlField from './PhotoUrlField';
+import TimeOfDayButtons from './TimeOfDayButtons';
 
 type MemoriesByMonthProps = {
   entries: DayEntryFormValue[];
@@ -133,6 +134,18 @@ const MemoriesByMonth = ({
                 )}
               />
             </Field>
+
+            <Controller
+              name={`entries.${selectedIndex}.timeOfDay` as Path<FieldValues>}
+              control={control}
+              render={({ field }) => (
+                <TimeOfDayButtons
+                  id={`entries.${selectedIndex}.timeOfDay`}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
 
             <Field>
               <Label htmlFor={`entries.${selectedIndex}.caption`}>

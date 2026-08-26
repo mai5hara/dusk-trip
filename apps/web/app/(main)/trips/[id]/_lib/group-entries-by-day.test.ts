@@ -13,6 +13,7 @@ function entry(overrides: Partial<Entry> = {}): Entry {
     caption: 'Caption',
     location: 'Kyoto',
     dayLabel: '2026-06-01',
+    timeOfDay: null,
     sortOrder: 0,
     createdAt: new Date('2026-01-01'),
     updatedAt: new Date('2026-01-01'),

@@ -49,6 +49,7 @@ function emptyDayEntry(date: Date, dayIndex: number): DayEntryFormValue {
     photoUrl: '',
     caption: '',
     location: '',
+    timeOfDay: undefined,
   };
 }
 
@@ -91,6 +92,7 @@ export function buildDayEntries(
       photoUrl: prev?.photoUrl ?? existing?.photoUrl ?? '',
       caption: prev?.caption ?? existing?.caption ?? '',
       location: prev?.location ?? existing?.location ?? '',
+      timeOfDay: prev?.timeOfDay ?? existing?.timeOfDay ?? undefined,
     };
   });
 }
