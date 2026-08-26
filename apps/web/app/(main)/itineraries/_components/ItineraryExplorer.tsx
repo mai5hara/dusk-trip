@@ -33,7 +33,7 @@ type ItineraryExplorerProps = {
   isSaving?: boolean;
 };
 
-function _useIsDesktop(): boolean {
+function useIsDesktop(): boolean {
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const ItineraryExplorer = ({
   isSaving = false,
 }: ItineraryExplorerProps) => {
   const { stops, center, isLoading, error } = useItineraryStops(plan);
-  const isDesktop = _useIsDesktop();
+  const isDesktop = useIsDesktop();
   const [selectedStopId, setSelectedStopId] = useState<string | null>(null);
   const [focusStopId, setFocusStopId] = useState<string | null>(null);
   const [flyToEnabled, setFlyToEnabled] = useState(true);

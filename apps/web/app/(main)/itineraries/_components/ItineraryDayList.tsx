@@ -9,7 +9,10 @@ import {
   CardTitle,
 } from '@mood-trip/ui';
 import type { ItineraryPlan, ItineraryPlanDay } from '@mood-trip/validators';
-import { getItineraryStopId, type ItineraryStop } from '../_lib/itinerary-utils';
+import {
+  getItineraryStopId,
+  type ItineraryStop,
+} from '../_lib/itinerary-utils';
 import { useScrollSpy } from '../_hooks/useScrollSpy';
 import ItineraryStopCard from './ItineraryStopCard';
 
@@ -26,6 +29,18 @@ function _shouldShowOverflowFade(element: HTMLElement): boolean {
     element.scrollTop + element.clientHeight <
     element.scrollHeight - SCROLL_END_EPSILON_PX
   );
+}
+
+function _resetScrollToTop(element: HTMLElement): void {
+  element.scrollTo({ top: 0 });
+
+  let ancestor: HTMLElement | null = element.parentElement;
+  while (ancestor) {
+    ancestor.scrollTo({ top: 0 });
+    ancestor = ancestor.parentElement;
+  }
+
+  window.scrollTo(0, 0);
 }
 
 type ItineraryDayListProps = {
@@ -95,13 +110,7 @@ const ItineraryDayList = ({
       return;
     }
 
-    container.scrollTo({ top: 0 });
-    let ancestor: HTMLElement | null = container.parentElement;
-    while (ancestor) {
-      ancestor.scrollTop = 0;
-      ancestor = ancestor.parentElement;
-    }
-    window.scrollTo(0, 0);
+    _resetScrollToTop(container);
     syncOverflowFade();
   }, []);
 

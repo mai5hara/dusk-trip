@@ -63,7 +63,9 @@ const ItineraryStopCard = ({
           <CardTitle as="h4">{item.title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm leading-relaxed opacity-75">{item.description}</p>
+          <p className="text-sm leading-relaxed opacity-75">
+            {item.description}
+          </p>
         </CardContent>
         <CardFooter>
           <button
