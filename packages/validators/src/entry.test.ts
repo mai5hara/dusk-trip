@@ -3,6 +3,7 @@ import {
   createEntryBodySchema,
   createEntriesBatchBodySchema,
   CREATE_ENTRIES_BATCH_MAX,
+  entryTimeOfDayRank,
 } from './entry';
 
 describe('createEntryBodySchema', () => {
@@ -75,5 +76,16 @@ describe('createEntriesBatchBodySchema', () => {
     });
 
     expect(result.success).toBe(false);
+  });
+});
+
+describe('entryTimeOfDayRank', () => {
+  it('orders morning through night, with untagged last', () => {
+    expect(entryTimeOfDayRank('morning')).toBe(0);
+    expect(entryTimeOfDayRank('afternoon')).toBe(1);
+    expect(entryTimeOfDayRank('evening')).toBe(2);
+    expect(entryTimeOfDayRank('night')).toBe(3);
+    expect(entryTimeOfDayRank(null)).toBe(4);
+    expect(entryTimeOfDayRank(undefined)).toBe(4);
   });
 });

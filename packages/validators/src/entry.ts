@@ -11,6 +11,17 @@ export const entryTimeOfDaySchema = z.enum(ENTRY_TIME_OF_DAY_VALUES);
 
 export type EntryTimeOfDay = z.infer<typeof entryTimeOfDaySchema>;
 
+/** Untagged memories sort after night. */
+export function entryTimeOfDayRank(
+  timeOfDay: EntryTimeOfDay | null | undefined,
+): number {
+  if (timeOfDay == null) {
+    return ENTRY_TIME_OF_DAY_VALUES.length;
+  }
+
+  return ENTRY_TIME_OF_DAY_VALUES.indexOf(timeOfDay);
+}
+
 export const entrySchema = z.object({
   id: z.string(),
   tripId: z.string(),
