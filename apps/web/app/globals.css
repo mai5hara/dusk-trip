@@ -40,6 +40,83 @@
 
 .itinerary-scroll {
   scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.itinerary-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.itinerary-overflow-fade {
+  display: none;
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 10;
+  height: 4rem;
+  background: linear-gradient(to top, var(--color-surface), transparent);
+  transition: opacity 300ms ease;
+}
+
+.itinerary-day-list {
+  min-height: 0;
+  width: 100%;
+}
+
+.itinerary-stops-body {
+  position: relative;
+}
+
+.itinerary-day-scroll {
+  overflow-y: scroll;
+}
+
+@media (min-width: 1024px) {
+  .itinerary-day-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+  }
+
+  .itinerary-day-list > * {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+
+  .itinerary-day-list [data-itinerary-stops] {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .itinerary-stops-body {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .itinerary-day-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: scroll;
+  }
+
+  .itinerary-overflow-fade {
+    display: block;
+    position: sticky;
+    inset-inline: 0;
+    bottom: 0;
+    margin-top: -4rem;
+  }
 }
 
 .itinerary-map-shell .maplibregl-map {

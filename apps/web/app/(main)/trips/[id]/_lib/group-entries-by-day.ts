@@ -1,4 +1,4 @@
-import type { Entry } from '@mood-trip/validators';
+import { entryTimeOfDayRank, type Entry } from '@mood-trip/validators';
 
 export type EntryDayGroup = {
   key: string;
@@ -47,6 +47,21 @@ function getGroupSortValue(key: string, fallbackSortOrder: number): number {
   }
 
   return fallbackSortOrder;
+}
+
+function _compareEntriesWithinDay(a: Entry, b: Entry): number {
+  const timeDiff =
+    entryTimeOfDayRank(a.timeOfDay) - entryTimeOfDayRank(b.timeOfDay);
+  if (timeDiff !== 0) {
+    return timeDiff;
+  }
+
+  const sortDiff = a.sortOrder - b.sortOrder;
+  if (sortDiff !== 0) {
+    return sortDiff;
+  }
+
+  return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
 }
 
 export function formatEntryDayHeading(
@@ -107,7 +122,7 @@ export function groupEntriesByDay(
   return [...groups.values()]
     .map((group) => ({
       ...group,
-      entries: [...group.entries].sort((a, b) => a.sortOrder - b.sortOrder),
+      entries: [...group.entries].sort(_compareEntriesWithinDay),
     }))
     .sort(
       (a, b) =>

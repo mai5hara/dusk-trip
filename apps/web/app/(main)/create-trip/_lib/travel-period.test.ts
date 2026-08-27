@@ -207,6 +207,32 @@ describe('buildDayEntries', () => {
     ).toHaveLength(1);
     expect(entries[entries.length - 1]?.id).toBeUndefined();
   });
+
+  it('orders same-day memories by time of day before sortOrder', () => {
+    const entries = buildDayEntries(
+      new Date(2026, 5, 1),
+      new Date(2026, 5, 1),
+      [],
+      [
+        apiEntry({
+          id: 'night',
+          caption: 'Night',
+          dayLabel: '2026-06-01',
+          timeOfDay: 'night',
+          sortOrder: 0,
+        }),
+        apiEntry({
+          id: 'morning',
+          caption: 'Morning',
+          dayLabel: '2026-06-01',
+          timeOfDay: 'morning',
+          sortOrder: 1,
+        }),
+      ],
+    );
+
+    expect(entries.map((entry) => entry.id)).toEqual(['morning', 'night']);
+  });
 });
 
 describe('groupEntriesByMonth', () => {

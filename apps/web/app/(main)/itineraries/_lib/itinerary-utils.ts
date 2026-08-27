@@ -27,3 +27,10 @@ export function flattenItinerary(plan: ItineraryPlan): ItineraryStop[] {
     })),
   );
 }
+
+export function findItineraryStop(
+  stops: ItineraryStop[],
+  stopId: string | null,
+): ItineraryStop | null {
+  return stops.find((stop) => stop.id === stopId) ?? stops[0] ?? null;
+}

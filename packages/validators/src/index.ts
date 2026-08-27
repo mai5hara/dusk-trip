@@ -45,6 +45,7 @@ export {
 export {
   ENTRY_TIME_OF_DAY_VALUES,
   entryTimeOfDaySchema,
+  entryTimeOfDayRank,
   entrySchema,
   createEntryBodySchema,
   createEntriesBatchBodySchema,

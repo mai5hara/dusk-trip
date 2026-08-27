@@ -31,7 +31,11 @@ export class TripsService {
       where: { id },
       include: {
         entries: {
-          orderBy: { sortOrder: 'asc' },
+          orderBy: [
+            { timeOfDay: 'asc' },
+            { sortOrder: 'asc' },
+            { createdAt: 'asc' },
+          ],
         },
       },
     });

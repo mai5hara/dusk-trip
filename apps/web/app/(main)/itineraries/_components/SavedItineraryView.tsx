@@ -19,7 +19,7 @@ const SavedItineraryView = ({ id }: { id: string }) => {
   }
 
   return (
-    <section className="flex flex-col py-4 lg:min-h-0 lg:flex-1 lg:py-6">
+    <section className="flex flex-col py-2 lg:min-h-0 lg:flex-1 lg:py-0">
       <ItineraryExplorer
         plan={data.plan}
         mapStyle={data.mapStyle}

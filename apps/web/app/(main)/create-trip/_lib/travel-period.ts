@@ -1,4 +1,4 @@
-import type { Entry } from '@mood-trip/validators';
+import { entryTimeOfDayRank, type Entry } from '@mood-trip/validators';
 import type { DayEntryFormValue } from './create-trip-form';
 
 export type { DayEntryFormValue };
@@ -60,6 +60,21 @@ function _unusedEntries(
   return existingEntries.filter((entry) => !entry.id || !usedIds.has(entry.id));
 }
 
+function _compareExistingEntries(a: Entry, b: Entry): number {
+  const timeDiff =
+    entryTimeOfDayRank(a.timeOfDay) - entryTimeOfDayRank(b.timeOfDay);
+  if (timeDiff !== 0) {
+    return timeDiff;
+  }
+
+  const sortDiff = a.sortOrder - b.sortOrder;
+  if (sortDiff !== 0) {
+    return sortDiff;
+  }
+
+  return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+}
+
 function _matchExistingEntries(
   dateKey: string,
   dayIndex: number,
@@ -74,7 +89,7 @@ function _matchExistingEntries(
       : unused.filter((entry) => entry.dayLabel === `Day ${dayIndex + 1}`);
 
   if (matches.length > 0) {
-    return [...matches].sort((a, b) => a.sortOrder - b.sortOrder);
+    return [...matches].sort(_compareExistingEntries);
   }
 
   const bySortOrder = unused.find((entry) => entry.sortOrder === dayIndex);
