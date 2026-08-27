@@ -10,7 +10,7 @@ import type { MapRef } from 'react-map-gl/maplibre';
 import type { StyleSpecification } from 'maplibre-gl';
 import type { ItineraryMapStyle } from '@mood-trip/validators';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import type { ItineraryStop } from '../_lib/itinerary-utils';
+import { findItineraryStop, type ItineraryStop } from '../_lib/itinerary-utils';
 
 type ItineraryMapProps = {
   mapStyle: ItineraryMapStyle | null;
@@ -19,44 +19,58 @@ type ItineraryMapProps = {
   stops: ItineraryStop[];
   activeStopId: string | null;
   center: { lat: number; lng: number } | null;
+  flyToEnabled: boolean;
   onMarkerClick: (stopId: string) => void;
 };
+
+type MapViewportProps = {
+  mapRef: React.RefObject<MapRef | null>;
+  stops: ItineraryStop[];
+  activeStop: ItineraryStop | null;
+  center: { lat: number; lng: number } | null;
+  flyToEnabled: boolean;
+};
+
+function _moveCamera(
+  map: NonNullable<ReturnType<MapRef['getMap']>>,
+  center: [number, number],
+  zoom: number,
+  animate: boolean,
+): void {
+  if (animate) {
+    map.flyTo({ center, zoom, duration: 1100, essential: true });
+    return;
+  }
+
+  map.stop();
+  map.jumpTo({ center, zoom });
+}
 
 function MapViewport({
   mapRef,
   stops,
   activeStop,
   center,
-}: {
-  mapRef: React.RefObject<MapRef | null>;
-  stops: ItineraryStop[];
-  activeStop: ItineraryStop | null;
-  center: { lat: number; lng: number } | null;
-}) {
+  flyToEnabled,
+}: MapViewportProps) {
   const lastActiveIdRef = useRef<string | null>(null);
 
-  // Keep the map focused on whichever stop is active — on first load and on
-  // every selection/scroll change — so the highlighted card and the map always
-  // agree. The initial view already centres on the first stop, so the opening
-  // fly is effectively a no-op rather than a jarring zoom-out-then-in.
+  // Keep the map focused on whichever stop is active. Fly-to animates; jump-to
+  // snaps instantly when the toggle is off.
   useEffect(() => {
     const map = mapRef.current?.getMap();
     if (!map || stops.length === 0 || !activeStop) {
       return;
     }
 
-    if (activeStop.id === lastActiveIdRef.current) {
+    const alreadyThere = activeStop.id === lastActiveIdRef.current;
+    if (alreadyThere && flyToEnabled) {
       return;
     }
 
     lastActiveIdRef.current = activeStop.id;
-    map.flyTo({
-      center: [activeStop.lng, activeStop.lat],
-      zoom: 16.5,
-      duration: 1100,
-      essential: true,
-    });
-  }, [activeStop, mapRef, stops.length]);
+    _moveCamera(map, [activeStop.lng, activeStop.lat], 16.5, flyToEnabled);
+  }, [activeStop, flyToEnabled, mapRef, stops.length]);
 
   useEffect(() => {
     const map = mapRef.current?.getMap();
@@ -64,13 +78,8 @@ function MapViewport({
       return;
     }
 
-    map.flyTo({
-      center: [center.lng, center.lat],
-      zoom: 12,
-      duration: 1200,
-      essential: true,
-    });
-  }, [center, mapRef, stops.length]);
+    _moveCamera(map, [center.lng, center.lat], 12, flyToEnabled);
+  }, [center, flyToEnabled, mapRef, stops.length]);
 
   return null;
 }
@@ -82,11 +91,11 @@ const ItineraryMap = ({
   stops,
   activeStopId,
   center,
+  flyToEnabled,
   onMarkerClick,
 }: ItineraryMapProps) => {
   const mapRef = useRef<MapRef | null>(null);
-  const activeStop =
-    stops.find((stop) => stop.id === activeStopId) ?? stops[0] ?? null;
+  const activeStop = findItineraryStop(stops, activeStopId);
 
   // Guarantee the compact attribution starts collapsed (just the ⓘ button);
   // some maplibre builds initialise it expanded. Clicking ⓘ still opens it.
@@ -122,7 +131,7 @@ const ItineraryMap = ({
 
   if (isMapLoading) {
     return (
-      <div className="flex h-full min-h-80 items-center justify-center rounded-3xl border border-dashed">
+      <div className="flex h-full min-h-80 items-center justify-center rounded-lg border border-dashed">
         <p className="text-sm opacity-70">Loading map...</p>
       </div>
     );
@@ -130,14 +139,14 @@ const ItineraryMap = ({
 
   if (mapError || !mapStyle || !initialViewState) {
     return (
-      <div className="flex h-full min-h-80 items-center justify-center rounded-3xl border border-dashed px-6 text-center text-sm opacity-70">
+      <div className="flex h-full min-h-80 items-center justify-center rounded-lg border border-dashed px-6 text-center text-sm opacity-70">
         {mapError ?? 'Map is unavailable.'}
       </div>
     );
   }
 
   return (
-    <div className="itinerary-map-shell h-full min-h-80 w-full overflow-hidden rounded-3xl">
+    <div className="itinerary-map-shell h-full min-h-80 w-full overflow-hidden rounded-lg">
       <Map
         ref={mapRef}
         mapStyle={mapStyle as StyleSpecification}
@@ -189,6 +198,7 @@ const ItineraryMap = ({
         stops={stops}
         activeStop={activeStop}
         center={center}
+        flyToEnabled={flyToEnabled}
       />
     </div>
   );
