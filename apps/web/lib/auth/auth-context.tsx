@@ -14,6 +14,7 @@ import type { AuthUser } from '@mood-trip/validators';
 import {
   getMe,
   login as loginApi,
+  googleLogin as googleLoginApi,
   refreshAccessToken,
   signup as signupApi,
 } from '@/api/auth/api';
@@ -24,6 +25,7 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (idToken: string) => Promise<void>;
   signup: (
     name: string,
     email: string,
@@ -78,6 +80,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [router],
   );
 
+  const loginWithGoogle = useCallback(
+    async (idToken: string) => {
+      const res = await googleLoginApi(idToken);
+      setAccessToken(res.accessToken);
+      setRefreshToken(res.refreshToken);
+      setUser(res.user);
+      router.push('/');
+    },
+    [router],
+  );
+
   const signup = useCallback(
     async (
       name: string,
@@ -106,10 +119,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: user !== null,
       isLoading,
       login,
+      loginWithGoogle,
       signup,
       logout,
     }),
-    [user, isLoading, login, logout, signup],
+    [user, isLoading, login, loginWithGoogle, logout, signup],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

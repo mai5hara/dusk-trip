@@ -64,6 +64,8 @@ export {
   forgotPasswordResponseSchema,
   refreshBodySchema,
   meResponseSchema,
+  googleLoginBodySchema,
+  googleLoginResponseSchema,
   type ForgotPasswordBody,
   type ResetPasswordBody,
   type LoginBody,
@@ -73,4 +75,6 @@ export {
   type AuthUser,
   type RefreshResponse,
   type MeResponse,
+  type GoogleLoginBody,
+  type GoogleLoginResponse,
 } from './auth';

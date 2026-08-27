@@ -13,6 +13,7 @@ import {
   forgotPasswordBodySchema,
   resetPasswordBodySchema,
   refreshBodySchema,
+  googleLoginBodySchema,
 } from '@mood-trip/validators';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -91,5 +92,16 @@ export class AuthController {
       parsed.data.email,
       parsed.data.password,
     );
+  }
+
+  @Post('google')
+  async google(@Body() body: unknown) {
+    const parsed = googleLoginBodySchema.safeParse(body);
+
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten());
+    }
+
+    return this.authService.googleLogin(parsed.data.idToken);
   }
 }

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth/auth-context';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { Input, Button, Label } from '@mood-trip/ui';
 
 export default function SignUpPage() {
@@ -110,6 +111,14 @@ export default function SignUpPage() {
               </p>
             </div>
           </form>
+          <div className="flex items-center gap-4 w-full max-w-87.5">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-text-subtle">OR</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          <div className="w-full max-w-87.5">
+            <GoogleSignInButton onError={setError} />
+          </div>
         </div>
       </div>
     </div>
