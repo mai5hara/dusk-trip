@@ -20,7 +20,7 @@ const DESKTOP_QUERY = '(min-width: 1024px)';
 const ItineraryMap = dynamic(() => import('./ItineraryMap'), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full min-h-[320px] items-center justify-center rounded-3xl border border-dashed">
+    <div className="flex h-full min-h-[320px] items-center justify-center rounded-lg border border-dashed">
       <LoaderCircleIcon className="size-6 animate-spin opacity-60" />
     </div>
   ),
@@ -139,7 +139,7 @@ const ItineraryExplorer = ({
       ) : null}
 
       <div className="flex flex-col gap-4 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:grid-rows-[minmax(0,1fr)]">
-        <div className="lg:h-full lg:min-h-0">
+        <div className="lg:flex lg:max-h-full lg:min-h-0 lg:flex-col lg:self-start">
           <ItineraryDayList
             plan={plan}
             stops={stops}

@@ -145,11 +145,11 @@ const ItineraryDayList = ({
           <CardTitle as="h2">{plan.title}</CardTitle>
           <CardDescription>{plan.summary}</CardDescription>
         </CardHeader>
-        <CardContent data-itinerary-day-content="">
-          <div className="itinerary-day-body">
+        <CardContent data-itinerary-stops="">
+          <div className="itinerary-stops-body">
             <div
               ref={scrollRef}
-              className="itinerary-scroll itinerary-day-scroll"
+              className="itinerary-scroll itinerary-day-scroll overflow-y-scroll"
             >
               <div ref={contentRef} className="pb-6">
                 {plan.days.map((day: ItineraryPlanDay) => (
@@ -186,12 +186,12 @@ const ItineraryDayList = ({
                   </section>
                 ))}
               </div>
+              <div
+                aria-hidden
+                className="itinerary-overflow-fade"
+                style={{ opacity: showOverflowFade ? 1 : 0 }}
+              />
             </div>
-            <div
-              aria-hidden
-              className="itinerary-overflow-fade"
-              style={{ opacity: showOverflowFade ? 1 : 0 }}
-            />
           </div>
         </CardContent>
       </Card>

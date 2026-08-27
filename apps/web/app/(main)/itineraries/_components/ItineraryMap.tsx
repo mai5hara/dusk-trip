@@ -131,7 +131,7 @@ const ItineraryMap = ({
 
   if (isMapLoading) {
     return (
-      <div className="flex h-full min-h-80 items-center justify-center rounded-3xl border border-dashed">
+      <div className="flex h-full min-h-80 items-center justify-center rounded-lg border border-dashed">
         <p className="text-sm opacity-70">Loading map...</p>
       </div>
     );
@@ -139,14 +139,14 @@ const ItineraryMap = ({
 
   if (mapError || !mapStyle || !initialViewState) {
     return (
-      <div className="flex h-full min-h-80 items-center justify-center rounded-3xl border border-dashed px-6 text-center text-sm opacity-70">
+      <div className="flex h-full min-h-80 items-center justify-center rounded-lg border border-dashed px-6 text-center text-sm opacity-70">
         {mapError ?? 'Map is unavailable.'}
       </div>
     );
   }
 
   return (
-    <div className="itinerary-map-shell h-full min-h-80 w-full overflow-hidden rounded-3xl">
+    <div className="itinerary-map-shell h-full min-h-80 w-full overflow-hidden rounded-lg">
       <Map
         ref={mapRef}
         mapStyle={mapStyle as StyleSpecification}
