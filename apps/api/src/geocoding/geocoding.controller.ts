@@ -11,9 +11,7 @@ import { OpenMeteoGeocodingService } from './open-meteo-geocoding.service';
 
 @Controller('geocoding')
 export class GeocodingController {
-  constructor(
-    private readonly geocodingService: OpenMeteoGeocodingService,
-  ) {}
+  constructor(private readonly geocodingService: OpenMeteoGeocodingService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('suggestions')

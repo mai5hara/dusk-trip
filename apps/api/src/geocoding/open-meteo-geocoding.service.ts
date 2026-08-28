@@ -70,7 +70,9 @@ export class OpenMeteoGeocodingService {
 
       const data = (await response.json()) as OpenMeteoGeocodeResponse;
       const suggestions = dedupeSuggestions(
-        (data.results ?? []).map((result) => formatDestinationSuggestion(result)),
+        (data.results ?? []).map((result) =>
+          formatDestinationSuggestion(result),
+        ),
       );
       this.setCached(
         cacheKey,
