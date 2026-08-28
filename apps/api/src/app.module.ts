@@ -9,6 +9,7 @@ import { ItinerariesModule } from './itineraries/itineraries.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MapsModule } from './maps/maps.module';
+import { GeocodingModule } from './geocoding/geocoding.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { MapsModule } from './maps/maps.module';
     ItinerariesModule,
     AuthModule,
     MapsModule,
+    GeocodingModule,
   ],
 })
 export class AppModule {}

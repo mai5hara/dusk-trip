@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { destinationPlaceSchema } from './geocoding';
 
 export const moodSchema = z.enum([
   'calm',
@@ -15,6 +16,7 @@ const budgetSchema = z.enum(['budget', 'moderate', 'premium', 'luxury']);
 export const generateItineraryBodySchema = z
   .object({
     destination: z.string().min(1).max(120),
+    destinationPlace: destinationPlaceSchema,
     mood: moodSchema,
     pace: paceSchema,
     startDate: z.coerce.date(),

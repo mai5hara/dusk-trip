@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   type GenerateItineraryBody,
@@ -7,6 +7,7 @@ import {
   type ItineraryPlanDraft,
   itineraryPlanSchema,
   generateItineraryResponseSchema,
+  type DestinationPlace,
 } from '@mood-trip/validators';
 import {
   MapTilerGeocodingService,
@@ -53,7 +54,11 @@ export class ItineraryPlanService {
     body: GenerateItineraryBody,
   ): Promise<GenerateItineraryResponse> {
     const draft = await this.itineraryPlanner.generateItinerary(body);
-    const plan = await this.enrichWithCoordinates(draft, body.destination);
+    const plan = await this.enrichWithCoordinates(
+      draft,
+      body.destination,
+      body.destinationPlace,
+    );
     const apiKey = getMapTilerStyleApiKey(this.configService);
 
     return generateItineraryResponseSchema.parse({
@@ -65,19 +70,13 @@ export class ItineraryPlanService {
   private async enrichWithCoordinates(
     draft: ItineraryPlanDraft,
     destination: string,
+    destinationPlace: DestinationPlace,
   ): Promise<ItineraryPlan> {
-    const area =
-      (await this.geocodingService.geocodeArea(draft.location)) ??
-      (await this.geocodingService.geocodeArea(destination));
-
-    if (!area) {
-      throw new BadRequestException(
-        `Could not resolve a map center for "${destination}".`,
-      );
-    }
-
-    const center: Coordinates = { lat: area.lat, lng: area.lng };
-    const country = area.countryCode;
+    const center: Coordinates = {
+      lat: destinationPlace.lat,
+      lng: destinationPlace.lng,
+    };
+    const country = destinationPlace.countryCode;
 
     // Look up Wikipedia (photo + authoritative coordinates) for every stop up
     // front, in parallel. The coordinates feed location resolution; the image

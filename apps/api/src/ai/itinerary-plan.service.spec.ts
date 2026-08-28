@@ -15,8 +15,16 @@ const noImageService = {
 } as unknown as WikimediaImageService;
 
 describe('ItineraryPlanService', () => {
+  const destinationPlace = {
+    label: 'Lisbon, Portugal',
+    lat: 38.7223,
+    lng: -9.1393,
+    countryCode: 'pt',
+  };
+
   const body: GenerateItineraryBody = {
     destination: 'Lisbon',
+    destinationPlace,
     mood: 'curious',
     pace: 'balanced',
     startDate: new Date('2026-07-01'),
@@ -55,13 +63,6 @@ describe('ItineraryPlanService', () => {
       generateItinerary: jest.fn().mockResolvedValue(draft),
     } as ItineraryPlanner;
     const geocodingService = {
-      geocodeArea: jest.fn().mockResolvedValue({
-        lat: 38.7223,
-        lng: -9.1393,
-        countryCode: 'pt',
-        bbox: [-9.5, 38.6, -9.0, 38.85],
-      }),
-      // Closest POI candidate resolves within range of the city center.
       geocodeCandidates: jest
         .fn()
         .mockResolvedValue([
@@ -79,9 +80,6 @@ describe('ItineraryPlanService', () => {
     );
     const result = await service.generateItinerary(body);
 
-    expect(geocodingService.geocodeArea).toHaveBeenCalledWith(
-      'Lisbon, Portugal',
-    );
     expect(result.plan.center).toEqual({ lat: 38.7223, lng: -9.1393 });
     expect(result.plan.days[0].items[0]).toMatchObject({
       lat: 38.7117,
@@ -114,9 +112,6 @@ describe('ItineraryPlanService', () => {
       generateItinerary: jest.fn().mockResolvedValue(draftWithHint),
     } as ItineraryPlanner;
     const geocodingService = {
-      geocodeArea: jest
-        .fn()
-        .mockResolvedValue({ lat: 38.7223, lng: -9.1393, countryCode: 'pt' }),
       geocodeCandidates: jest.fn().mockResolvedValue([
         // A nearby same-named decoy and the real venue; both within range.
         { lat: 38.74, lng: -9.16, relevance: 0.8, isPoi: true },
@@ -153,10 +148,6 @@ describe('ItineraryPlanService', () => {
       generateItinerary: jest.fn().mockResolvedValue(draftWithHint),
     } as ItineraryPlanner;
     const geocodingService = {
-      geocodeArea: jest
-        .fn()
-        .mockResolvedValue({ lat: 38.7223, lng: -9.1393, countryCode: 'pt' }),
-      // A same-named match on another continent — far outside Lisbon.
       geocodeCandidates: jest
         .fn()
         .mockResolvedValue([
@@ -185,9 +176,6 @@ describe('ItineraryPlanService', () => {
       generateItinerary: jest.fn().mockResolvedValue(draft),
     } as ItineraryPlanner;
     const geocodingService = {
-      geocodeArea: jest
-        .fn()
-        .mockResolvedValue({ lat: 38.7223, lng: -9.1393, countryCode: 'pt' }),
       geocodeCandidates: jest
         .fn()
         .mockResolvedValue([
@@ -232,10 +220,6 @@ describe('ItineraryPlanService', () => {
       generateItinerary: jest.fn().mockResolvedValue(draft),
     } as ItineraryPlanner;
     const geocodingService = {
-      geocodeArea: jest
-        .fn()
-        .mockResolvedValue({ lat: 38.7223, lng: -9.1393, countryCode: 'pt' }),
-      // Geocoding would resolve a (wrong) nearby POI...
       geocodeCandidates: jest
         .fn()
         .mockResolvedValue([
