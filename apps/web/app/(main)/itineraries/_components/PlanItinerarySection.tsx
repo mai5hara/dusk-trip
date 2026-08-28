@@ -73,6 +73,15 @@ const PlanItinerarySection = () => {
     }
   };
 
+  const handleDestinationPlaceChange = (
+    value: DestinationPlace | null,
+  ): void => {
+    setDestinationPlace(value);
+    if (value) {
+      setDestinationError(undefined);
+    }
+  };
+
   const handleGenerate = async (): Promise<void> => {
     setError(null);
     setPlan(null);
@@ -200,7 +209,7 @@ const PlanItinerarySection = () => {
               itineraryIdea={itineraryIdea}
               error={error}
               isGenerating={isGenerating}
-              onDestinationPlaceChange={setDestinationPlace}
+              onDestinationPlaceChange={handleDestinationPlaceChange}
               onDateRangeChange={handleDateRangeChange}
               onPaceChange={setPace}
               onBudgetChange={setBudget}

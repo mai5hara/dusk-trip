@@ -131,7 +131,6 @@ const DestinationAutocomplete = ({
           setSuggestions(results);
           setActiveIndex(results.length > 0 ? 0 : -1);
           setIsOpen(true);
-          setSearchError(results.length === 0);
         })
         .catch(() => {
           if (requestId !== requestIdRef.current) {
@@ -169,6 +168,13 @@ const DestinationAutocomplete = ({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>): void => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setIsOpen(false);
+      setActiveIndex(-1);
+      return;
+    }
+
     if (!hasSelectableSuggestions) {
       return;
     }
@@ -201,16 +207,9 @@ const DestinationAutocomplete = ({
       }
       return;
     }
-
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      setIsOpen(false);
-      setActiveIndex(-1);
-    }
   };
 
-  const showPanel =
-    isOpen && (isLoading || searchError || suggestions.length > 0);
+  const showPanel = isOpen;
 
   const activeOptionId =
     hasSelectableSuggestions && activeIndex >= 0
