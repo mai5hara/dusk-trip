@@ -1,15 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import {
+  NEGATIVE_CACHE_TTL_MS,
+  REQUEST_TIMEOUT_MS,
+  SUCCESS_CACHE_TTL_MS,
+  TtlCache,
+  abortAfter,
+  isAbortError,
+} from './geocoding-utils';
 
 export type Coordinates = { lat: number; lng: number };
 
 // [west, south, east, north]
 export type BoundingBox = [number, number, number, number];
-
-export type AreaResult = Coordinates & {
-  countryCode?: string;
-  bbox?: BoundingBox;
-};
 
 export type GeocodeOptions = {
   proximity?: Coordinates;
@@ -45,20 +48,6 @@ type MapTilerFeature = {
   }>;
 };
 
-// City-level types resolve "Kyoto" to the city, not the much larger prefecture
-// centroid. Region/country are only used as a fallback for broad destinations.
-const CITY_AREA_TYPES = 'place,municipality,municipal_district';
-const REGION_AREA_TYPES = 'region,country';
-const REQUEST_TIMEOUT_MS = 10_000;
-const MAX_CACHE_SIZE = 5000;
-const SUCCESS_CACHE_TTL_MS = 60 * 60 * 1000;
-const NEGATIVE_CACHE_TTL_MS = 30 * 1000;
-
-type CacheEntry = {
-  features: MapTilerFeature[];
-  expiresAt: number;
-};
-
 type MapTilerGeocodeResponse = {
   features?: MapTilerFeature[];
 };
@@ -66,34 +55,9 @@ type MapTilerGeocodeResponse = {
 @Injectable()
 export class MapTilerGeocodingService {
   private readonly logger = new Logger(MapTilerGeocodingService.name);
-  private readonly cache = new Map<string, CacheEntry>();
+  private readonly cache = new TtlCache<MapTilerFeature[]>();
 
   constructor(private readonly configService: ConfigService) {}
-
-  /**
-   * Resolve a city / region to its center, country code and bounding box.
-   * Uses place-level types so a city name never resolves to a same-named POI
-   * on another continent.
-   */
-  async geocodeArea(query: string): Promise<AreaResult | null> {
-    const feature =
-      (await this.fetchFeature(query, { types: CITY_AREA_TYPES })) ??
-      (await this.fetchFeature(query, { types: REGION_AREA_TYPES }));
-    if (!feature) {
-      return null;
-    }
-
-    const coords = featureCoordinates(feature);
-    if (!coords) {
-      return null;
-    }
-
-    return {
-      ...coords,
-      countryCode: extractCountryCode(feature),
-      bbox: feature.bbox,
-    };
-  }
 
   async geocode(
     query: string,
@@ -150,7 +114,7 @@ export class MapTilerGeocodingService {
     }
 
     const cacheKey = buildCacheKey(normalized, options);
-    const cached = this.getCached(cacheKey);
+    const cached = this.cache.get(cacheKey);
     if (cached) {
       return cached;
     }
@@ -190,13 +154,13 @@ export class MapTilerGeocodingService {
         this.logger.warn(
           `Geocoding failed for "${normalized}" (${response.status})`,
         );
-        this.setCached(cacheKey, [], NEGATIVE_CACHE_TTL_MS);
+        this.cache.set(cacheKey, [], NEGATIVE_CACHE_TTL_MS);
         return [];
       }
 
       const data = (await response.json()) as MapTilerGeocodeResponse;
       const features = data.features ?? [];
-      this.setCached(
+      this.cache.set(
         cacheKey,
         features,
         features.length === 0 ? NEGATIVE_CACHE_TTL_MS : SUCCESS_CACHE_TTL_MS,
@@ -212,54 +176,6 @@ export class MapTilerGeocodingService {
       return [];
     }
   }
-
-  private getCached(key: string): MapTilerFeature[] | undefined {
-    const entry = this.cache.get(key);
-    if (!entry) {
-      return undefined;
-    }
-    if (Date.now() > entry.expiresAt) {
-      this.cache.delete(key);
-      return undefined;
-    }
-    return entry.features;
-  }
-
-  private setCached(
-    key: string,
-    features: MapTilerFeature[],
-    ttlMs: number,
-  ): void {
-    if (this.cache.has(key)) {
-      this.cache.delete(key);
-    } else if (this.cache.size >= MAX_CACHE_SIZE) {
-      const oldest = this.cache.keys().next().value;
-      if (oldest !== undefined) {
-        this.cache.delete(oldest);
-      }
-    }
-    this.cache.set(key, { features, expiresAt: Date.now() + ttlMs });
-  }
-}
-
-function abortAfter(ms: number): AbortSignal {
-  if (typeof AbortSignal.timeout === 'function') {
-    return AbortSignal.timeout(ms);
-  }
-
-  const controller = new AbortController();
-  setTimeout(() => controller.abort(), ms);
-  return controller.signal;
-}
-
-function isAbortError(error: unknown): boolean {
-  return (
-    (error instanceof Error &&
-      (error.name === 'AbortError' || error.name === 'TimeoutError')) ||
-    (typeof DOMException !== 'undefined' &&
-      error instanceof DOMException &&
-      error.name === 'AbortError')
-  );
 }
 
 function featureCoordinates(feature: MapTilerFeature): Coordinates | null {
@@ -268,22 +184,6 @@ function featureCoordinates(feature: MapTilerFeature): Coordinates | null {
     return null;
   }
   return { lat: coords[1], lng: coords[0] };
-}
-
-function extractCountryCode(feature: MapTilerFeature): string | undefined {
-  const fromProperties =
-    typeof feature.properties?.country_code === 'string'
-      ? (feature.properties.country_code as string)
-      : undefined;
-
-  const countryContext = feature.context?.find((entry) =>
-    entry.id?.startsWith('country'),
-  );
-  const fromContext =
-    countryContext?.short_code ?? countryContext?.country_code;
-
-  const code = fromProperties ?? fromContext;
-  return code ? code.toLowerCase() : undefined;
 }
 
 function buildCacheKey(query: string, options?: GeocodeOptions): string {

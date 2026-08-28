@@ -1,12 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import type { DestinationSuggestion } from '@mood-trip/validators';
+import {
+  NEGATIVE_CACHE_TTL_MS,
+  REQUEST_TIMEOUT_MS,
+  SUCCESS_CACHE_TTL_MS,
+  TtlCache,
+  abortAfter,
+  isAbortError,
+} from './geocoding-utils';
 
 const OPEN_METEO_GEOCODING_URL =
   'https://geocoding-api.open-meteo.com/v1/search';
-const REQUEST_TIMEOUT_MS = 10_000;
-const MAX_CACHE_SIZE = 5000;
-const SUCCESS_CACHE_TTL_MS = 60 * 60 * 1000;
-const NEGATIVE_CACHE_TTL_MS = 30 * 1000;
 
 type OpenMeteoGeocodeResult = {
   name: string;
@@ -21,15 +25,10 @@ type OpenMeteoGeocodeResponse = {
   results?: OpenMeteoGeocodeResult[];
 };
 
-type CacheEntry = {
-  suggestions: DestinationSuggestion[];
-  expiresAt: number;
-};
-
 @Injectable()
 export class OpenMeteoGeocodingService {
   private readonly logger = new Logger(OpenMeteoGeocodingService.name);
-  private readonly cache = new Map<string, CacheEntry>();
+  private readonly cache = new TtlCache<DestinationSuggestion[]>();
 
   /** Return population-ranked city suggestions for destination autocomplete. */
   async suggestDestinations(
@@ -42,7 +41,7 @@ export class OpenMeteoGeocodingService {
     }
 
     const cacheKey = `${normalized.toLowerCase()}|${limit}`;
-    const cached = this.getCached(cacheKey);
+    const cached = this.cache.get(cacheKey);
     if (cached) {
       return cached;
     }
@@ -64,7 +63,7 @@ export class OpenMeteoGeocodingService {
         this.logger.warn(
           `Open-Meteo geocoding failed for "${normalized}" (${response.status})`,
         );
-        this.setCached(cacheKey, [], NEGATIVE_CACHE_TTL_MS);
+        this.cache.set(cacheKey, [], NEGATIVE_CACHE_TTL_MS);
         return [];
       }
 
@@ -74,7 +73,7 @@ export class OpenMeteoGeocodingService {
           formatDestinationSuggestion(result),
         ),
       );
-      this.setCached(
+      this.cache.set(
         cacheKey,
         suggestions,
         suggestions.length === 0 ? NEGATIVE_CACHE_TTL_MS : SUCCESS_CACHE_TTL_MS,
@@ -89,34 +88,6 @@ export class OpenMeteoGeocodingService {
       );
       return [];
     }
-  }
-
-  private getCached(key: string): DestinationSuggestion[] | undefined {
-    const entry = this.cache.get(key);
-    if (!entry) {
-      return undefined;
-    }
-    if (Date.now() > entry.expiresAt) {
-      this.cache.delete(key);
-      return undefined;
-    }
-    return entry.suggestions;
-  }
-
-  private setCached(
-    key: string,
-    suggestions: DestinationSuggestion[],
-    ttlMs: number,
-  ): void {
-    if (this.cache.has(key)) {
-      this.cache.delete(key);
-    } else if (this.cache.size >= MAX_CACHE_SIZE) {
-      const oldest = this.cache.keys().next().value;
-      if (oldest !== undefined) {
-        this.cache.delete(oldest);
-      }
-    }
-    this.cache.set(key, { suggestions, expiresAt: Date.now() + ttlMs });
   }
 }
 
@@ -152,24 +123,4 @@ function dedupeSuggestions(
     seen.add(key);
     return true;
   });
-}
-
-function abortAfter(ms: number): AbortSignal {
-  if (typeof AbortSignal.timeout === 'function') {
-    return AbortSignal.timeout(ms);
-  }
-
-  const controller = new AbortController();
-  setTimeout(() => controller.abort(), ms);
-  return controller.signal;
-}
-
-function isAbortError(error: unknown): boolean {
-  return (
-    (error instanceof Error &&
-      (error.name === 'AbortError' || error.name === 'TimeoutError')) ||
-    (typeof DOMException !== 'undefined' &&
-      error instanceof DOMException &&
-      error.name === 'AbortError')
-  );
 }
