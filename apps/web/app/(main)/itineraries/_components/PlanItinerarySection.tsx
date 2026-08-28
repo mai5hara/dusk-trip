@@ -30,7 +30,9 @@ const PlanItinerarySection = () => {
   const [budget, setBudget] = useState('moderate');
   const [destinationPlace, setDestinationPlace] =
     useState<DestinationPlace | null>(null);
-  const [destinationError, setDestinationError] = useState<string | undefined>();
+  const [destinationError, setDestinationError] = useState<
+    string | undefined
+  >();
   const [dateRange, setDateRange] = useState<DateRangePickerValue | undefined>(
     undefined,
   );

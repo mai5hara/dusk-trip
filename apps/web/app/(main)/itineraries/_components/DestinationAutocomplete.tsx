@@ -2,7 +2,10 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { Field, Input, Label } from '@mood-trip/ui';
-import type { DestinationPlace, DestinationSuggestion } from '@mood-trip/validators';
+import type {
+  DestinationPlace,
+  DestinationSuggestion,
+} from '@mood-trip/validators';
 import { searchDestinationSuggestions } from '@/api/geocoding/api';
 
 const DEBOUNCE_MS = 300;
@@ -27,7 +30,9 @@ type DestinationAutocompleteProps = {
   error?: string;
 };
 
-function toDestinationPlace(suggestion: DestinationSuggestion): DestinationPlace {
+function toDestinationPlace(
+  suggestion: DestinationSuggestion,
+): DestinationPlace {
   return {
     label: suggestion.label,
     lat: suggestion.lat,
@@ -61,7 +66,8 @@ const DestinationAutocomplete = ({
     };
   }, []);
 
-  const hasSelectableSuggestions = !isLoading && !searchError && suggestions.length > 0;
+  const hasSelectableSuggestions =
+    !isLoading && !searchError && suggestions.length > 0;
 
   useEffect(() => {
     if (!hasSelectableSuggestions || activeIndex < 0) {
@@ -204,8 +210,7 @@ const DestinationAutocomplete = ({
   };
 
   const showPanel =
-    isOpen &&
-    (isLoading || searchError || suggestions.length > 0);
+    isOpen && (isLoading || searchError || suggestions.length > 0);
 
   const activeOptionId =
     hasSelectableSuggestions && activeIndex >= 0
@@ -221,11 +226,7 @@ const DestinationAutocomplete = ({
       <Label htmlFor="destination" required>
         Destination
       </Label>
-      <div
-        ref={rootRef}
-        className="relative"
-        onKeyDownCapture={handleKeyDown}
-      >
+      <div ref={rootRef} className="relative" onKeyDownCapture={handleKeyDown}>
         <Input
           id="destination"
           variant="inset"
@@ -296,7 +297,9 @@ const DestinationAutocomplete = ({
                           handleSelect(suggestion);
                         }}
                       >
-                        <span className="font-medium">{suggestion.primary}</span>
+                        <span className="font-medium">
+                          {suggestion.primary}
+                        </span>
                         {suggestion.context ? (
                           <span className="text-xs text-text-muted">
                             {suggestion.context}
@@ -310,9 +313,7 @@ const DestinationAutocomplete = ({
           </ul>
         ) : null}
       </div>
-      <p
-        className={`min-h-4 text-xs ${error ? 'text-red-500' : 'opacity-60'}`}
-      >
+      <p className={`min-h-4 text-xs ${error ? 'text-red-500' : 'opacity-60'}`}>
         {helperText}
       </p>
     </Field>
