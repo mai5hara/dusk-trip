@@ -25,6 +25,6 @@ Copy `.env.local.example` to `.env.local`:
 cp .env.local.example .env.local
 ```
 
-| Variable | Description |
-| --- | --- |
+| Variable              | Description                                     |
+| --------------------- | ----------------------------------------------- |
 | `NEXT_PUBLIC_API_URL` | API base URL (default: `http://localhost:3000`) |
