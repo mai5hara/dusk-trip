@@ -16,7 +16,9 @@ export class AdminGuard extends JwtAuthGuard {
     const result = await super.canActivate(context);
     if (!result) return false;
 
-    const request = context.switchToHttp().getRequest();
+    const request = context
+      .switchToHttp()
+      .getRequest<{ user: { id: string } }>();
 
     const user = await this.userService.findByIdForAuth(request.user.id);
     if (!user?.isAdmin) {
