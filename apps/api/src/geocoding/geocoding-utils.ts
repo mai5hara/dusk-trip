@@ -1,5 +1,65 @@
 type Coordinates = { lat: number; lng: number };
 
+export const REQUEST_TIMEOUT_MS = 10_000;
+export const MAX_CACHE_SIZE = 5000;
+export const SUCCESS_CACHE_TTL_MS = 60 * 60 * 1000;
+export const NEGATIVE_CACHE_TTL_MS = 30 * 1000;
+
+type CacheEntry<T> = {
+  value: T;
+  expiresAt: number;
+};
+
+export class TtlCache<T> {
+  private readonly cache = new Map<string, CacheEntry<T>>();
+
+  constructor(private readonly maxSize: number = MAX_CACHE_SIZE) {}
+
+  get(key: string): T | undefined {
+    const entry = this.cache.get(key);
+    if (!entry) {
+      return undefined;
+    }
+    if (Date.now() > entry.expiresAt) {
+      this.cache.delete(key);
+      return undefined;
+    }
+    return entry.value;
+  }
+
+  set(key: string, value: T, ttlMs: number): void {
+    if (this.cache.has(key)) {
+      this.cache.delete(key);
+    } else if (this.cache.size >= this.maxSize) {
+      const oldest = this.cache.keys().next().value;
+      if (oldest !== undefined) {
+        this.cache.delete(oldest);
+      }
+    }
+    this.cache.set(key, { value, expiresAt: Date.now() + ttlMs });
+  }
+}
+
+export function abortAfter(ms: number): AbortSignal {
+  if (typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(ms);
+  }
+
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), ms);
+  return controller.signal;
+}
+
+export function isAbortError(error: unknown): boolean {
+  return (
+    (error instanceof Error &&
+      (error.name === 'AbortError' || error.name === 'TimeoutError')) ||
+    (typeof DOMException !== 'undefined' &&
+      error instanceof DOMException &&
+      error.name === 'AbortError')
+  );
+}
+
 const EARTH_RADIUS_KM = 6371;
 const METERS_PER_DEGREE = 111_320;
 

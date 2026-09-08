@@ -7,12 +7,10 @@ import {
   Input,
   Label,
   Select,
+  Textarea,
   type DateRangePickerValue,
 } from '@mood-trip/ui';
 import { budgetOptions, paceOptions } from '../_lib/plan-form-options';
-
-const textareaClassName =
-  'min-h-24 w-full rounded-md border border-transparent bg-surface px-3 py-2 text-sm text-text-primary shadow-[var(--shadow-button-inset)] outline-none transition-[box-shadow,border-color] duration-200 ease-out focus:shadow-[var(--shadow-button-raised-hover)] focus:ring-2 focus:ring-ring/40 focus:ring-offset-2 focus:ring-offset-surface motion-reduce:transition-none';
 
 type ItineraryDestinationStepProps = {
   destination: string;
@@ -162,11 +160,13 @@ const ItineraryDestinationStep = ({
 
         <Field>
           <Label htmlFor="constraints">Constraints</Label>
-          <textarea
+          <Textarea
             id="constraints"
-            className={textareaClassName}
+            variant="inset"
             value={constraints}
-            onChange={(event) => onConstraintsChange(event.target.value)}
+            onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
+              onConstraintsChange(event.target.value)
+            }
             placeholder="No driving, vegetarian food, kid-friendly..."
           />
         </Field>

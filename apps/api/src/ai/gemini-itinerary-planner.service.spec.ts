@@ -13,6 +13,12 @@ describe('GeminiItineraryPlannerService', () => {
 
   const body: GenerateItineraryBody = {
     destination: 'Lisbon',
+    destinationPlace: {
+      label: 'Lisbon, Portugal',
+      lat: 38.7223,
+      lng: -9.1393,
+      countryCode: 'pt',
+    },
     mood: 'curious',
     pace: 'balanced',
     startDate: new Date('2026-07-01'),

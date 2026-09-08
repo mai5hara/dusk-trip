@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { destinationPlaceSchema } from './geocoding';
 
 export const moodSchema = z.enum([
   'calm',
@@ -15,6 +16,9 @@ const budgetSchema = z.enum(['budget', 'moderate', 'premium', 'luxury']);
 export const generateItineraryBodySchema = z
   .object({
     destination: z.string().min(1).max(120),
+    // Optional until the destination autocomplete UI (#41) ships; when absent
+    // the API falls back to MapTiler area geocoding on the free-text destination.
+    destinationPlace: destinationPlaceSchema.optional(),
     mood: moodSchema,
     pace: paceSchema,
     startDate: z.coerce.date(),

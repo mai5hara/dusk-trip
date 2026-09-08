@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MapsModule } from './maps/maps.module';
 import { AdminModule } from './admin/admin.module';
+import { GeocodingModule } from './geocoding/geocoding.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AdminModule } from './admin/admin.module';
     AuthModule,
     MapsModule,
     AdminModule,
+    GeocodingModule,
   ],
 })
 export class AppModule {}

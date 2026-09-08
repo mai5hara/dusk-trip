@@ -5,6 +5,13 @@ import {
   itineraryPlanSchema,
 } from './itinerary';
 
+const sampleDestinationPlace = {
+  label: 'Lisbon, Portugal',
+  lat: 38.7223,
+  lng: -9.1393,
+  countryCode: 'pt',
+};
+
 const samplePlan = {
   title: 'Curious Lisbon',
   location: 'Lisbon, Portugal',
@@ -54,6 +61,7 @@ describe('generateItineraryBodySchema', () => {
   it('accepts valid planning input', () => {
     const result = generateItineraryBodySchema.safeParse({
       destination: 'Lisbon',
+      destinationPlace: sampleDestinationPlace,
       mood: 'curious',
       pace: 'balanced',
       startDate: '2026-07-01',
@@ -67,9 +75,25 @@ describe('generateItineraryBodySchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it('accepts planning input without a resolved destination place', () => {
+    const result = generateItineraryBodySchema.safeParse({
+      destination: 'Lisbon',
+      mood: 'curious',
+      pace: 'balanced',
+      startDate: '2026-07-01',
+      endDate: '2026-07-04',
+      budget: 'moderate',
+      travelers: 2,
+      interests: ['food'],
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   it('rejects planning input without interests', () => {
     const result = generateItineraryBodySchema.safeParse({
       destination: 'Lisbon',
+      destinationPlace: sampleDestinationPlace,
       mood: 'curious',
       pace: 'balanced',
       startDate: '2026-07-01',
