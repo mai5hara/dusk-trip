@@ -15,8 +15,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="moss" className="h-full antialiased">
-      <body className="flex min-h-screen w-full flex-col">
+    <html
+      lang="en"
+      data-theme="moss"
+      className="h-full overflow-x-clip antialiased"
+    >
+      <body className="flex min-h-screen w-full flex-col overflow-x-clip">
         <AuthProvider>
           <QueryProvider>
             {children}

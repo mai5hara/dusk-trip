@@ -16,10 +16,12 @@ export {
   tripWithEntriesSchema,
   listTripsQuerySchema,
   createTripBodySchema,
+  updateTripBodySchema,
   type Trip,
   type TripListItem,
   type TripWithEntries,
   type CreateTripBody,
+  type UpdateTripBody,
 } from './trip';
 export {
   moodSchema,
@@ -57,11 +59,15 @@ export {
   entrySchema,
   createEntryBodySchema,
   createEntriesBatchBodySchema,
+  updateEntryBodySchema,
+  updateEntriesBatchBodySchema,
   CREATE_ENTRIES_BATCH_MAX,
   type EntryTimeOfDay,
   type Entry,
   type CreateEntryBody,
   type CreateEntriesBatchBody,
+  type UpdateEntryBody,
+  type UpdateEntriesBatchBody,
 } from './entry';
 export {
   loginBodySchema,

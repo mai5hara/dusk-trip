@@ -121,6 +121,13 @@ describe('toDate', () => {
     expect(date?.getFullYear()).toBe(2026);
   });
 
+  it('keeps UTC midnight API dates on the same calendar day', () => {
+    const date = toDate('2026-08-19T00:00:00.000Z');
+    expect(date?.getFullYear()).toBe(2026);
+    expect(date?.getMonth()).toBe(7);
+    expect(date?.getDate()).toBe(19);
+  });
+
   it('returns Date values as-is', () => {
     const input = new Date(2026, 5, 1);
     expect(toDate(input)).toBe(input);

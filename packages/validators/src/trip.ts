@@ -32,18 +32,40 @@ export const listTripsQuerySchema = z.object({
   userId: z.string().uuid(),
 });
 
-export const createTripBodySchema = z
-  .object({
-    title: z.string().min(1),
-    thumbnailUrl: z.string().url(),
-    description: z.string().max(500).optional(),
-    location: z.string().min(1),
-    startDate: z.coerce.date(),
-    endDate: z.coerce.date(),
-  })
-  .refine((data) => data.endDate >= data.startDate, {
+const tripBodyFieldsSchema = z.object({
+  title: z.string().min(1),
+  thumbnailUrl: z.string().url(),
+  description: z.string().max(500).optional(),
+  location: z.string().min(1),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
+});
+
+function _endDateOnOrAfterStartDate(data: {
+  startDate?: Date;
+  endDate?: Date;
+}): boolean {
+  if (data.startDate && data.endDate) {
+    return data.endDate >= data.startDate;
+  }
+  return true;
+}
+
+export const createTripBodySchema = tripBodyFieldsSchema.refine(
+  _endDateOnOrAfterStartDate,
+  {
+    message: 'endDate must be or after startDate',
+    path: ['endDate'],
+  },
+);
+
+export type CreateTripBody = z.infer<typeof createTripBodySchema>;
+
+export const updateTripBodySchema = tripBodyFieldsSchema
+  .partial()
+  .refine(_endDateOnOrAfterStartDate, {
     message: 'endDate must be or after startDate',
     path: ['endDate'],
   });
 
-export type CreateTripBody = z.infer<typeof createTripBodySchema>;
+export type UpdateTripBody = z.infer<typeof updateTripBodySchema>;

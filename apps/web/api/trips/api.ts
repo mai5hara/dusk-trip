@@ -5,6 +5,8 @@ import {
   type Entry,
   type TripListItem,
   type TripWithEntries,
+  type UpdateEntriesBatchBody,
+  type UpdateTripBody,
 } from '@mood-trip/validators';
 
 export async function getTrips(): Promise<TripListItem[]> {
@@ -28,6 +30,26 @@ export async function createEntries(
 ): Promise<Entry[]> {
   return apiClient<Entry[]>(`/trips/${tripId}/entries/batch`, {
     method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function updateTrip(
+  id: string,
+  body: UpdateTripBody,
+): Promise<TripListItem> {
+  return apiClient<TripListItem>(`/trips/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function updateEntries(
+  tripId: string,
+  body: UpdateEntriesBatchBody,
+): Promise<Entry[]> {
+  return apiClient<Entry[]>(`/trips/${tripId}/entries/batch`, {
+    method: 'PATCH',
     body: JSON.stringify(body),
   });
 }

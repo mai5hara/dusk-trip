@@ -1,4 +1,4 @@
-import type { Entry } from '@mood-trip/validators';
+import { entryTimeOfDayRank, type Entry } from '@mood-trip/validators';
 import type { DayEntryFormValue } from './create-trip-form';
 
 export type { DayEntryFormValue };
@@ -53,21 +53,87 @@ function emptyDayEntry(date: Date, dayIndex: number): DayEntryFormValue {
   };
 }
 
-function matchExistingEntry(
+function _unusedEntries(
+  existingEntries: Entry[],
+  usedIds: Set<string>,
+): Entry[] {
+  return existingEntries.filter((entry) => !entry.id || !usedIds.has(entry.id));
+}
+
+function _compareExistingEntries(a: Entry, b: Entry): number {
+  const timeDiff =
+    entryTimeOfDayRank(a.timeOfDay) - entryTimeOfDayRank(b.timeOfDay);
+  if (timeDiff !== 0) {
+    return timeDiff;
+  }
+
+  const sortDiff = a.sortOrder - b.sortOrder;
+  if (sortDiff !== 0) {
+    return sortDiff;
+  }
+
+  return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+}
+
+function _matchExistingEntries(
   dateKey: string,
   dayIndex: number,
   existingEntries: Entry[],
-): Entry | undefined {
-  return (
-    existingEntries.find((entry) => entry.dayLabel === dateKey) ??
-    existingEntries.find((entry) => entry.dayLabel === `Day ${dayIndex + 1}`) ??
-    existingEntries.find((entry) => entry.sortOrder === dayIndex)
-  );
+  usedIds: Set<string>,
+): Entry[] {
+  const unused = _unusedEntries(existingEntries, usedIds);
+  const byDateKey = unused.filter((entry) => entry.dayLabel === dateKey);
+  const matches =
+    byDateKey.length > 0
+      ? byDateKey
+      : unused.filter((entry) => entry.dayLabel === `Day ${dayIndex + 1}`);
+
+  if (matches.length > 0) {
+    return [...matches].sort(_compareExistingEntries);
+  }
+
+  const bySortOrder = unused.find((entry) => entry.sortOrder === dayIndex);
+  return bySortOrder ? [bySortOrder] : [];
+}
+
+function _markUsed(entries: Entry[], usedIds: Set<string>): void {
+  for (const entry of entries) {
+    if (entry.id) usedIds.add(entry.id);
+  }
+}
+
+function _formEntryFromSaved(
+  date: Date,
+  dayIndex: number,
+  existing: Entry,
+): DayEntryFormValue {
+  return {
+    id: existing.id,
+    dateKey: toDateKey(date),
+    dayLabel: `Day ${dayIndex + 1}`,
+    sortOrder: existing.sortOrder,
+    photoUrl: existing.photoUrl,
+    caption: existing.caption ?? '',
+    location: existing.location ?? '',
+    timeOfDay: existing.timeOfDay ?? undefined,
+  };
+}
+
+function _formEntryFromPrevious(
+  date: Date,
+  dayIndex: number,
+  previous: DayEntryFormValue,
+): DayEntryFormValue {
+  return {
+    ...previous,
+    dateKey: toDateKey(date),
+    dayLabel: `Day ${dayIndex + 1}`,
+  };
 }
 
 /**
- * Build per-day form rows for a travel period.
- * Keeps previous form values and API memories when the date still exists.
+ * Build form rows for a travel period.
+ * Keeps previous form values and all API memories for each day.
  */
 export function buildDayEntries(
   start: Date,
@@ -75,25 +141,37 @@ export function buildDayEntries(
   previous: DayEntryFormValue[] = [],
   existingEntries: Entry[] = [],
 ): DayEntryFormValue[] {
-  const previousByDate = new Map(
-    previous.map((entry) => [entry.dateKey, entry]),
-  );
+  const previousByDate = new Map<string, DayEntryFormValue[]>();
+  for (const entry of previous) {
+    const rows = previousByDate.get(entry.dateKey) ?? [];
+    rows.push(entry);
+    previousByDate.set(entry.dateKey, rows);
+  }
 
-  return eachDayInRange(start, end).map((date, dayIndex) => {
+  const usedIds = new Set<string>();
+
+  return eachDayInRange(start, end).flatMap((date, dayIndex) => {
     const dateKey = toDateKey(date);
     const prev = previousByDate.get(dateKey);
-    const existing = matchExistingEntry(dateKey, dayIndex, existingEntries);
+    if (prev && prev.length > 0) {
+      return prev.map((entry) => _formEntryFromPrevious(date, dayIndex, entry));
+    }
 
-    return {
-      id: prev?.id ?? existing?.id,
+    const existing = _matchExistingEntries(
       dateKey,
-      dayLabel: `Day ${dayIndex + 1}`,
-      sortOrder: dayIndex,
-      photoUrl: prev?.photoUrl ?? existing?.photoUrl ?? '',
-      caption: prev?.caption ?? existing?.caption ?? '',
-      location: prev?.location ?? existing?.location ?? '',
-      timeOfDay: prev?.timeOfDay ?? existing?.timeOfDay ?? undefined,
-    };
+      dayIndex,
+      existingEntries,
+      usedIds,
+    );
+    _markUsed(existing, usedIds);
+
+    if (existing.length > 0) {
+      return existing.map((entry) =>
+        _formEntryFromSaved(date, dayIndex, entry),
+      );
+    }
+
+    return [emptyDayEntry(date, dayIndex)];
   });
 }
 
@@ -115,7 +193,9 @@ export function groupEntriesByMonth(
       label,
       days: [],
     };
-    group.days.push(entry);
+    if (!group.days.some((day) => day.dateKey === entry.dateKey)) {
+      group.days.push(entry);
+    }
     groups.set(monthKey, group);
   }
 

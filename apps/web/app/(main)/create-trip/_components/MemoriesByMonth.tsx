@@ -25,10 +25,10 @@ import {
 } from '../_lib/travel-period';
 import PhotoUrlField from './PhotoUrlField';
 import TimeOfDayButtons from './TimeOfDayButtons';
+import MemoryCarousel from './MemoryCarousel';
 
 type MemoriesByMonthProps = {
   entries: DayEntryFormValue[];
-  // Parent form shape is wider; keep this loosely typed for reuse.
   control: Control<FieldValues>;
   register: UseFormRegister<FieldValues>;
   errors: FieldErrors<FieldValues>;
@@ -37,13 +37,12 @@ type MemoriesByMonthProps = {
 const MemoriesByMonth = ({
   entries,
   control,
-  register,
   errors,
 }: MemoriesByMonthProps) => {
   const months = groupEntriesByMonth(entries);
   const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
+  const [slotByDay, setSlotByDay] = useState<Record<string, number>>({});
 
-  // Derive a valid selection from entries so we don't sync with useEffect.
   const effectiveSelectedDateKey =
     entries.length === 0
       ? null
@@ -51,10 +50,17 @@ const MemoriesByMonth = ({
         ? selectedDateKey
         : entries[0].dateKey;
 
-  const selectedIndex = entries.findIndex(
-    (entry) => entry.dateKey === effectiveSelectedDateKey,
+  const selectedIndices = entries.flatMap((entry, index) =>
+    entry.dateKey === effectiveSelectedDateKey ? [index] : [],
   );
-  const selectedDay = selectedIndex >= 0 ? entries[selectedIndex] : undefined;
+  const selectedDay =
+    selectedIndices.length > 0 ? entries[selectedIndices[0]] : undefined;
+  const dayKey = effectiveSelectedDateKey ?? '';
+  const activeSlot = Math.min(
+    slotByDay[dayKey] ?? 0,
+    Math.max(0, selectedIndices.length - 1),
+  );
+  const selectedIndex = selectedIndices[activeSlot];
 
   if (months.length === 0) {
     return (
@@ -65,8 +71,8 @@ const MemoriesByMonth = ({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-16">
-      <div className="md:col-span-5">
+    <div className="isolate grid grid-cols-1 gap-6 pr-8 md:grid-cols-16 md:pr-12">
+      <div className="relative z-20 min-w-0 bg-surface md:col-span-5">
         <Accordion
           type="multiple"
           variant="accent"
@@ -104,90 +110,36 @@ const MemoriesByMonth = ({
         </Accordion>
       </div>
 
-      <div className="md:col-span-11">
-        {selectedDay && selectedIndex >= 0 ? (
-          <div key={selectedDay.dateKey} className="flex flex-col gap-4">
+      <div className="relative z-0 min-w-0 md:col-span-11">
+        {selectedDay && selectedIndex !== undefined ? (
+          <div className="flex flex-col gap-6">
             <h3 className="text-lg font-semibold">
               {formatDayHeading(selectedDay)}
             </h3>
-
-            <Field>
-              <Label htmlFor={`entries.${selectedIndex}.photoUrl`}>Photo</Label>
-              <Controller
-                name={`entries.${selectedIndex}.photoUrl` as Path<FieldValues>}
-                control={control}
-                render={({ field }) => (
-                  <PhotoUrlField
-                    id={`entries.${selectedIndex}.photoUrl`}
-                    variant="inset"
-                    value={typeof field.value === 'string' ? field.value : ''}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    errorMessage={
-                      (
-                        errors.entries as
-                          | FieldErrors<DayEntryFormValue>[]
-                          | undefined
-                      )?.[selectedIndex]?.photoUrl?.message
-                    }
-                  />
-                )}
-              />
-            </Field>
-
-            <Controller
-              name={`entries.${selectedIndex}.timeOfDay` as Path<FieldValues>}
-              control={control}
-              render={({ field }) => (
-                <TimeOfDayButtons
-                  id={`entries.${selectedIndex}.timeOfDay`}
-                  value={field.value}
-                  onChange={field.onChange}
+            <MemoryCarousel
+              items={selectedIndices.map((index) => ({
+                id: entries[index]?.id,
+                photoUrl: entries[index]?.photoUrl ?? '',
+              }))}
+              activeSlot={activeSlot}
+              onActiveSlotChange={(slot) =>
+                setSlotByDay((current) => ({ ...current, [dayKey]: slot }))
+              }
+              activePhotoField={
+                <_PhotoField
+                  key={selectedIndex}
+                  selectedIndex={selectedIndex}
+                  control={control}
+                  errors={errors}
                 />
-              )}
+              }
             />
-
-            <Field>
-              <Label htmlFor={`entries.${selectedIndex}.caption`}>
-                Caption
-              </Label>
-              <Input
-                type="text"
-                variant="inset"
-                placeholder="Write a caption"
-                {...register(
-                  `entries.${selectedIndex}.caption` as Path<FieldValues>,
-                )}
-                errorMessage={
-                  (
-                    errors.entries as
-                      | FieldErrors<DayEntryFormValue>[]
-                      | undefined
-                  )?.[selectedIndex]?.caption?.message
-                }
-              />
-            </Field>
-
-            <Field>
-              <Label htmlFor={`entries.${selectedIndex}.location`}>
-                Location
-              </Label>
-              <Input
-                type="text"
-                variant="inset"
-                placeholder="Where was this?"
-                {...register(
-                  `entries.${selectedIndex}.location` as Path<FieldValues>,
-                )}
-                errorMessage={
-                  (
-                    errors.entries as
-                      | FieldErrors<DayEntryFormValue>[]
-                      | undefined
-                  )?.[selectedIndex]?.location?.message
-                }
-              />
-            </Field>
+            <_CaptionFields
+              key={selectedIndex}
+              selectedIndex={selectedIndex}
+              control={control}
+              errors={errors}
+            />
           </div>
         ) : (
           <p className="text-sm opacity-70">Select a day to edit memories.</p>
@@ -196,5 +148,105 @@ const MemoriesByMonth = ({
     </div>
   );
 };
+
+type FieldProps = {
+  selectedIndex: number;
+  errors: FieldErrors<FieldValues>;
+};
+
+function _PhotoField({
+  selectedIndex,
+  control,
+  errors,
+}: FieldProps & { control: Control<FieldValues> }) {
+  const fieldErrors = errors.entries as
+    | FieldErrors<DayEntryFormValue>[]
+    | undefined;
+
+  return (
+    <Controller
+      name={`entries.${selectedIndex}.photoUrl` as Path<FieldValues>}
+      control={control}
+      render={({ field }) => (
+        <div className="size-full overflow-hidden [&>div]:h-full [&>div]:gap-0 [&>div>div]:h-full [&_img]:size-full [&_img]:object-cover">
+          <PhotoUrlField
+            id={`entries.${selectedIndex}.photoUrl`}
+            variant="inset"
+            value={typeof field.value === 'string' ? field.value : ''}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            errorMessage={fieldErrors?.[selectedIndex]?.photoUrl?.message}
+          />
+        </div>
+      )}
+    />
+  );
+}
+
+function _CaptionFields({
+  selectedIndex,
+  control,
+  errors,
+}: FieldProps & {
+  control: Control<FieldValues>;
+}) {
+  const fieldErrors = errors.entries as
+    | FieldErrors<DayEntryFormValue>[]
+    | undefined;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Controller
+        name={`entries.${selectedIndex}.timeOfDay` as Path<FieldValues>}
+        control={control}
+        render={({ field }) => (
+          <TimeOfDayButtons
+            id={`entries.${selectedIndex}.timeOfDay`}
+            value={field.value}
+            onChange={field.onChange}
+          />
+        )}
+      />
+      <Field>
+        <Label htmlFor={`entries.${selectedIndex}.caption`}>Caption</Label>
+        <Controller
+          name={`entries.${selectedIndex}.caption` as Path<FieldValues>}
+          control={control}
+          render={({ field }) => (
+            <Input
+              id={`entries.${selectedIndex}.caption`}
+              type="text"
+              variant="inset"
+              placeholder="Write a caption"
+              value={typeof field.value === 'string' ? field.value : ''}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              errorMessage={fieldErrors?.[selectedIndex]?.caption?.message}
+            />
+          )}
+        />
+      </Field>
+      <Field>
+        <Label htmlFor={`entries.${selectedIndex}.location`}>Location</Label>
+        <Controller
+          name={`entries.${selectedIndex}.location` as Path<FieldValues>}
+          control={control}
+          render={({ field }) => (
+            <Input
+              id={`entries.${selectedIndex}.location`}
+              type="text"
+              variant="inset"
+              placeholder="Where was this?"
+              value={typeof field.value === 'string' ? field.value : ''}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              errorMessage={fieldErrors?.[selectedIndex]?.location?.message}
+            />
+          )}
+        />
+      </Field>
+    </div>
+  );
+}
 
 export default MemoriesByMonth;

@@ -59,8 +59,27 @@ export const entryFormSchema = z
 export type DayEntryFormValue = z.infer<typeof dayEntryFormSchema>;
 export type EntryFormValues = z.infer<typeof entryFormSchema>;
 
+/**
+ * Calendar dates from the API arrive as UTC midnight ISO strings.
+ * Parse the YYYY-MM-DD prefix as a local date so the picker matches
+ * formatDateRange (which uses UTC date parts).
+ */
 export function toDate(value: Date | string | undefined): Date | undefined {
   if (!value) return undefined;
-  const date = value instanceof Date ? value : new Date(value);
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? undefined : value;
+  }
+
+  const dateOnly = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (dateOnly) {
+    const date = new Date(
+      Number(dateOnly[1]),
+      Number(dateOnly[2]) - 1,
+      Number(dateOnly[3]),
+    );
+    return Number.isNaN(date.getTime()) ? undefined : date;
+  }
+
+  const date = new Date(value);
   return Number.isNaN(date.getTime()) ? undefined : date;
 }

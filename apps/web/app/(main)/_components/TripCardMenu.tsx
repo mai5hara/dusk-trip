@@ -1,16 +1,27 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { EllipsisIcon } from 'lucide-react';
 import { Button } from '@mood-trip/ui';
 
-const MENU_ITEMS = ['Delete Album', 'Edit Album', 'Edit Memories'] as const;
-
 type TripCardMenuProps = {
+  tripId: string;
   cardRef: React.RefObject<HTMLDivElement | null>;
 };
 
-const TripCardMenu = ({ cardRef }: TripCardMenuProps): React.JSX.Element => {
+const _getMenuItems = (
+  tripId: string,
+): ReadonlyArray<{ label: string; href: string | null }> => [
+  { label: 'Delete Album', href: null },
+  { label: 'Edit Album', href: `/trips/${tripId}/edit` },
+  { label: 'Edit Memories', href: `/trips/${tripId}/edit/memories` },
+];
+
+const TripCardMenu = ({
+  tripId,
+  cardRef,
+}: TripCardMenuProps): React.JSX.Element => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -56,20 +67,29 @@ const TripCardMenu = ({ cardRef }: TripCardMenuProps): React.JSX.Element => {
           role="menu"
           className="absolute right-0 mt-1 flex min-w-44 flex-col rounded-xl border bg-surface p-1 shadow-md"
         >
-          {MENU_ITEMS.map((label) => (
-            <a
-              key={label}
-              role="menuitem"
-              href="#"
-              className="rounded-lg px-3 py-2 text-sm hover:bg-black/5"
-              onClick={(event: React.MouseEvent<HTMLAnchorElement>) => {
-                event.preventDefault();
-                setIsOpen(false);
-              }}
-            >
-              {label}
-            </a>
-          ))}
+          {_getMenuItems(tripId).map(({ label, href }) =>
+            href ? (
+              <Link
+                key={label}
+                role="menuitem"
+                href={href}
+                className="rounded-lg px-3 py-2 text-sm hover:bg-black/5"
+                onClick={() => setIsOpen(false)}
+              >
+                {label}
+              </Link>
+            ) : (
+              <button
+                key={label}
+                type="button"
+                role="menuitem"
+                className="rounded-lg px-3 py-2 text-left text-sm hover:bg-black/5"
+                onClick={() => setIsOpen(false)}
+              >
+                {label}
+              </button>
+            ),
+          )}
         </div>
       ) : null}
     </div>
