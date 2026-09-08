@@ -95,6 +95,47 @@ describe('ItineraryPlanService', () => {
     expect(result.mapStyle.sources).toHaveProperty('maptiler_planet_v4');
   });
 
+  it('falls back to MapTiler area geocoding when destinationPlace is omitted', async () => {
+    const bodyWithoutPlace: GenerateItineraryBody = {
+      ...body,
+      destinationPlace: undefined,
+    };
+    const itineraryPlannerService = {
+      generateItinerary: jest.fn().mockResolvedValue(draft),
+    } as ItineraryPlanner;
+    const geocodingService = {
+      geocodeArea: jest.fn().mockResolvedValue({
+        lat: 38.7223,
+        lng: -9.1393,
+        countryCode: 'pt',
+      }),
+      geocodeCandidates: jest
+        .fn()
+        .mockResolvedValue([
+          { lat: 38.7117, lng: -9.1304, relevance: 0.9, isPoi: true },
+        ]),
+    } as unknown as MapTilerGeocodingService;
+
+    const service = new ItineraryPlanService(
+      itineraryPlannerService,
+      geocodingService,
+      noImageService,
+      {
+        getOrThrow: jest.fn().mockReturnValue('test-maptiler-key'),
+      } as unknown as ConfigService,
+    );
+    const result = await service.generateItinerary(bodyWithoutPlace);
+
+    expect(geocodingService.geocodeArea).toHaveBeenCalledWith(
+      'Lisbon, Portugal',
+    );
+    expect(result.plan.center).toEqual({ lat: 38.7223, lng: -9.1393 });
+    expect(geocodingService.geocodeCandidates).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ country: 'pt' }),
+    );
+  });
+
   it('uses the AI coordinate hint to pick between geocoding candidates', async () => {
     const draftWithHint: ItineraryPlanDraft = {
       ...draft,

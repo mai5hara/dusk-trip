@@ -14,6 +14,11 @@ export type Coordinates = { lat: number; lng: number };
 // [west, south, east, north]
 export type BoundingBox = [number, number, number, number];
 
+export type AreaResult = Coordinates & {
+  countryCode?: string;
+  bbox?: BoundingBox;
+};
+
 export type GeocodeOptions = {
   proximity?: Coordinates;
   /** ISO 3166-1 alpha-2 codes, comma separated, to restrict results. */
@@ -52,12 +57,41 @@ type MapTilerGeocodeResponse = {
   features?: MapTilerFeature[];
 };
 
+// City-level types resolve "Kyoto" to the city, not the much larger prefecture
+// centroid. Region/country are only used as a fallback for broad destinations.
+const CITY_AREA_TYPES = 'place,municipality,municipal_district';
+const REGION_AREA_TYPES = 'region,country';
+
 @Injectable()
 export class MapTilerGeocodingService {
   private readonly logger = new Logger(MapTilerGeocodingService.name);
   private readonly cache = new TtlCache<MapTilerFeature[]>();
 
   constructor(private readonly configService: ConfigService) {}
+
+  /**
+   * Resolve a city / region to its center, country code and bounding box.
+   * Used when the client has not supplied a resolved destinationPlace yet.
+   */
+  async geocodeArea(query: string): Promise<AreaResult | null> {
+    const feature =
+      (await this.fetchFeature(query, { types: CITY_AREA_TYPES })) ??
+      (await this.fetchFeature(query, { types: REGION_AREA_TYPES }));
+    if (!feature) {
+      return null;
+    }
+
+    const coords = featureCoordinates(feature);
+    if (!coords) {
+      return null;
+    }
+
+    return {
+      ...coords,
+      countryCode: extractCountryCode(feature),
+      bbox: feature.bbox,
+    };
+  }
 
   async geocode(
     query: string,
@@ -184,6 +218,22 @@ function featureCoordinates(feature: MapTilerFeature): Coordinates | null {
     return null;
   }
   return { lat: coords[1], lng: coords[0] };
+}
+
+function extractCountryCode(feature: MapTilerFeature): string | undefined {
+  const fromProperties =
+    typeof feature.properties?.country_code === 'string'
+      ? feature.properties.country_code
+      : undefined;
+
+  const countryContext = feature.context?.find((entry) =>
+    entry.id?.startsWith('country'),
+  );
+  const fromContext =
+    countryContext?.short_code ?? countryContext?.country_code;
+
+  const code = fromProperties ?? fromContext;
+  return code ? code.toLowerCase() : undefined;
 }
 
 function buildCacheKey(query: string, options?: GeocodeOptions): string {

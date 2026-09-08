@@ -75,7 +75,7 @@ describe('generateItineraryBodySchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects planning input without a resolved destination place', () => {
+  it('accepts planning input without a resolved destination place', () => {
     const result = generateItineraryBodySchema.safeParse({
       destination: 'Lisbon',
       mood: 'curious',
@@ -87,7 +87,7 @@ describe('generateItineraryBodySchema', () => {
       interests: ['food'],
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 
   it('rejects planning input without interests', () => {

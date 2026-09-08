@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   type GenerateItineraryBody,
@@ -70,13 +70,25 @@ export class ItineraryPlanService {
   private async enrichWithCoordinates(
     draft: ItineraryPlanDraft,
     destination: string,
-    destinationPlace: DestinationPlace,
+    destinationPlace: DestinationPlace | undefined,
   ): Promise<ItineraryPlan> {
-    const center: Coordinates = {
-      lat: destinationPlace.lat,
-      lng: destinationPlace.lng,
-    };
-    const country = destinationPlace.countryCode;
+    const resolved = destinationPlace
+      ? {
+          lat: destinationPlace.lat,
+          lng: destinationPlace.lng,
+          countryCode: destinationPlace.countryCode,
+        }
+      : ((await this.geocodingService.geocodeArea(draft.location)) ??
+        (await this.geocodingService.geocodeArea(destination)));
+
+    if (!resolved) {
+      throw new BadRequestException(
+        `Could not resolve a map center for "${destination}".`,
+      );
+    }
+
+    const center: Coordinates = { lat: resolved.lat, lng: resolved.lng };
+    const country = resolved.countryCode;
 
     // Look up Wikipedia (photo + authoritative coordinates) for every stop up
     // front, in parallel. The coordinates feed location resolution; the image
