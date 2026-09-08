@@ -11,6 +11,7 @@ export const authUserSchema = z.object({
   id: z.string(),
   email: z.string().email(),
   name: z.string(),
+  isAdmin: z.boolean(),
 });
 
 export type AuthUser = z.infer<typeof authUserSchema>;
