@@ -10,10 +10,13 @@ import {
   Textarea,
   type DateRangePickerValue,
 } from '@mood-trip/ui';
+import type { DestinationPlace } from '@mood-trip/validators';
 import { budgetOptions, paceOptions } from '../_lib/plan-form-options';
+import DestinationAutocomplete from './DestinationAutocomplete';
 
 type ItineraryDestinationStepProps = {
-  destination: string;
+  destinationPlace: DestinationPlace | null;
+  destinationError: string | undefined;
   dateRange: DateRangePickerValue | undefined;
   dateRangeError: string | undefined;
   pace: string;
@@ -24,7 +27,7 @@ type ItineraryDestinationStepProps = {
   itineraryIdea: string;
   error: string | null;
   isGenerating: boolean;
-  onDestinationChange: (value: string) => void;
+  onDestinationPlaceChange: (value: DestinationPlace | null) => void;
   onDateRangeChange: (value: DateRangePickerValue | undefined) => void;
   onPaceChange: (value: string) => void;
   onBudgetChange: (value: string) => void;
@@ -35,7 +38,8 @@ type ItineraryDestinationStepProps = {
 };
 
 const ItineraryDestinationStep = ({
-  destination,
+  destinationPlace,
+  destinationError,
   dateRange,
   dateRangeError,
   pace,
@@ -46,7 +50,7 @@ const ItineraryDestinationStep = ({
   itineraryIdea,
   error,
   isGenerating,
-  onDestinationChange,
+  onDestinationPlaceChange,
   onDateRangeChange,
   onPaceChange,
   onBudgetChange,
@@ -63,21 +67,11 @@ const ItineraryDestinationStep = ({
       </div>
 
       <div className="flex w-full max-w-xl flex-col gap-3">
-        <Field>
-          <Label htmlFor="destination" required>
-            Destination
-          </Label>
-          <Input
-            id="destination"
-            variant="inset"
-            value={destination}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              onDestinationChange(event.target.value)
-            }
-            placeholder="Kyoto, Lisbon, Big Sur..."
-            required
-          />
-        </Field>
+        <DestinationAutocomplete
+          value={destinationPlace}
+          onValueChange={onDestinationPlaceChange}
+          error={destinationError}
+        />
 
         <Field>
           <Label htmlFor="itineraryDates" required>

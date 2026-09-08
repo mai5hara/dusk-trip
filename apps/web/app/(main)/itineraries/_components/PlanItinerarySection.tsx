@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { DateRangePickerValue } from '@mood-trip/ui';
 import type {
+  DestinationPlace,
   GenerateItineraryBody,
   ItineraryMapStyle,
   ItineraryPlan,
@@ -27,7 +28,11 @@ const PlanItinerarySection = () => {
   const [mood, setMood] = useState('');
   const [pace, setPace] = useState('balanced');
   const [budget, setBudget] = useState('moderate');
-  const [destination, setDestination] = useState('');
+  const [destinationPlace, setDestinationPlace] =
+    useState<DestinationPlace | null>(null);
+  const [destinationError, setDestinationError] = useState<
+    string | undefined
+  >();
   const [dateRange, setDateRange] = useState<DateRangePickerValue | undefined>(
     undefined,
   );
@@ -45,8 +50,8 @@ const PlanItinerarySection = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const itineraryIdea = useMemo(
-    () => buildItineraryIdea(destination, mood, pace),
-    [destination, mood, pace],
+    () => buildItineraryIdea(destinationPlace?.label ?? '', mood, pace),
+    [destinationPlace?.label, mood, pace],
   );
 
   const handleBackToForm = (): void => {
@@ -68,6 +73,15 @@ const PlanItinerarySection = () => {
     }
   };
 
+  const handleDestinationPlaceChange = (
+    value: DestinationPlace | null,
+  ): void => {
+    setDestinationPlace(value);
+    if (value) {
+      setDestinationError(undefined);
+    }
+  };
+
   const handleGenerate = async (): Promise<void> => {
     setError(null);
     setPlan(null);
@@ -78,10 +92,17 @@ const PlanItinerarySection = () => {
       return;
     }
 
+    if (!destinationPlace) {
+      setDestinationError('Pick a destination from the suggestions.');
+      return;
+    }
+
+    setDestinationError(undefined);
     setIsGenerating(true);
 
     const body: GenerateItineraryBody = {
-      destination,
+      destination: destinationPlace.label,
+      destinationPlace,
       mood: mood as GenerateItineraryBody['mood'],
       pace: pace as GenerateItineraryBody['pace'],
       startDate: dateRange.from,
@@ -176,7 +197,8 @@ const PlanItinerarySection = () => {
             <ItineraryMoodStep mood={mood} onMoodChange={setMood} />
           ) : (
             <ItineraryDestinationStep
-              destination={destination}
+              destinationPlace={destinationPlace}
+              destinationError={destinationError}
               dateRange={dateRange}
               dateRangeError={dateRangeError}
               pace={pace}
@@ -187,7 +209,7 @@ const PlanItinerarySection = () => {
               itineraryIdea={itineraryIdea}
               error={error}
               isGenerating={isGenerating}
-              onDestinationChange={setDestination}
+              onDestinationPlaceChange={handleDestinationPlaceChange}
               onDateRangeChange={handleDateRangeChange}
               onPaceChange={setPace}
               onBudgetChange={setBudget}
