@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AdminGuard } from './admin.guard';
 import { JwtStrategy } from './jwt.strategy';
 import { ResetPasswordService } from './reset-password.service';
 
@@ -27,7 +28,7 @@ import { ResetPasswordService } from './reset-password.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, ResetPasswordService],
-  exports: [AuthService],
+  providers: [AuthService, JwtStrategy, ResetPasswordService, AdminGuard],
+  exports: [AuthService, AdminGuard],
 })
 export class AuthModule {}

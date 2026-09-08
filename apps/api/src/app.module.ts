@@ -9,6 +9,7 @@ import { ItinerariesModule } from './itineraries/itineraries.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MapsModule } from './maps/maps.module';
+import { AdminModule } from './admin/admin.module';
 import { GeocodingModule } from './geocoding/geocoding.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { GeocodingModule } from './geocoding/geocoding.module';
     ItinerariesModule,
     AuthModule,
     MapsModule,
+    AdminModule,
     GeocodingModule,
   ],
 })
