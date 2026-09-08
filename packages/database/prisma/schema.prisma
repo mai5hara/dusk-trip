@@ -24,6 +24,7 @@ model User {
   trips               Trip[]
   itineraries         Itinerary[]
   passwordResetTokens PasswordResetToken[]
+  isAdmin             Boolean              @default(false)
 }
 
 model Trip {
