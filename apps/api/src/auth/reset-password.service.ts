@@ -45,7 +45,13 @@ export class ResetPasswordService {
       },
     });
 
-    const webOrigin = this.configService.getOrThrow<string>('WEB_ORIGIN');
+    const webOrigin = this.configService
+      .getOrThrow<string>('WEB_ORIGIN')
+      .split(',')[0]
+      ?.trim();
+    if (!webOrigin) {
+      throw new BadRequestException('WEB_ORIGIN is not configured');
+    }
     const resetUrl = `${webOrigin}/reset-password?token=${rawToken}`;
     console.log('[dev] password reset link:', resetUrl);
 

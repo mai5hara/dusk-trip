@@ -133,12 +133,14 @@ describe('AuthService', () => {
       name: 'Test User',
       email: 'test@test.com',
       passwordHash,
+      isAdmin: false,
     });
 
     const result = await service.login('test@test.com', 'password');
     expect(result.accessToken).toBe('mock-token');
     expect(result.refreshToken).toBe('mock-token');
     expect(result.user.email).toBe('test@test.com');
+    expect(result.user.isAdmin).toBe(false);
   });
 
   it('refresh: throws UnauthorizedException if refresh token is invalid', async () => {
@@ -181,12 +183,14 @@ describe('AuthService', () => {
       id: '1',
       email: 'test@test.com',
       passwordHash: 'hashed-password',
+      isAdmin: false,
     });
 
     const result = await service.getMe('1');
     expect(result.id).toBe('1');
     expect(result.email).toBe('test@test.com');
     expect(result).not.toHaveProperty('passwordHash');
+    expect(result.isAdmin).toBe(false);
   });
 
   describe('googleLogin', () => {

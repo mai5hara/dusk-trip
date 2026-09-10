@@ -17,6 +17,9 @@ importers:
 
   apps/admin:
     dependencies:
+      '@hookform/resolvers':
+        specifier: ^5.4.0
+        version: 5.4.0(react-hook-form@7.80.0(react@19.2.4))
       '@mood-trip/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -32,6 +35,12 @@ importers:
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
+      react-hook-form:
+        specifier: ^7.80.0
+        version: 7.80.0(react@19.2.4)
+      sonner:
+        specifier: ^2.0.8
+        version: 2.0.8(@types/react@19.2.16)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     devDependencies:
       '@mood-trip/config':
         specifier: workspace:*
@@ -317,8 +326,8 @@ importers:
         specifier: ^19.0.0
         version: 19.2.7(react@19.2.7)
       tokonoma-ui:
-        specifier: git+ssh://git@github.com/mai5hara/tokonoma-ui.git#v0.2.7
-        version: https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/1da9027b6409d9b81cfc130ed0632abcc862f2d7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: ^0.2.9
+        version: 0.2.9(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
     devDependencies:
       '@mood-trip/config':
         specifier: workspace:*
@@ -5169,9 +5178,8 @@ packages:
     resolution: {integrity: sha512-dRXchy+C0IgK8WPC6xvCHFRIWYUbqqdEIKPaKo/AcTUNzwLTK6AH7RjdLWsEZcAN/TBdtfUw3PYEgPr5VPr6ww==}
     engines: {node: '>=14.16'}
 
-  tokonoma-ui@https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/1da9027b6409d9b81cfc130ed0632abcc862f2d7:
-    resolution: {tarball: https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/1da9027b6409d9b81cfc130ed0632abcc862f2d7}
-    version: 0.2.7
+  tokonoma-ui@0.2.9:
+    resolution: {integrity: sha512-ssRNgHgFSAu3ljD69vXcFQHmBaBMMnbeqeMn54FD11ktiHyldgIpHW2kkrpM6s+NosmaogrkZsBM9U8IlFMEPA==}
     peerDependencies:
       react: ^19.0.0
       react-dom: ^19.0.0
@@ -10970,7 +10978,7 @@ snapshots:
       '@tokenizer/token': 0.3.0
       ieee754: 1.2.1
 
-  tokonoma-ui@https://codeload.github.com/mai5hara/tokonoma-ui/tar.gz/1da9027b6409d9b81cfc130ed0632abcc862f2d7(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+  tokonoma-ui@0.2.9(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)

@@ -18,7 +18,7 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "tokonoma-ui": "git+ssh://git@github.com/mai5hara/tokonoma-ui.git#v0.2.7",
+    "tokonoma-ui": "^0.2.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
