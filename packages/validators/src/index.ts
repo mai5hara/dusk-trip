@@ -1,4 +1,14 @@
 export { z } from 'zod';
+export {
+  destinationPlaceSchema,
+  destinationSuggestionSchema,
+  destinationSuggestionsQuerySchema,
+  destinationSuggestionsResponseSchema,
+  type DestinationPlace,
+  type DestinationSuggestion,
+  type DestinationSuggestionsQuery,
+  type DestinationSuggestionsResponse,
+} from './geocoding';
 export { userSchema, type User } from './user';
 export {
   tripSchema,

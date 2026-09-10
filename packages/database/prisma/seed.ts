@@ -22,11 +22,13 @@ async function main() {
     update: {
       name: DEV_NAME,
       passwordHash,
+      isAdmin: true,
     },
     create: {
       email: DEV_EMAIL,
       name: DEV_NAME,
       passwordHash,
+      isAdmin: true,
     },
   });
 
