@@ -65,13 +65,6 @@ export default function Login() {
                 </Field>
                 <Field>
                   <Label htmlFor="password">Password</Label>
-                  {/* TODO: Add forgot password link */}
-                  {/* <Link
-                      className="text-xs text-text-subtle"
-                      href="/forgot-password"
-                    >
-                      Forgot password?
-                    </Link> */}
                   <Input
                     type="password"
                     id="password"
