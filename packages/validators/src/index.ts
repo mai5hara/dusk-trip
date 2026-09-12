@@ -9,7 +9,16 @@ export {
   type DestinationSuggestionsQuery,
   type DestinationSuggestionsResponse,
 } from './geocoding';
-export { userSchema, type User } from './user';
+export {
+  userListItemSchema,
+  userDetailsSchema,
+  usersSchema,
+  usersQuerySchema,
+  type UserListItem,
+  type UserDetails,
+  type Users,
+  type UsersQuery,
+} from './user';
 export {
   tripSchema,
   tripListItemSchema,
