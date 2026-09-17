@@ -4,8 +4,8 @@ export const userListItemSchema = z.object({
   id: z.string(),
   email: z.string().email(),
   name: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
   isAdmin: z.boolean(),
 });
 
