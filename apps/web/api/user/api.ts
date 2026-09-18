@@ -1,6 +1,6 @@
 import { apiClient } from '@/api/_common/client';
-import type { UserListItem } from '@mood-trip/validators';
+import type { User } from '@mood-trip/validators';
 
-export async function getUser(id: string): Promise<UserListItem> {
-  return apiClient<UserListItem>(`/user/${id}`);
+export async function getUser(id: string): Promise<User> {
+  return apiClient<User>(`/user/${id}`);
 }

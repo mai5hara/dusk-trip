@@ -8,7 +8,11 @@ import {
 } from '@nestjs/common';
 import { AdminGuard } from '../auth/admin.guard';
 import { AdminUsersService } from './admin-users.service';
-import { Users, UserDetails, usersQuerySchema } from '@mood-trip/validators';
+import {
+  AdminUsers,
+  AdminUserDetails,
+  adminUsersQuerySchema,
+} from '@mood-trip/validators';
 
 @Controller('admin/users')
 @UseGuards(AdminGuard)
@@ -20,8 +24,8 @@ export class AdminUsersController {
     @Query('page') page: number,
     @Query('limit') limit: number,
     @Query('search') search: string,
-  ): Promise<Users> {
-    const parsed = usersQuerySchema.safeParse({ page, limit, search });
+  ): Promise<AdminUsers> {
+    const parsed = adminUsersQuerySchema.safeParse({ page, limit, search });
 
     if (!parsed.success) {
       throw new BadRequestException(parsed.error.flatten());
@@ -35,7 +39,7 @@ export class AdminUsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<UserDetails> {
+  findOne(@Param('id') id: string): Promise<AdminUserDetails> {
     return this.adminUsersService.findOne(id);
   }
 }

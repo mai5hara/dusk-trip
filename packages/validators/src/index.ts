@@ -10,14 +10,16 @@ export {
   type DestinationSuggestionsResponse,
 } from './geocoding';
 export {
-  userListItemSchema,
-  userDetailsSchema,
-  usersSchema,
-  usersQuerySchema,
-  type UserListItem,
-  type UserDetails,
-  type Users,
-  type UsersQuery,
+  adminUserListItemSchema,
+  adminUserDetailsSchema,
+  adminUsersSchema,
+  adminUsersQuerySchema,
+  userSchema,
+  type User,
+  type AdminUserListItem,
+  type AdminUserDetails,
+  type AdminUsers,
+  type AdminUsersQuery,
 } from './user';
 export {
   tripSchema,
