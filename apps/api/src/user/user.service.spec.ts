@@ -56,10 +56,21 @@ describe('UserService', () => {
       prismaService.client.user.findUnique.mockResolvedValue({
         id: '1',
         email: 'test@test.com',
+        name: 'Test',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        isAdmin: false,
       });
 
       const result = await service.findOne('1');
-      expect(result?.id).toBe('1');
+      expect(result).toEqual({
+        id: '1',
+        email: 'test@test.com',
+        name: 'Test',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+        isAdmin: false,
+      });
     });
   });
 
