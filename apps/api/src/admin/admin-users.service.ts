@@ -21,22 +21,23 @@ export class AdminUsersService {
       }),
     };
 
-    const users = await this.prisma.client.user.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-      where,
-      omit: {
-        passwordHash: true,
-        googleId: true,
-      },
-    });
-
-    const total = await this.prisma.client.user.count({
-      where,
-    });
+    const [users, total] = await Promise.all([
+      this.prisma.client.user.findMany({
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+        where,
+        omit: {
+          passwordHash: true,
+          googleId: true,
+        },
+      }),
+      this.prisma.client.user.count({
+        where,
+      }),
+    ]);
 
     return {
       users: users.map((user) => ({
