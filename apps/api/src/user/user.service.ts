@@ -3,7 +3,8 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { Prisma, type User } from '@mood-trip/database';
+import { Prisma, type User as PrismaUser } from '@mood-trip/database';
+import type { User } from '@mood-trip/validators';
 import { PrismaService } from '../prisma/prisma.service';
 
 const UNIQUE_CONSTRAINT_VIOLATION = 'P2002';
@@ -12,19 +13,27 @@ const UNIQUE_CONSTRAINT_VIOLATION = 'P2002';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findOne(id: string): Promise<User | null> {
+  async findOne(id: string): Promise<User> {
     const user = await this.prisma.client.user.findUnique({
       where: { id },
+      omit: {
+        passwordHash: true,
+        googleId: true,
+      },
     });
 
     if (!user) {
       throw new NotFoundException(`User ${id} not found`);
     }
 
-    return user;
+    return {
+      ...user,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    };
   }
 
-  async findByEmailForAuth(email: string): Promise<User | null> {
+  async findByEmailForAuth(email: string): Promise<PrismaUser | null> {
     const user = await this.prisma.client.user.findUnique({
       where: { email },
     });
@@ -32,7 +41,7 @@ export class UserService {
     return user;
   }
 
-  async findByIdForAuth(id: string): Promise<User | null> {
+  async findByIdForAuth(id: string): Promise<PrismaUser | null> {
     return this.prisma.client.user.findUnique({ where: { id } });
   }
 
@@ -40,7 +49,7 @@ export class UserService {
     name: string,
     email: string,
     passwordHash: string,
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     try {
       return await this.prisma.client.user.create({
         data: {
@@ -54,7 +63,7 @@ export class UserService {
     }
   }
 
-  async findByGoogleId(googleId: string): Promise<User | null> {
+  async findByGoogleId(googleId: string): Promise<PrismaUser | null> {
     return this.prisma.client.user.findUnique({ where: { googleId } });
   }
 
@@ -62,7 +71,7 @@ export class UserService {
     name: string,
     email: string,
     googleId: string,
-  ): Promise<User> {
+  ): Promise<PrismaUser> {
     try {
       return await this.prisma.client.user.create({
         data: { name, email, googleId },

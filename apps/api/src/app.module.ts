@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { join } from 'node:path';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { UsersModule } from './users/users.module';
 import { TripsModule } from './trips/trips.module';
 import { ItinerariesModule } from './itineraries/itineraries.module';
 import { UserModule } from './user/user.module';
@@ -20,7 +19,6 @@ import { GeocodingModule } from './geocoding/geocoding.module';
     }),
     HealthModule,
     PrismaModule,
-    UsersModule,
     UserModule,
     TripsModule,
     ItinerariesModule,
