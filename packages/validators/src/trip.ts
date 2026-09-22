@@ -69,3 +69,42 @@ export const updateTripBodySchema = tripBodyFieldsSchema
   });
 
 export type UpdateTripBody = z.infer<typeof updateTripBodySchema>;
+
+export const adminTripsQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(10),
+  search: z.string().trim().min(2).max(120).optional(),
+});
+
+export type AdminTripsQuery = z.infer<typeof adminTripsQuerySchema>;
+
+export const adminTripListItemSchema = tripSchema.extend({
+  owner: z.object({
+    id: z.string(),
+    email: z.string().email(),
+    name: z.string(),
+  }),
+  startDate: z.string(),
+  endDate: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  entryCount: z.number(),
+});
+
+export type AdminTripListItem = z.infer<typeof adminTripListItemSchema>;
+
+export const adminTripsSchema = z.object({
+  trips: z.array(adminTripListItemSchema),
+  total: z.number(),
+  page: z.number(),
+  limit: z.number(),
+  totalPages: z.number(),
+});
+
+export type AdminTrips = z.infer<typeof adminTripsSchema>;
+
+export const adminTripDetailsSchema = adminTripListItemSchema.extend({
+  entries: z.array(entrySchema),
+});
+
+export type AdminTripDetails = z.infer<typeof adminTripDetailsSchema>;
