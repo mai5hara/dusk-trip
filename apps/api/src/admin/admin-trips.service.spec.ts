@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import { Prisma } from '@mood-trip/database';
 import { NotFoundException } from '@nestjs/common';
 import { AdminTripsService } from './admin-trips.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -175,11 +176,7 @@ describe('AdminTripsService', () => {
 
   describe('remove', () => {
     it('removes a trip by id', async () => {
-      prismaService.client.trip.findUnique.mockResolvedValue({
-        id: '1',
-        title: 'Test Trip',
-        description: 'Test Description',
-      });
+      prismaService.client.trip.delete.mockResolvedValue(undefined);
 
       await service.remove('1');
 
@@ -189,10 +186,17 @@ describe('AdminTripsService', () => {
     });
 
     it('throws a NotFoundException if the trip is not found', async () => {
-      prismaService.client.trip.findUnique.mockResolvedValue(null);
+      prismaService.client.trip.delete.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError(
+          'Record to delete does not exist.',
+          {
+            code: 'P2025',
+            clientVersion: 'test',
+          },
+        ),
+      );
 
       await expect(service.remove('1')).rejects.toThrow(NotFoundException);
-      expect(prismaService.client.trip.delete).not.toHaveBeenCalled();
     });
   });
 });

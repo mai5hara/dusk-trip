@@ -104,16 +104,16 @@ export class AdminTripsService {
   }
 
   async remove(id: string): Promise<void> {
-    const trip = await this.prisma.client.trip.findUnique({
-      where: { id },
-    });
-
-    if (!trip) {
-      throw new NotFoundException(`Trip ${id} not found.`);
+    try {
+      await this.prisma.client.trip.delete({ where: { id } });
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2025'
+      ) {
+        throw new NotFoundException(`Trip ${id} not found.`);
+      }
+      throw err;
     }
-
-    await this.prisma.client.trip.delete({
-      where: { id },
-    });
   }
 }
