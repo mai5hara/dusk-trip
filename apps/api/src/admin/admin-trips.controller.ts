@@ -9,7 +9,11 @@ import {
 } from '@nestjs/common';
 import { AdminGuard } from '../auth/admin.guard';
 import { AdminTripsService } from './admin-trips.service';
-import { AdminTrips, adminTripsQuerySchema } from '@mood-trip/validators';
+import {
+  AdminTrips,
+  adminTripsQuerySchema,
+  AdminTripDetails,
+} from '@mood-trip/validators';
 
 @Controller('admin/trips')
 @UseGuards(AdminGuard)
@@ -36,12 +40,12 @@ export class AdminTripsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<AdminTripDetails> {
     return this.adminTripsService.findOne(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<void> {
     return this.adminTripsService.remove(id);
   }
 }
