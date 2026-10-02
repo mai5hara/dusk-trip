@@ -104,7 +104,12 @@ export const adminTripsSchema = z.object({
 export type AdminTrips = z.infer<typeof adminTripsSchema>;
 
 export const adminTripDetailsSchema = adminTripListItemSchema.extend({
-  entries: z.array(entrySchema),
+  entries: z.array(
+    entrySchema.extend({
+      createdAt: z.string(),
+      updatedAt: z.string(),
+    }),
+  ),
 });
 
 export type AdminTripDetails = z.infer<typeof adminTripDetailsSchema>;

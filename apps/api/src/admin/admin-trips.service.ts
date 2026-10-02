@@ -90,10 +90,15 @@ export class AdminTripsService {
       throw new NotFoundException(`Trip ${id} not found.`);
     }
 
-    const { user, _count, ...rest } = trip;
+    const { user, _count, entries, ...rest } = trip;
 
     return {
       ...rest,
+      entries: entries.map((entry) => ({
+        ...entry,
+        createdAt: entry.createdAt.toISOString(),
+        updatedAt: entry.updatedAt.toISOString(),
+      })),
       owner: user,
       entryCount: _count.entries,
       createdAt: trip.createdAt.toISOString(),
