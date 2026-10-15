@@ -90,6 +90,24 @@ describe('AdminTripsService', () => {
       });
     });
 
+    it('returns paginated trips with search query', async () => {
+      prismaService.client.trip.findMany.mockResolvedValue([]);
+      prismaService.client.trip.count.mockResolvedValue(0);
+
+      await service.findAll(1, 10, 'paris');
+
+      expect(prismaService.client.trip.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            OR: [
+              { title: { contains: 'paris', mode: 'insensitive' } },
+              { location: { contains: 'paris', mode: 'insensitive' } },
+            ],
+          },
+        }),
+      );
+    });
+
     it('passes skip and take based on page and limit', async () => {
       prismaService.client.trip.findMany.mockResolvedValue([]);
 
