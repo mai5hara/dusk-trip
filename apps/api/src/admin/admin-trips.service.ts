@@ -1,7 +1,32 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@mood-trip/database';
-import type { AdminTrips, AdminTripDetails } from '@mood-trip/validators';
+import type {
+  AdminTripListItem,
+  AdminTrips,
+  AdminTripDetails,
+} from '@mood-trip/validators';
 import { PrismaService } from '../prisma/prisma.service';
+
+type AdminTripOwner = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+type AdminTripListRecord = {
+  id: string;
+  userId: string;
+  title: string;
+  thumbnailUrl: string;
+  description: string | null;
+  location: string;
+  user: AdminTripOwner;
+  _count: { entries: number };
+  createdAt: Date;
+  updatedAt: Date;
+  startDate: Date;
+  endDate: Date;
+};
 
 @Injectable()
 export class AdminTripsService {
@@ -46,19 +71,7 @@ export class AdminTripsService {
     ]);
 
     return {
-      trips: trips.map((trip) => {
-        const { user, _count, ...rest } = trip;
-
-        return {
-          ...rest,
-          owner: user,
-          entryCount: _count.entries,
-          createdAt: trip.createdAt.toISOString(),
-          updatedAt: trip.updatedAt.toISOString(),
-          startDate: trip.startDate.toISOString(),
-          endDate: trip.endDate.toISOString(),
-        };
-      }),
+      trips: trips.map((trip) => _toAdminTripListItem(trip)),
       total,
       page,
       limit,
@@ -90,21 +103,15 @@ export class AdminTripsService {
       throw new NotFoundException(`Trip ${id} not found.`);
     }
 
-    const { user, _count, entries, ...rest } = trip;
+    const { entries, ...listRecord } = trip;
 
     return {
-      ...rest,
+      ..._toAdminTripListItem(listRecord),
       entries: entries.map((entry) => ({
         ...entry,
         createdAt: entry.createdAt.toISOString(),
         updatedAt: entry.updatedAt.toISOString(),
       })),
-      owner: user,
-      entryCount: _count.entries,
-      createdAt: trip.createdAt.toISOString(),
-      updatedAt: trip.updatedAt.toISOString(),
-      startDate: trip.startDate.toISOString(),
-      endDate: trip.endDate.toISOString(),
     };
   }
 
@@ -121,4 +128,19 @@ export class AdminTripsService {
       throw err;
     }
   }
+}
+
+function _toAdminTripListItem(trip: AdminTripListRecord): AdminTripListItem {
+  const { user, _count, createdAt, updatedAt, startDate, endDate, ...rest } =
+    trip;
+
+  return {
+    ...rest,
+    owner: user,
+    entryCount: _count.entries,
+    createdAt: createdAt.toISOString(),
+    updatedAt: updatedAt.toISOString(),
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
+  };
 }
