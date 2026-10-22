@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { AdminTripsController } from './admin-trips.controller';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AdminTripsService } from './admin-trips.service';
 
 describe('AdminTripsController', () => {
@@ -65,8 +65,30 @@ describe('AdminTripsController', () => {
     expect(adminTripsService.findOne).toHaveBeenCalledWith('1');
   });
 
+  it('findOne propagates NotFoundException from the service', async () => {
+    adminTripsService.findOne.mockRejectedValue(
+      new NotFoundException('Trip missing not found.'),
+    );
+
+    await expect(controller.findOne('missing')).rejects.toThrow(
+      NotFoundException,
+    );
+    expect(adminTripsService.findOne).toHaveBeenCalledWith('missing');
+  });
+
   it('remove returns void', async () => {
     await controller.remove('1');
     expect(adminTripsService.remove).toHaveBeenCalledWith('1');
+  });
+
+  it('remove propagates NotFoundException from the service', async () => {
+    adminTripsService.remove.mockRejectedValue(
+      new NotFoundException('Trip missing not found.'),
+    );
+
+    await expect(controller.remove('missing')).rejects.toThrow(
+      NotFoundException,
+    );
+    expect(adminTripsService.remove).toHaveBeenCalledWith('missing');
   });
 });
