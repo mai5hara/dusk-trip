@@ -189,6 +189,7 @@ describe('AdminTripsService', () => {
   });
 
   describe('remove', () => {
+    // Entry rows are removed by DB cascade (Entry.trip → onDelete: Cascade), not in AdminTripsService.
     it('removes a trip by id', async () => {
       prismaService.client.trip.delete.mockResolvedValue(undefined);
 
