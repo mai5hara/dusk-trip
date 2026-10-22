@@ -1,6 +1,10 @@
 'use client';
 
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQuery,
+  type UseQueryResult,
+} from '@tanstack/react-query';
 import { getUsers } from '@/api/users/api';
 import { queryKeys } from '@/lib/query/query-keys';
 import type { AdminUsers } from '@mood-trip/validators';
@@ -17,5 +21,6 @@ export function useUsersQuery(
     queryKey: queryKeys.users.all(page, limit, search),
     queryFn: () => getUsers({ page, limit, search: normalizedSearch }),
     enabled: page >= 1 && limit >= 1,
+    placeholderData: keepPreviousData,
   });
 }
