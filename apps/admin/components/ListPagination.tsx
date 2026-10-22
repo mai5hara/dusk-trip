@@ -33,11 +33,7 @@ export function ListPagination({
       </p>
       <div className="flex gap-2">
         {hasPrev ? (
-          <ButtonLink
-            href={hrefForPage(page - 1)}
-            variant="outline"
-            size="sm"
-          >
+          <ButtonLink href={hrefForPage(page - 1)} variant="outline" size="sm">
             Previous
           </ButtonLink>
         ) : (
@@ -46,11 +42,7 @@ export function ListPagination({
           </span>
         )}
         {hasNext ? (
-          <ButtonLink
-            href={hrefForPage(page + 1)}
-            variant="outline"
-            size="sm"
-          >
+          <ButtonLink href={hrefForPage(page + 1)} variant="outline" size="sm">
             Next
           </ButtonLink>
         ) : (

@@ -29,8 +29,7 @@ export function ListSearchForm({
 
   const _applySearch = (nextValue: string): void => {
     const trimmed = nextValue.trim();
-    const searchUpdate =
-      trimmed.length >= minLength ? trimmed : null;
+    const searchUpdate = trimmed.length >= minLength ? trimmed : null;
 
     router.push(
       buildListUrl(basePath, searchParams, {
