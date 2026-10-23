@@ -18,7 +18,7 @@ export function useUsersQuery(
     search.trim().length >= 2 ? search.trim() : undefined;
 
   return useQuery({
-    queryKey: queryKeys.users.all(page, limit, search),
+    queryKey: queryKeys.users.all(page, limit, normalizedSearch ?? ''),
     queryFn: () => getUsers({ page, limit, search: normalizedSearch }),
     enabled: page >= 1 && limit >= 1,
     placeholderData: keepPreviousData,
