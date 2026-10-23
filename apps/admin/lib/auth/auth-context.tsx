@@ -10,6 +10,7 @@ import {
   useMemo,
 } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { login as loginApi, refreshAccessToken, getMe } from '@/api/auth/api';
 import { setAccessToken, setRefreshToken, clearTokens } from '@/lib/auth/token';
 import { MeResponse } from '@mood-trip/validators';
@@ -25,6 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<MeResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -77,9 +79,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     clearTokens();
+    queryClient.clear();
     setUser(null);
     router.push('/login');
-  }, [router]);
+  }, [queryClient, router]);
 
   const value = useMemo(
     () => ({ user, isLoading, login, logout }),

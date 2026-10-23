@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth/auth-context';
 import { AppToaster } from '@/components/AppToaster';
+import { QueryProvider } from '@/lib/query/query-provider';
 
 export const metadata: Metadata = {
   title: 'Mood Trip Admin',
@@ -20,10 +21,12 @@ export default function RootLayout({
       className="h-full overflow-x-clip antialiased"
     >
       <body className="flex min-h-screen w-full flex-col overflow-x-clip">
-        <AuthProvider>
-          {children}
-          <AppToaster />
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            {children}
+            <AppToaster />
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
