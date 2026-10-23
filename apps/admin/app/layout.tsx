@@ -21,12 +21,12 @@ export default function RootLayout({
       className="h-full overflow-x-clip antialiased"
     >
       <body className="flex min-h-screen w-full flex-col overflow-x-clip">
-        <AuthProvider>
-          <QueryProvider>
+        <QueryProvider>
+          <AuthProvider>
             {children}
             <AppToaster />
-          </QueryProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );
