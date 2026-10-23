@@ -4,6 +4,8 @@ import { AdminGuard } from '../auth/admin.guard';
 import { UserModule } from '../user/user.module';
 import { AdminUsersController } from './admin-users.controller';
 import { AdminUsersService } from './admin-users.service';
+import { AdminTripsController } from './admin-trips.controller';
+import { AdminTripsService } from './admin-trips.service';
 
 @Module({
   imports: [AuthModule, UserModule],

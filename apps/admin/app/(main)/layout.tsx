@@ -6,7 +6,7 @@ export default function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>): React.JSX.Element {
   return (
     <AuthGate>
       <div className="flex min-h-screen">

@@ -14,11 +14,20 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/trips', label: 'Trips' },
 ];
 
+const NAV_LINK_BASE = 'border-l-[3px] px-3 py-3 text-sm';
+
 function _isActivePath(pathname: string, href: string): boolean {
   if (href === '/') {
     return pathname === '/';
   }
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function _navLinkClassName(isActive: boolean): string {
+  if (isActive) {
+    return `${NAV_LINK_BASE} border-text-primary bg-accent/20 font-medium text-text-primary`;
+  }
+  return `${NAV_LINK_BASE} border-transparent text-text-muted transition-colors hover:bg-accent/10 hover:text-text-primary`;
 }
 
 export function Sidebar(): React.JSX.Element {
@@ -34,11 +43,7 @@ export function Sidebar(): React.JSX.Element {
             <Link
               key={item.href}
               href={item.href}
-              className={
-                isActive
-                  ? 'border-l-[3px] border-text-primary bg-accent/20 px-3 py-3 text-sm font-medium text-text-primary'
-                  : 'border-l-[3px] border-transparent px-3 py-3 text-sm text-text-muted hover:bg-accent/10 hover:text-text-primary transition-colors'
-              }
+              className={_navLinkClassName(isActive)}
             >
               {item.label}
             </Link>
