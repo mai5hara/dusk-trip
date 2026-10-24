@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, type UseFormSetValue } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Button,
@@ -22,6 +22,15 @@ import { useUpdateTripMutation } from '@/app/(main)/create-trip/_hooks/useTripMu
 import PhotoUrlField from '@/app/(main)/create-trip/_components/PhotoUrlField';
 import { toDate } from '@/app/(main)/create-trip/_lib/create-trip-form';
 import { getErrorMessage } from '@/lib/get-error-message';
+
+function _syncTravelPeriodFromRange(
+  setValue: UseFormSetValue<CreateTripBody>,
+  range: { from?: Date | string; to?: Date | string } | undefined,
+): void {
+  const options = { shouldValidate: true, shouldDirty: true } as const;
+  setValue('startDate', toDate(range?.from) as Date, options);
+  setValue('endDate', toDate(range?.to) as Date, options);
+}
 
 const EditAlbum = ({ tripId }: { tripId: string }) => {
   const router = useRouter();
@@ -141,14 +150,7 @@ const EditAlbum = ({ tripId }: { tripId: string }) => {
                       placeholder="Select travel period"
                       value={{ from: field.value, to: endDate }}
                       onValueChange={(range) => {
-                        setValue('startDate', range?.from, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
-                        setValue('endDate', range?.to, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
+                        _syncTravelPeriodFromRange(setValue, range);
                       }}
                       errorMessage={
                         errors.startDate?.message ?? errors.endDate?.message

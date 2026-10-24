@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { LoaderCircleIcon } from 'lucide-react';
 import { Input, Label, Button } from '@mood-trip/ui';
 import { resetPassword } from '@/api/auth/api';
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -91,5 +92,23 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="flex h-screen items-center justify-center"
+          aria-busy="true"
+          aria-label="Loading"
+        >
+          <LoaderCircleIcon className="size-6 animate-spin opacity-60" />
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
