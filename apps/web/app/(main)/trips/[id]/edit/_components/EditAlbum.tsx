@@ -141,14 +141,20 @@ const EditAlbum = ({ tripId }: { tripId: string }) => {
                       placeholder="Select travel period"
                       value={{ from: field.value, to: endDate }}
                       onValueChange={(range) => {
-                        setValue('startDate', range?.from, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
-                        setValue('endDate', range?.to, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        });
+                        const from = range?.from;
+                        const to = range?.to;
+                        if (from instanceof Date) {
+                          setValue('startDate', from, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
+                        if (to instanceof Date) {
+                          setValue('endDate', to, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
                       }}
                       errorMessage={
                         errors.startDate?.message ?? errors.endDate?.message
