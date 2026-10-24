@@ -34,6 +34,13 @@ jobs:
       name: test
       command: pnpm test:ci
 
+  build-web:
+    uses: ./.github/workflows/ci-job.yml
+    secrets: inherit
+    with:
+      name: build-web
+      command: pnpm --filter @mood-trip/validators build && pnpm --filter @mood-trip/web build
+
   review:
     if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
     needs: [format, lint, test]
