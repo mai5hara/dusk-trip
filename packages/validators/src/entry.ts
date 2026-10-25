@@ -38,8 +38,11 @@ export const entrySchema = z.object({
 export type Entry = z.infer<typeof entrySchema>;
 
 export const createEntryBodySchema = z.object({
-  photoUrl: z.string().url(),
-  caption: z.string().max(300).optional(),
+  photoUrl: z.string({ required_error: 'Add a photo' }).url('Add a photo'),
+  caption: z
+    .string()
+    .max(300, 'Keep the caption to 300 characters or fewer')
+    .optional(),
   location: z.string().optional(),
   dayLabel: z.string().max(300).optional(),
   timeOfDay: entryTimeOfDaySchema.optional(),

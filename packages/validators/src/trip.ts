@@ -32,13 +32,27 @@ export const listTripsQuerySchema = z.object({
   userId: z.string().uuid(),
 });
 
+// Messages are user-facing: the web forms show them as-is.
+const _travelPeriodError = {
+  errorMap: () => ({ message: 'Select a travel period' }),
+};
+
 const tripBodyFieldsSchema = z.object({
-  title: z.string().min(1),
-  thumbnailUrl: z.string().url(),
-  description: z.string().max(500).optional(),
-  location: z.string().min(1),
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date(),
+  title: z
+    .string({ required_error: 'Enter an album name' })
+    .min(1, 'Enter an album name'),
+  thumbnailUrl: z
+    .string({ required_error: 'Add a cover photo' })
+    .url('Add a cover photo'),
+  description: z
+    .string()
+    .max(500, 'Keep the description to 500 characters or fewer')
+    .optional(),
+  location: z
+    .string({ required_error: 'Enter a location' })
+    .min(1, 'Enter a location'),
+  startDate: z.coerce.date(_travelPeriodError),
+  endDate: z.coerce.date(_travelPeriodError),
 });
 
 function _endDateOnOrAfterStartDate(data: {
@@ -54,7 +68,7 @@ function _endDateOnOrAfterStartDate(data: {
 export const createTripBodySchema = tripBodyFieldsSchema.refine(
   _endDateOnOrAfterStartDate,
   {
-    message: 'endDate must be or after startDate',
+    message: 'End date must be on or after the start date',
     path: ['endDate'],
   },
 );
@@ -64,7 +78,7 @@ export type CreateTripBody = z.infer<typeof createTripBodySchema>;
 export const updateTripBodySchema = tripBodyFieldsSchema
   .partial()
   .refine(_endDateOnOrAfterStartDate, {
-    message: 'endDate must be or after startDate',
+    message: 'End date must be on or after the start date',
     path: ['endDate'],
   });
 

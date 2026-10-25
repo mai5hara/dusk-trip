@@ -29,7 +29,7 @@ export const generateItineraryBodySchema = z
     constraints: z.string().max(500).optional(),
   })
   .refine((data) => data.endDate >= data.startDate, {
-    message: 'endDate must be or after startDate',
+    message: 'End date must be on or after the start date',
     path: ['endDate'],
   });
 
@@ -48,7 +48,7 @@ const withValidItineraryDates = <T extends z.ZodTypeAny>(schema: T) =>
     (data: z.infer<typeof itineraryPlanBaseSchema>) =>
       data.endDate >= data.startDate,
     {
-      message: 'endDate must be or after startDate',
+      message: 'End date must be on or after the start date',
       path: ['endDate'],
     },
   );
