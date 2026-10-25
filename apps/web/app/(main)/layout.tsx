@@ -18,7 +18,7 @@ export default function MainLayout({
         <div className="px-6">
           <Header />
         </div>
-        <div className="flex min-h-0 flex-1 flex-col overflow-x-clip px-6 pt-36 pb-10 lg:overflow-y-auto lg:pb-4">
+        <div className="flex min-h-0 flex-1 flex-col overflow-x-clip px-6 pt-44 pb-10 md:pt-36 lg:overflow-y-auto lg:pb-4">
           <AuthGate>{children}</AuthGate>
         </div>
         <div className="px-6">

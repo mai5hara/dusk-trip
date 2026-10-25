@@ -83,13 +83,13 @@ const EditAlbum = ({ tripId }: { tripId: string }) => {
   if (isError || !trip) return <section>Trip not found</section>;
 
   return (
-    <form className="mx-auto flex w-full max-w-225 flex-col items-center pt-20 pb-40">
+    <form className="mx-auto flex w-full max-w-225 flex-col items-center pt-8 pb-20 md:pt-20 md:pb-40">
       <div className="flex w-full flex-col items-center gap-14">
         <p className="text-sm opacity-70">Step 1 of 2 · Album</p>
         <section className="flex w-full flex-col gap-9">
           <h1 className="text-2xl font-mono font-medium">Edit Album</h1>
-          <div className="grid grid-cols-16 gap-4">
-            <div className="col-span-7">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-16 md:gap-4">
+            <div className="md:col-span-7">
               <Field>
                 <Label htmlFor="thumbnailUrl">Thumbnail</Label>
                 <Controller
@@ -108,7 +108,7 @@ const EditAlbum = ({ tripId }: { tripId: string }) => {
                 />
               </Field>
             </div>
-            <div className="col-span-8 flex flex-col gap-3">
+            <div className="flex flex-col gap-3 md:col-span-8">
               <Field>
                 <Label htmlFor="title">Album Name</Label>
                 <Input
@@ -161,25 +161,31 @@ const EditAlbum = ({ tripId }: { tripId: string }) => {
               </Field>
             </div>
           </div>
-          <div className="flex max-w-125 flex-col gap-3 self-center sm:flex-row">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isPending}
-              onClick={() => router.push(`/trips/${tripId}`)}
-            >
-              Back
-            </Button>
-            <Button
-              type="button"
-              variant="accent"
-              disabled={isPending}
-              onClick={handleSubmit((values) =>
-                save(values, `/trips/${tripId}/edit/memories`),
-              )}
-            >
-              {isPending ? 'Saving...' : 'Continue to memories'}
-            </Button>
+          <div className="flex w-full justify-center flex-col gap-3 self-center sm:flex-row">
+            <div className="w-full md:max-w-50">
+              <Button
+                type="button"
+                variant="outline"
+                width="full"
+                disabled={isPending}
+                onClick={() => router.push(`/trips/${tripId}`)}
+              >
+                Back
+              </Button>
+            </div>
+            <div className="w-full md:max-w-50">
+              <Button
+                type="button"
+                variant="accent"
+                width="full"
+                disabled={isPending}
+                onClick={handleSubmit((values) =>
+                  save(values, `/trips/${tripId}/edit/memories`),
+                )}
+              >
+                {isPending ? 'Saving...' : 'Continue to memories'}
+              </Button>
+            </div>
           </div>
         </section>
       </div>

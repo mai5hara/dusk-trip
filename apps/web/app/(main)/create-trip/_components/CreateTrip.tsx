@@ -193,7 +193,7 @@ const CreateTrip = () => {
     entries.length > 0 || Boolean(travelStartDate && travelEndDate);
 
   return (
-    <div className="mx-auto flex w-full max-w-225 flex-col items-center pt-20 pb-40">
+    <div className="mx-auto flex w-full max-w-225 flex-col items-center pt-8 pb-20 md:pt-20 md:pb-40">
       <div className="flex w-full flex-col items-center gap-14">
         <p className="text-sm opacity-70">
           Step {step} of 2 · {step === 1 ? 'Album' : 'Memories'}
@@ -202,8 +202,8 @@ const CreateTrip = () => {
         {step === 1 ? (
           <section className="flex w-full flex-col gap-9">
             <h1 className="text-2xl font-mono font-medium">Create Album</h1>
-            <div className="grid grid-cols-16 gap-4">
-              <div className="col-span-7">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-16 md:gap-4">
+              <div className="md:col-span-7">
                 <Field>
                   <Label htmlFor="newTrip.thumbnailUrl">Thumbnail</Label>
                   <Controller
@@ -223,7 +223,7 @@ const CreateTrip = () => {
                 </Field>
               </div>
 
-              <div className="col-span-8 flex flex-col gap-3">
+              <div className="flex flex-col gap-3 md:col-span-8">
                 <Field>
                   <Label htmlFor="newTrip.title">Album Name</Label>
                   <Input
@@ -288,23 +288,29 @@ const CreateTrip = () => {
               </div>
             </div>
 
-            <div className="flex max-w-125 flex-col gap-3 self-center sm:flex-row">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={isSaving}
-                onClick={saveAlbumOnly}
-              >
-                {isSaving ? 'Saving...' : 'Create album only'}
-              </Button>
-              <Button
-                type="button"
-                variant="accent"
-                disabled={isSaving}
-                onClick={continueToMemories}
-              >
-                {isSaving ? 'Saving...' : 'Continue to memories'}
-              </Button>
+            <div className="flex w-full justify-center flex-col gap-3 self-center sm:flex-row">
+              <div className="w-full md:max-w-50">
+                <Button
+                  type="button"
+                  variant="outline"
+                  width="full"
+                  disabled={isSaving}
+                  onClick={saveAlbumOnly}
+                >
+                  {isSaving ? 'Saving...' : 'Create album only'}
+                </Button>
+              </div>
+              <div className="w-full md:max-w-50">
+                <Button
+                  type="button"
+                  variant="accent"
+                  width="full"
+                  disabled={isSaving}
+                  onClick={continueToMemories}
+                >
+                  {isSaving ? 'Saving...' : 'Continue to memories'}
+                </Button>
+              </div>
             </div>
           </section>
         ) : (

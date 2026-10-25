@@ -44,11 +44,11 @@ const TripCard = ({ trip }: { trip: TripListItem }): React.JSX.Element => {
           <CardContent>
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2 text-sm">
-                <MapPinIcon className="size-4" />
+                <MapPinIcon className="size-4 shrink-0" />
                 {trip.location}
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <CalendarIcon className="size-4" />
+                <CalendarIcon className="size-4 shrink-0" />
                 {formatDateRange(trip.startDate, trip.endDate)}
               </div>
               <div className="flex items-center justify-between gap-2 text-sm">
