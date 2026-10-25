@@ -1,11 +1,19 @@
 import { z } from 'zod';
 
 export const loginBodySchema = z.object({
-  email: z.string().email(),
+  email: z.string().email('Enter a valid email address'),
   password: z.string().min(8),
 });
 
 export type LoginBody = z.infer<typeof loginBodySchema>;
+
+/** Login form check: only catches empty or malformed input; the API decides the rest. */
+export const loginFormSchema = z.object({
+  email: z.string().email('Enter a valid email address'),
+  password: z.string().min(1, 'Enter your password'),
+});
+
+export type LoginForm = z.infer<typeof loginFormSchema>;
 
 export const authUserSchema = z.object({
   id: z.string(),
@@ -25,7 +33,7 @@ export const loginResponseSchema = z.object({
 export type LoginResponse = z.infer<typeof loginResponseSchema>;
 
 export const forgotPasswordBodySchema = z.object({
-  email: z.string().email(),
+  email: z.string().email('Enter a valid email address'),
 });
 
 export type ForgotPasswordBody = z.infer<typeof forgotPasswordBodySchema>;
@@ -69,10 +77,10 @@ export type MeResponse = z.infer<typeof meResponseSchema>;
 
 export const signupBodySchema = z
   .object({
-    name: z.string().min(1),
-    email: z.string().email(),
-    password: z.string().min(8),
-    confirmPassword: z.string().min(8),
+    name: z.string().min(1, 'Enter your name'),
+    email: z.string().email('Enter a valid email address'),
+    password: z.string().min(8, 'Use at least 8 characters for your password'),
+    confirmPassword: z.string().min(1, 'Confirm your password'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',

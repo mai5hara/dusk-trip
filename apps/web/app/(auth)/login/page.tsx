@@ -1,32 +1,35 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/lib/auth/auth-context';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { Input, Button, Label } from '@mood-trip/ui';
+import { loginFormSchema, type LoginForm } from '@mood-trip/validators';
 import { AuthSidePanel } from '@/app/(auth)/_components/AuthSidePanel';
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginForm>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: { email: '', password: '' },
+  });
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
+  const onSubmit = handleSubmit(async ({ email, password }) => {
     try {
       await login(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
+      setError('root', {
+        message: err instanceof Error ? err.message : 'An error occurred',
+      });
     }
-  };
+  });
 
   return (
     <div className="flex min-h-screen">
@@ -39,17 +42,21 @@ export default function LoginPage() {
               Sign in to your journey and continue to the story
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-10 w-full">
+          <form
+            onSubmit={onSubmit}
+            noValidate
+            className="flex flex-col gap-10 w-full"
+          >
             <div className="flex flex-col gap-4 items-center w-full max-w-87.5">
               <div className="flex flex-col gap-2 w-full">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
+                  id="email"
                   type="email"
                   variant="inset"
                   placeholder="Type your email"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setEmail(e.target.value)
-                  }
+                  {...register('email')}
+                  errorMessage={errors.email?.message}
                 />
               </div>
               <div className="flex flex-col gap-2 w-full">
@@ -63,26 +70,28 @@ export default function LoginPage() {
                   </Link>
                 </div>
                 <Input
+                  id="password"
                   type="password"
                   variant="inset"
                   showPasswordToggle
                   placeholder="Type your password"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setPassword(e.target.value)
-                  }
+                  {...register('password')}
+                  errorMessage={errors.password?.message}
                 />
               </div>
             </div>
-            {error && <p className="text-red-500">{error}</p>}
+            {errors.root?.message && (
+              <p className="text-red-500">{errors.root.message}</p>
+            )}
             <div className="flex flex-col gap-4">
               <div className="w-full max-w-87.5">
                 <Button
                   type="submit"
                   variant="accent"
                   rounded="full"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
                 >
-                  {isLoading ? 'Loading...' : 'SIGN IN TO JOURNEY'}
+                  {isSubmitting ? 'Loading...' : 'SIGN IN TO JOURNEY'}
                 </Button>
               </div>
               <p className="text-sm">
@@ -99,7 +108,9 @@ export default function LoginPage() {
             <div className="h-px flex-1 bg-border" />
           </div>
           <div className="w-full max-w-87.5">
-            <GoogleSignInButton onError={setError} />
+            <GoogleSignInButton
+              onError={(message) => setError('root', { message })}
+            />
           </div>
         </div>
       </div>

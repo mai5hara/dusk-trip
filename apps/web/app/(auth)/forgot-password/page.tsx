@@ -1,31 +1,39 @@
 'use client';
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Input, Label, Button } from '@mood-trip/ui';
+import {
+  forgotPasswordBodySchema,
+  type ForgotPasswordBody,
+} from '@mood-trip/validators';
 import { requestPasswordReset } from '@/api/auth/api';
 import Link from 'next/link';
 import { AuthSidePanel } from '@/app/(auth)/_components/AuthSidePanel';
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<ForgotPasswordBody>({
+    resolver: zodResolver(forgotPasswordBodySchema),
+    defaultValues: { email: '' },
+  });
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
+  const onSubmit = handleSubmit(async ({ email }) => {
     try {
       await requestPasswordReset(email);
       setSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
+      setError('root', {
+        message: err instanceof Error ? err.message : 'An error occurred',
+      });
     }
-  };
+  });
 
   return (
     <div className="flex min-h-screen">
@@ -51,33 +59,35 @@ export default function ForgotPasswordPage() {
                 </p>
               </div>
               <form
-                onSubmit={handleSubmit}
+                onSubmit={onSubmit}
+                noValidate
                 className="flex flex-col gap-10 w-full"
               >
                 <div className="flex flex-col gap-4 items-center w-full max-w-87.5">
                   <div className="flex flex-col gap-2 w-full">
                     <Label htmlFor="email">Email</Label>
                     <Input
+                      id="email"
                       type="email"
                       variant="inset"
-                      showPasswordToggle
                       placeholder="Type your email"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEmail(e.target.value)
-                      }
+                      {...register('email')}
+                      errorMessage={errors.email?.message}
                     />
                   </div>
                 </div>
-                {error && <p className="text-red-500">{error}</p>}
+                {errors.root?.message && (
+                  <p className="text-red-500">{errors.root.message}</p>
+                )}
                 <div className="flex flex-col gap-4">
                   <div className="w-full max-w-87.5">
                     <Button
                       type="submit"
                       variant="accent"
                       rounded="full"
-                      disabled={isLoading}
+                      disabled={isSubmitting}
                     >
-                      {isLoading ? 'Loading...' : 'SEND RESET LINK'}
+                      {isSubmitting ? 'Loading...' : 'SEND RESET LINK'}
                     </Button>
                   </div>
                   <Link
