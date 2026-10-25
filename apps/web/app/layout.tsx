@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AuthProvider } from '@/lib/auth/auth-context';
 import { QueryProvider } from '@/lib/query/query-provider';
 import { AppToaster } from '@/components/AppToaster';
+import { ApiWarmup } from '@/components/ApiWarmup';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
       className="h-full overflow-x-clip antialiased"
     >
       <body className="flex min-h-screen w-full flex-col overflow-x-clip">
+        <ApiWarmup />
         <AuthProvider>
           <QueryProvider>
             {children}
