@@ -1,28 +1,13 @@
 import bcrypt from 'bcrypt';
 import { createPrismaClient } from '../src';
 
-const DEV_NAME = 'Test User';
+// Local development sample data. The demo account exists only in local
+// databases (see the host guard below), so its dummy credentials are safe to commit.
+const DEMO_EMAIL = 'demo@example.com';
+const DEMO_PASSWORD = 'password123';
+const DEMO_NAME = 'Demo User';
 
-// Local admin credentials come from packages/database/.env so none are committed.
-function _requireSeedAdmin(): { email: string; password: string } {
-  const email = process.env.SEED_ADMIN_EMAIL;
-  const password = process.env.SEED_ADMIN_PASSWORD;
-
-  if (!email || !password) {
-    throw new Error(
-      'SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD must be set in packages/database/.env (see .env.example)',
-    );
-  }
-
-  // Login requires at least 8 characters, so a shorter password could never sign in.
-  if (password.length < 8) {
-    throw new Error('SEED_ADMIN_PASSWORD must be at least 8 characters');
-  }
-
-  return { email, password };
-}
-
-const { email: DEV_EMAIL, password: DEV_PASSWORD } = _requireSeedAdmin();
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
 
 const url = process.env.DATABASE_URL;
 
@@ -30,33 +15,34 @@ if (!url) {
   throw new Error('DATABASE_URL is not set');
 }
 
+// Refuse to touch anything but a local database (e.g. a production URL left in .env).
+const host = new URL(url).hostname;
+if (!LOCAL_HOSTS.has(host)) {
+  throw new Error(
+    `Refusing to seed: DATABASE_URL host "${host}" is not local. The seed is for local development only.`,
+  );
+}
+
 const prisma = createPrismaClient(url);
 
 async function main() {
-  const passwordHash = await bcrypt.hash(DEV_PASSWORD, 10);
+  // Create-only and idempotent: never overwrites or deletes existing data.
+  // To start over, reset the local database (pnpm db:reset) and seed again.
   const user = await prisma.user.upsert({
-    where: {
-      email: DEV_EMAIL,
-    },
-    update: {
-      name: DEV_NAME,
-      passwordHash,
-      isAdmin: true,
-    },
+    where: { email: DEMO_EMAIL },
+    update: {},
     create: {
-      email: DEV_EMAIL,
-      name: DEV_NAME,
-      passwordHash,
+      email: DEMO_EMAIL,
+      name: DEMO_NAME,
+      passwordHash: await bcrypt.hash(DEMO_PASSWORD, 10),
       isAdmin: true,
     },
   });
 
-  await prisma.entry.deleteMany({
-    where: { trip: { userId: user.id } },
-  });
-  await prisma.trip.deleteMany({
-    where: { userId: user.id },
-  });
+  if ((await prisma.trip.count({ where: { userId: user.id } })) > 0) {
+    console.log(`Seed skipped: ${DEMO_EMAIL} already has trips.`);
+    return;
+  }
 
   const trip1 = await prisma.trip.create({
     data: {

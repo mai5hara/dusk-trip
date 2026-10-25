@@ -116,18 +116,22 @@ Run only one side with `pnpm dev:api` or `pnpm dev:web`. Run the admin app with 
 
 ### Seed data (local only)
 
-`pnpm db:seed` creates a local admin user with sample trips. Set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` (8+ characters) in `packages/database/.env` first; the seed stops if they are missing. No credentials are committed to the repo.
+`pnpm db:seed` creates a demo account with sample trips. Log in to the web app (and the local admin app) with:
 
-The seed is for local development only: **never run it against a shared or production database.** The demo deployment is not seeded. Create an account through the web app instead.
+- Email: `demo@example.com`
+- Password: `password123`
+
+The seed only creates data that is missing, so running it again changes nothing. To start over, run `pnpm db:reset` (**drops all data in the local database** and reapplies migrations), then `pnpm db:seed`.
+
+The seed is for local development only and refuses to run when `DATABASE_URL` does not point at `localhost`. The demo account exists only in local databases; the deployed demo is not seeded, so create an account through the web app there.
 
 ### Environment variables
 
 **`packages/database/.env`** (Prisma CLI and seed):
 
-| Variable                                  | Required      | Description                                                           |
-| ----------------------------------------- | ------------- | --------------------------------------------------------------------- |
-| `DATABASE_URL`                            | Yes           | PostgreSQL connection string for migrations and the seed              |
-| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | For `db:seed` | Local admin account the seed creates. Password must be 8+ characters. |
+| Variable       | Required | Description                                              |
+| -------------- | -------- | -------------------------------------------------------- |
+| `DATABASE_URL` | Yes      | PostgreSQL connection string for migrations and the seed |
 
 **Root `.env`** (API):
 
@@ -158,13 +162,14 @@ Never commit `.env` or `.env.local`. Only the `.example` files belong in Git.
 
 ### Useful scripts
 
-| Command                                                 | Description                                        |
-| ------------------------------------------------------- | -------------------------------------------------- |
-| `pnpm dev`                                              | Build shared packages, then start API + web        |
-| `pnpm dev:api` / `pnpm dev:web` / `pnpm dev:admin`      | Start one app                                      |
-| `pnpm dev:db`                                           | Start local PostgreSQL (Docker Compose)            |
-| `pnpm db:migrate` / `pnpm db:generate` / `pnpm db:seed` | Prisma migrate / generate client / seed (local)    |
-| `pnpm lint` / `pnpm format:check` / `pnpm test`         | Lint / Prettier check / tests across the workspace |
+| Command                                                 | Description                                                          |
+| ------------------------------------------------------- | -------------------------------------------------------------------- |
+| `pnpm dev`                                              | Build shared packages, then start API + web                          |
+| `pnpm dev:api` / `pnpm dev:web` / `pnpm dev:admin`      | Start one app                                                        |
+| `pnpm dev:db`                                           | Start local PostgreSQL (Docker Compose)                              |
+| `pnpm db:migrate` / `pnpm db:generate` / `pnpm db:seed` | Prisma migrate / generate client / seed (local)                      |
+| `pnpm db:reset`                                         | Drop all local data and reapply migrations (then run `pnpm db:seed`) |
+| `pnpm lint` / `pnpm format:check` / `pnpm test`         | Lint / Prettier check / tests across the workspace                   |
 
 ### Troubleshooting
 
