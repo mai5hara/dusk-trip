@@ -1,9 +1,28 @@
 import bcrypt from 'bcrypt';
 import { createPrismaClient } from '../src';
 
-const DEV_EMAIL = 'test@test.com';
-const DEV_PASSWORD = 'newpassword1';
 const DEV_NAME = 'Test User';
+
+// Local admin credentials come from packages/database/.env so none are committed.
+function _requireSeedAdmin(): { email: string; password: string } {
+  const email = process.env.SEED_ADMIN_EMAIL;
+  const password = process.env.SEED_ADMIN_PASSWORD;
+
+  if (!email || !password) {
+    throw new Error(
+      'SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD must be set in packages/database/.env (see .env.example)',
+    );
+  }
+
+  // Login requires at least 8 characters, so a shorter password could never sign in.
+  if (password.length < 8) {
+    throw new Error('SEED_ADMIN_PASSWORD must be at least 8 characters');
+  }
+
+  return { email, password };
+}
+
+const { email: DEV_EMAIL, password: DEV_PASSWORD } = _requireSeedAdmin();
 
 const url = process.env.DATABASE_URL;
 
