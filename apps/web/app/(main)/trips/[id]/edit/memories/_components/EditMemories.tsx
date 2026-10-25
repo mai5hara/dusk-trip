@@ -125,8 +125,8 @@ const EditMemories = ({ tripId }: { tripId: string }) => {
   const isSaving = isSubmitting || isCreating || isUpdating;
 
   return (
-    <div className="mx-auto flex w-full max-w-225 flex-col items-center pt-8 pb-20 md:pt-20 md:pb-40">
-      <div className="flex w-full flex-col items-center gap-14">
+    <div className="mx-auto flex w-full max-w-225 flex-col items-center pb-20 md:pb-40">
+      <div className="flex w-full flex-col items-center gap-10">
         <p className="text-sm opacity-70">Step 2 of 2 · Memories</p>
         <section className="flex w-full flex-col gap-9">
           <div className="flex flex-col gap-2">

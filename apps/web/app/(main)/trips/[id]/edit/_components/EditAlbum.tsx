@@ -83,8 +83,8 @@ const EditAlbum = ({ tripId }: { tripId: string }) => {
   if (isError || !trip) return <section>Trip not found</section>;
 
   return (
-    <form className="mx-auto flex w-full max-w-225 flex-col items-center pt-8 pb-20 md:pt-20 md:pb-40">
-      <div className="flex w-full flex-col items-center gap-14">
+    <form className="mx-auto flex w-full max-w-225 flex-col items-center pb-20 md:pb-40">
+      <div className="flex w-full flex-col items-center gap-10">
         <p className="text-sm opacity-70">Step 1 of 2 · Album</p>
         <section className="flex w-full flex-col gap-9">
           <h1 className="text-2xl font-mono font-medium">Edit Album</h1>
