@@ -96,7 +96,9 @@ const ItineraryExplorer = ({
   );
 
   return (
-    <div className="explorer-enter flex flex-col gap-4 lg:h-full lg:min-h-0 lg:flex-1">
+    // Desktop: fit the viewport below the fixed header (layout md:pt-36 +
+    // pb-10) so only the day list scrolls beside the map.
+    <div className="explorer-enter flex flex-col gap-4 lg:h-[calc(100dvh-11.5rem)] lg:min-h-0">
       <div className="flex items-center justify-between gap-4">
         <Button type="button" variant="outline" onClick={onBack}>
           <ArrowLeftIcon className="size-4" />
