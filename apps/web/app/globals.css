@@ -152,5 +152,5 @@
 /* Temporary: mirrors tokonoma Card raised until a Box component ships */
 .tokonoma-raised-panel {
   background: var(--background-gradient-raised);
-  box-shadow: var(--shadow-button-raised);
+  box-shadow: var(--shadow-card-raised);
 }
