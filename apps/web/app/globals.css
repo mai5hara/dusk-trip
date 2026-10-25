@@ -6,6 +6,20 @@
 @source "../components/**/*.{js,ts,jsx,tsx}";
 @source "../features/**/*.{js,ts,jsx,tsx}";
 
+/* Main layout spacing, shared by (main)/layout.tsx and the itinerary explorer
+   so the explorer's desktop height stays in sync with the shell. */
+:root {
+  --main-pt: 11rem; /* clears the two-row mobile header */
+  --main-pb: 2.5rem;
+  --footer-h: 5rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --main-pt: 9rem;
+  }
+}
+
 @keyframes formExit {
   from {
     opacity: 1;
