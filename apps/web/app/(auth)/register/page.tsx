@@ -1,34 +1,37 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/lib/auth/auth-context';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { Input, Button, Label } from '@mood-trip/ui';
+import { signupBodySchema, type SignupBody } from '@mood-trip/validators';
 import { AuthSidePanel } from '@/app/(auth)/_components/AuthSidePanel';
 
 export default function SignUpPage() {
   const { signup } = useAuth();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupBody>({
+    resolver: zodResolver(signupBodySchema),
+    defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
+  });
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      await signup(name, email, password, confirmPassword);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const onSubmit = handleSubmit(
+    async ({ name, email, password, confirmPassword }) => {
+      try {
+        await signup(name, email, password, confirmPassword);
+      } catch (err) {
+        setError('root', {
+          message: err instanceof Error ? err.message : 'An error occurred',
+        });
+      }
+    },
+  );
 
   return (
     <div className="flex min-h-screen">
@@ -41,65 +44,71 @@ export default function SignUpPage() {
               Create an account to start your journey
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-10 w-full">
+          <form
+            onSubmit={onSubmit}
+            noValidate
+            className="flex flex-col gap-10 w-full"
+          >
             <div className="flex flex-col gap-4 items-center w-full max-w-87.5">
               <div className="flex flex-col gap-2 w-full">
                 <Label htmlFor="name">Name</Label>
                 <Input
+                  id="name"
                   type="text"
                   variant="inset"
                   placeholder="Type your name"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setName(e.target.value)
-                  }
+                  {...register('name')}
+                  errorMessage={errors.name?.message}
                 />
               </div>
               <div className="flex flex-col gap-2 w-full">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
+                  id="email"
                   type="email"
                   variant="inset"
                   placeholder="Type your email"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setEmail(e.target.value)
-                  }
+                  {...register('email')}
+                  errorMessage={errors.email?.message}
                 />
               </div>
               <div className="flex flex-col gap-2 w-full">
                 <Label htmlFor="password">Password</Label>
                 <Input
+                  id="password"
                   type="password"
                   variant="inset"
                   showPasswordToggle
                   placeholder="Type your password"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setPassword(e.target.value)
-                  }
+                  {...register('password')}
+                  errorMessage={errors.password?.message}
                 />
               </div>
               <div className="flex flex-col gap-2 w-full">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
                 <Input
+                  id="confirm-password"
                   type="password"
                   variant="inset"
                   showPasswordToggle
                   placeholder="Confirm password"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setConfirmPassword(e.target.value)
-                  }
+                  {...register('confirmPassword')}
+                  errorMessage={errors.confirmPassword?.message}
                 />
               </div>
             </div>
-            {error && <p className="text-red-500">{error}</p>}
+            {errors.root?.message && (
+              <p className="text-red-500">{errors.root.message}</p>
+            )}
             <div className="flex flex-col gap-4">
               <div className="w-full max-w-87.5">
                 <Button
                   type="submit"
                   variant="accent"
                   rounded="full"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
                 >
-                  {isLoading ? 'Loading...' : 'SIGN UP TO JOURNEY'}
+                  {isSubmitting ? 'Loading...' : 'SIGN UP TO JOURNEY'}
                 </Button>
               </div>
               <p className="text-sm">
@@ -116,7 +125,9 @@ export default function SignUpPage() {
             <div className="h-px flex-1 bg-border" />
           </div>
           <div className="w-full max-w-87.5">
-            <GoogleSignInButton onError={setError} />
+            <GoogleSignInButton
+              onError={(message) => setError('root', { message })}
+            />
           </div>
         </div>
       </div>

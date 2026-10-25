@@ -65,7 +65,13 @@ export async function signup(body: SignupBody): Promise<SignupResponse> {
   return publicApi<SignupResponse>(
     '/auth/signup',
     { method: 'POST', body: JSON.stringify(body) },
-    'Invalid email or password',
+    {
+      default: 'Could not create your account. Please try again.',
+      status: {
+        400: 'Please check your name, email, and password.',
+        409: 'An account with this email already exists.',
+      },
+    },
   );
 }
 
