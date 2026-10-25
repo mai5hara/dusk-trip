@@ -20,7 +20,7 @@ const TripCard = ({ trip }: { trip: TripListItem }): React.JSX.Element => {
 
   return (
     <div ref={cardRef} className="relative">
-      <TripCardMenu tripId={trip.id} cardRef={cardRef} />
+      <TripCardMenu tripId={trip.id} tripTitle={trip.title} cardRef={cardRef} />
       <Link href={`/trips/${trip.id}`}>
         <Card variant="raised" size="sm">
           <CardMedia>

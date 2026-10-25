@@ -16,6 +16,7 @@ export {
   ModalContent,
   ModalHeader,
   ModalBody,
+  ModalFooter,
   Select,
   type DateRangePickerValue,
   DateRangePicker,
