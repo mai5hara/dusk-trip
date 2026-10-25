@@ -2,8 +2,8 @@ const Footer = () => {
   return (
     <footer className="flex h-(--footer-h) w-full shrink-0 items-center justify-between">
       <div className="flex flex-col gap-1">
-        <p className="text-sm font-bold">Mood Trip</p>
-        <small>© 2026 Mood Trip. All rights reserved.</small>
+        <p className="text-sm font-bold">Dusk Trip</p>
+        <small>© 2026 Dusk Trip. All rights reserved.</small>
       </div>
       {/* Footer links — hidden for v1 demo (#65); restore with #66 routes.
           Uncomment `import Link from 'next/link'` (and `'use client'` if needed).

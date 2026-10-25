@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { GoogleSignInButton } from '@/components/GoogleSignInButton';
 import { Input, Button, Label } from '@mood-trip/ui';
+import { AuthSidePanel } from '@/app/(auth)/_components/AuthSidePanel';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -29,9 +30,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      <div className="hidden flex-1 items-center justify-center bg-accent md:flex">
-        nanika
-      </div>
+      <AuthSidePanel />
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10 sm:px-10">
         <div className="flex flex-col gap-8 max-w-[350px] w-full">
           <div className="flex flex-col gap-2">
@@ -87,7 +86,7 @@ export default function LoginPage() {
                 </Button>
               </div>
               <p className="text-sm">
-                New to Mood Trip?
+                New to Dusk Trip?
                 <Link href="/register" className="text-accent pl-2 font-bold">
                   Create an account
                 </Link>

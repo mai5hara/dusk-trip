@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Input, Label, Button } from '@mood-trip/ui';
 import { requestPasswordReset } from '@/api/auth/api';
 import Link from 'next/link';
+import { AuthSidePanel } from '@/app/(auth)/_components/AuthSidePanel';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -28,9 +29,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="flex min-h-screen">
-      <div className="hidden flex-1 items-center justify-center bg-accent md:flex">
-        nanika
-      </div>
+      <AuthSidePanel />
       <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10 sm:px-10">
         <div className="flex flex-col gap-8 max-w-87.5 w-full">
           {sent ? (

@@ -4,8 +4,8 @@ import { AuthProvider } from '@/lib/auth/auth-context';
 import { AppToaster } from '@/components/AppToaster';
 
 export const metadata: Metadata = {
-  title: 'Mood Trip Admin',
-  description: 'Mood Trip Admin',
+  title: 'Dusk Trip Admin',
+  description: 'Dusk Trip Admin',
 };
 
 export default function RootLayout({

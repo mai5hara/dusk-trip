@@ -1,6 +1,6 @@
-# Mood Trip Admin
+# Dusk Trip Admin
 
-Next.js admin panel for Mood Trip.
+Next.js admin panel for Dusk Trip.
 
 ## Prerequisites
 

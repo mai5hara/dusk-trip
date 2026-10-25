@@ -1,6 +1,6 @@
 # `@mood-trip/web`
 
-Next.js app for the mood-trip product.
+Next.js app for Dusk Trip.
 
 ## Directory conventions
 

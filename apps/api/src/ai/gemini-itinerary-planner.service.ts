@@ -147,7 +147,7 @@ export class GeminiItineraryPlannerService implements ItineraryPlanner {
     const constraints = body.constraints?.trim() || 'No special constraints.';
 
     return `
-You are a thoughtful travel planner for Mood-Trip.
+You are a thoughtful travel planner for Dusk Trip.
 Generate a practical itinerary as JSON only. Do not include markdown.
 
 Input:
