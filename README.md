@@ -98,8 +98,10 @@ The web app is responsive down to ~375px wide.
 ```bash
 pnpm install
 
-# API / database env (repo root)
+# API env (repo root)
 cp .env.example .env
+# Prisma CLI and seed env
+cp packages/database/.env.example packages/database/.env
 # Web env
 cp apps/web/.env.local.example apps/web/.env.local
 
@@ -114,11 +116,20 @@ Run only one side with `pnpm dev:api` or `pnpm dev:web`. Run the admin app with 
 
 ### Seed data (local only)
 
-`pnpm db:seed` creates a local test user with sample trips. The seed is for local development only: **never run it against a shared or production database.** The demo deployment is not seeded. Create an account through the web app instead.
+`pnpm db:seed` creates a local admin user with sample trips. Set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` (8+ characters) in `packages/database/.env` first; the seed stops if they are missing. No credentials are committed to the repo.
+
+The seed is for local development only: **never run it against a shared or production database.** The demo deployment is not seeded. Create an account through the web app instead.
 
 ### Environment variables
 
-**Root `.env`** (API and Prisma):
+**`packages/database/.env`** (Prisma CLI and seed):
+
+| Variable                                  | Required      | Description                                                           |
+| ----------------------------------------- | ------------- | --------------------------------------------------------------------- |
+| `DATABASE_URL`                            | Yes           | PostgreSQL connection string for migrations and the seed              |
+| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | For `db:seed` | Local admin account the seed creates. Password must be 8+ characters. |
+
+**Root `.env`** (API):
 
 | Variable                                          | Required | Description                                                                                                                                 |
 | ------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
