@@ -1,4 +1,4 @@
-# Mood Trip
+# Dusk Trip
 
 A travel journal for keeping trips as photo albums, organized by day and time of day, plus an AI trip planner that drafts itineraries from a mood and a destination.
 

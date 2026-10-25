@@ -19,7 +19,7 @@ const Header = () => {
       <header className="tokonoma-raised-panel mx-auto flex w-full max-w-312 flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-3xl bg-surface p-4 md:flex-nowrap md:rounded-full">
         <h1 className="shrink-0 xl:flex-1">
           <ButtonLink href="/" variant="ghost">
-            Mood-Trip
+            Dusk Trip
           </ButtonLink>
         </h1>
         <div className="order-last flex w-full justify-center md:order-0 md:w-auto md:flex-1">
