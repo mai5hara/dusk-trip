@@ -3,14 +3,8 @@
 import Image from 'next/image';
 import { useTripQuery } from '@/app/(main)/_hooks/useTripQuery';
 import { formatDateRange } from '@/lib/format-date';
-import {
-  MapPinIcon,
-  CalendarIcon,
-  PenIcon,
-  TriangleIcon,
-  ArrowLeftIcon,
-} from 'lucide-react';
-import { Button, ButtonLink } from '@mood-trip/ui';
+import { MapPinIcon, CalendarIcon, PenIcon, ArrowLeftIcon } from 'lucide-react';
+import { ButtonLink } from '@mood-trip/ui';
 import Link from 'next/link';
 import { groupEntriesByDay } from '../_lib/group-entries-by-day';
 
@@ -79,12 +73,14 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
                   <PenIcon className="size-4" />
                 </ButtonLink>
               </div>
+              {/* Slide Show — hidden for v1 demo (GitHub #23); restore with route + imports when shipped
               <div className="w-full md:max-w-50">
                 <Button variant="accent" rounded="full" width="full">
                   View Slideshow
                   <TriangleIcon className="size-4 rotate-90" />
                 </Button>
               </div>
+              */}
             </div>
           </div>
         </div>

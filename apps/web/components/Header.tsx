@@ -1,8 +1,8 @@
 'use client';
 
-import { ButtonLink } from '@mood-trip/ui';
-import { Input } from '@mood-trip/ui';
-import { PlusIcon, UserIcon, SparklesIcon } from 'lucide-react';
+import { Button, ButtonLink, Input } from '@mood-trip/ui';
+import { PlusIcon, SparklesIcon } from 'lucide-react';
+// import { UserIcon } from 'lucide-react'; // My Page (#73): uncomment with block below
 import { useAuth } from '@/lib/auth/auth-context';
 import { useTripListContext } from '@/app/(main)/_hooks/trip-list-context';
 
@@ -50,10 +50,20 @@ const Header = () => {
           <SparklesIcon className="size-4" />
           Trip Planner
         </ButtonLink>
+        {/* My Page — hidden for v1 demo (#73); link to /mypage/[id] when profile ships
         <ButtonLink href="#" variant="outline" size="icon" rounded="full">
           <UserIcon className="size-5" />
         </ButtonLink>
-        <button onClick={logout}>Logout</button>
+        */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          rounded="full"
+          onClick={logout}
+        >
+          Logout
+        </Button>
       </div>
     </header>
   );
