@@ -24,6 +24,10 @@ export async function createTrip(body: CreateTripBody): Promise<TripListItem> {
   });
 }
 
+export async function deleteTrip(id: string): Promise<void> {
+  return apiClient<void>(`/trips/${id}`, { method: 'DELETE' });
+}
+
 export async function createEntries(
   tripId: string,
   body: CreateEntriesBatchBody,
