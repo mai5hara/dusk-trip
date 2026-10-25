@@ -125,8 +125,8 @@ const EditMemories = ({ tripId }: { tripId: string }) => {
   const isSaving = isSubmitting || isCreating || isUpdating;
 
   return (
-    <div className="mx-auto flex w-full max-w-225 flex-col items-center pt-20 pb-40">
-      <div className="flex w-full flex-col items-center gap-14">
+    <div className="mx-auto flex w-full max-w-225 flex-col items-center pb-20 md:pb-40">
+      <div className="flex w-full flex-col items-center gap-10">
         <p className="text-sm opacity-70">Step 2 of 2 · Memories</p>
         <section className="flex w-full flex-col gap-9">
           <div className="flex flex-col gap-2">
@@ -147,23 +147,29 @@ const EditMemories = ({ tripId }: { tripId: string }) => {
               No travel period is set for this album.
             </p>
           )}
-          <div className="flex max-w-125 flex-col gap-3 self-center sm:flex-row">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isSaving}
-              onClick={() => router.push(`/trips/${tripId}/edit`)}
-            >
-              Back
-            </Button>
-            <Button
-              type="button"
-              variant="accent"
-              disabled={isSaving}
-              onClick={saveMemories}
-            >
-              {isSaving ? 'Saving...' : 'Save memories'}
-            </Button>
+          <div className="flex w-full justify-center flex-col gap-3 self-center sm:flex-row">
+            <div className="w-full md:max-w-50">
+              <Button
+                type="button"
+                variant="outline"
+                width="full"
+                disabled={isSaving}
+                onClick={() => router.push(`/trips/${tripId}/edit`)}
+              >
+                Back
+              </Button>
+            </div>
+            <div className="w-full md:max-w-50">
+              <Button
+                type="button"
+                variant="accent"
+                width="full"
+                disabled={isSaving}
+                onClick={saveMemories}
+              >
+                {isSaving ? 'Saving...' : 'Save memories'}
+              </Button>
+            </div>
           </div>
         </section>
       </div>

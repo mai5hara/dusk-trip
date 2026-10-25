@@ -25,11 +25,15 @@ export function GoogleSignInButton({ onError }: GoogleSignInButtonProps) {
       },
     });
 
+    // GSI only accepts a pixel width (200–400), so fit it to the container
+    // to avoid overflowing narrow screens.
+    const width = Math.min(350, Math.max(200, buttonRef.current.offsetWidth));
+
     googleAccounts.id.renderButton(buttonRef.current, {
       type: 'standard',
       theme: 'outline',
       size: 'large',
-      width: 350,
+      width,
       text: 'continue_with',
       locale: 'en',
     });
@@ -42,7 +46,7 @@ export function GoogleSignInButton({ onError }: GoogleSignInButtonProps) {
         strategy="afterInteractive"
         onReady={renderButton}
       />
-      <div ref={buttonRef} />
+      <div ref={buttonRef} className="w-full" />
     </>
   );
 }

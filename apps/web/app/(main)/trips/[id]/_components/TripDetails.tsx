@@ -30,26 +30,28 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
         <ArrowLeftIcon className="size-4" />
         Back to album
       </Link>
-      <div className="tokonoma-raised-panel flex flex-col gap-12 rounded-2xl p-10 items-center">
-        <div className="flex w-full flex-row items-start gap-10">
+      <div className="tokonoma-raised-panel flex flex-col items-center gap-10 rounded-2xl p-5 sm:p-8 md:gap-12 lg:p-10">
+        <div className="flex w-full flex-col items-start gap-6 md:flex-row md:gap-10">
           <Image
-            className="w-1/2 max-w-140 shrink-0 aspect-4/3 rounded-xl object-cover"
+            className="aspect-4/3 w-full shrink-0 rounded-xl object-cover md:w-1/2 md:max-w-140"
             src={trip.thumbnailUrl}
             alt={trip.title}
             width={560}
             height={420}
           />
-          <div className="flex min-w-0 flex-1 flex-col gap-12 pt-1">
+          <div className="flex w-full min-w-0 flex-1 flex-col gap-8 pt-1 md:gap-12">
             <div className="flex flex-col gap-4">
-              <h1 className="font-mono text-4xl font-medium">{trip.title}</h1>
+              <h1 className="font-mono text-2xl font-medium break-words sm:text-3xl lg:text-4xl">
+                {trip.title}
+              </h1>
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <MapPinIcon className="size-4" />
+                    <MapPinIcon className="size-4 shrink-0" />
                     {trip.location}
                   </div>
                   <div className="flex items-center gap-2">
-                    <CalendarIcon className="size-4" />
+                    <CalendarIcon className="size-4 shrink-0" />
                     {formatDateRange(trip.startDate, trip.endDate)}
                   </div>
                   <div className="flex items-center gap-2 font-medium">
@@ -84,7 +86,7 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-10">
+        <div className="flex w-full flex-col gap-10">
           {dayGroups.length === 0 ? (
             <p className="text-sm opacity-70">No memories saved yet.</p>
           ) : (
@@ -109,7 +111,7 @@ const TripDetails = ({ tripId }: { tripId: string }) => {
                         )}
                         {entry.location && (
                           <div className="flex items-center gap-2 text-xs">
-                            <MapPinIcon className="size-4" />
+                            <MapPinIcon className="size-4 shrink-0" />
                             {entry.location}
                           </div>
                         )}

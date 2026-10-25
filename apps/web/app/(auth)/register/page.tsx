@@ -30,11 +30,11 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="flex flex-1 bg-accent h-full items-center justify-center">
+    <div className="flex min-h-screen">
+      <div className="hidden flex-1 items-center justify-center bg-accent md:flex">
         nanika
       </div>
-      <div className="flex flex-col gap-8 flex-1 h-full items-center justify-center px-10">
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10 sm:px-10">
         <div className="flex flex-col gap-8 max-w-[350px] w-full">
           <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-bold">Sign Up</h1>
