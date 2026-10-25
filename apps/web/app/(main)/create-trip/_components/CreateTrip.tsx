@@ -83,6 +83,25 @@ const CreateTrip = () => {
     setValue('entries', buildDayEntries(start, end, previous));
   }, [travelStartDate, travelEndDate, getValues, setValue]);
 
+  // The album step validates with trigger(), which doesn't mark the form as
+  // submitted, so react-hook-form won't revalidate on change by itself. After
+  // the first attempt, recheck each album field as it changes.
+  const [hasValidatedAlbumStep, setHasValidatedAlbumStep] = useState(false);
+
+  useEffect(() => {
+    if (!hasValidatedAlbumStep) return;
+
+    const subscription = watch((_values, { name }) => {
+      if (name === 'newTrip.startDate' || name === 'newTrip.endDate') {
+        // The end-date-order error lives on endDate, so check both together.
+        void trigger(['newTrip.startDate', 'newTrip.endDate']);
+      } else if (name?.startsWith('newTrip.')) {
+        void trigger(name);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [hasValidatedAlbumStep, watch, trigger]);
+
   const ensureAlbumExists = async (
     values: EntryFormValues,
   ): Promise<string> => {
@@ -100,6 +119,7 @@ const CreateTrip = () => {
   };
 
   const validateAlbumStep = async (): Promise<boolean> => {
+    setHasValidatedAlbumStep(true);
     return trigger([
       'newTrip',
       'newTrip.title',
