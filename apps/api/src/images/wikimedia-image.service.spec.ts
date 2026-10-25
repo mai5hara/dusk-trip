@@ -44,7 +44,7 @@ describe('WikimediaImageService', () => {
     expect(place.coords).toEqual({ lat: 35.0394, lng: 135.7292 });
     // Sends a descriptive User-Agent as Wikimedia requires.
     const [, init] = fetchMock.mock.calls[0];
-    expect(init.headers['User-Agent']).toContain('Mood-Trip');
+    expect(init.headers['User-Agent']).toContain('Dusk-Trip');
   });
 
   it('returns coordinates even when the article has no image', async () => {
