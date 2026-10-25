@@ -79,6 +79,13 @@ export class TripsService {
     return _toTripListItem(trip);
   }
 
+  async remove(id: string, userId: string): Promise<void> {
+    await this._assertTripOwnedByUser(id, userId);
+
+    // Entries are removed by the onDelete: Cascade relation.
+    await this.prisma.client.trip.delete({ where: { id } });
+  }
+
   private async _assertTripOwnedByUser(
     tripId: string,
     userId: string,

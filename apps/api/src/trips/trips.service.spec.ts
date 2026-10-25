@@ -12,6 +12,7 @@ describe('TripsService', () => {
         findUnique: jest.Mock;
         create: jest.Mock;
         update: jest.Mock;
+        delete: jest.Mock;
       };
       entry: {
         create: jest.Mock;
@@ -30,6 +31,7 @@ describe('TripsService', () => {
           findUnique: jest.fn(),
           create: jest.fn(),
           update: jest.fn(),
+          delete: jest.fn(),
         },
         entry: {
           create: jest.fn(),
@@ -482,5 +484,42 @@ describe('TripsService', () => {
 
     expect(prismaService.client.$transaction).toHaveBeenCalled();
     expect(result[0].caption).toBe('Updated');
+  });
+
+  it('remove: throws NotFoundException if trip not found', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue(null);
+
+    await expect(service.remove('trip-1', 'user-1')).rejects.toThrow(
+      NotFoundException,
+    );
+
+    expect(prismaService.client.trip.delete).not.toHaveBeenCalled();
+  });
+
+  it('remove: throws NotFoundException if trip is not owned by user', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-2',
+    });
+
+    await expect(service.remove('trip-1', 'user-1')).rejects.toThrow(
+      NotFoundException,
+    );
+
+    expect(prismaService.client.trip.delete).not.toHaveBeenCalled();
+  });
+
+  it('remove: deletes the trip', async () => {
+    prismaService.client.trip.findUnique.mockResolvedValue({
+      id: 'trip-1',
+      userId: 'user-1',
+    });
+    prismaService.client.trip.delete.mockResolvedValue({ id: 'trip-1' });
+
+    await service.remove('trip-1', 'user-1');
+
+    expect(prismaService.client.trip.delete).toHaveBeenCalledWith({
+      where: { id: 'trip-1' },
+    });
   });
 });
