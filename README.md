@@ -120,19 +120,19 @@ Run only one side with `pnpm dev:api` or `pnpm dev:web`. Run the admin app with 
 
 **Root `.env`** (API and Prisma):
 
-| Variable                                          | Required | Description                                                             |
-| ------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
-| `DATABASE_URL`                                    | Yes      | PostgreSQL connection string                                            |
-| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`         | Yes      | Separate random strings for signing tokens                              |
-| `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN` | Yes      | Token lifetimes, e.g. `15m`, `7d`                                       |
-| `GOOGLE_CLIENT_ID`                                | Yes      | Google OAuth client ID (Google Sign-In)                                 |
-| `GEMINI_API_KEY`                                  | Yes      | Gemini API key for the Trip Planner                                     |
-| `MAPTILER_API_KEY`                                | Yes      | MapTiler key for geocoding and map styles                               |
-| `MAPTILER_MAP_API_KEY`                            | No       | Separate MapTiler key for map styles, if you use one                    |
-| `WEB_ORIGIN`                                      | Yes      | Allowed web origin(s) for CORS, comma-separated                         |
-| `ADMIN_ORIGIN`                                    | No       | Allowed admin origin(s) for CORS                                        |
-| `PASSWORD_RESET_EXPIRES_IN`                       | No       | Reset token lifetime (default `1h`)                                     |
-| `API_PORT`                                        | No       | Local API port (default `3000`). Hosts that set `PORT` take precedence. |
+| Variable                                          | Required | Description                                                                                                                                 |
+| ------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                    | Yes      | PostgreSQL connection string                                                                                                                |
+| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`         | Yes      | Separate random strings for signing tokens                                                                                                  |
+| `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN` | Yes      | Token lifetimes, e.g. `15m`, `7d`                                                                                                           |
+| `GOOGLE_CLIENT_ID`                                | Yes      | Google OAuth client ID (Google Sign-In)                                                                                                     |
+| `GEMINI_API_KEY`                                  | Yes      | Gemini API key for the Trip Planner                                                                                                         |
+| `MAPTILER_API_KEY`                                | Yes      | MapTiler key for geocoding and map styles                                                                                                   |
+| `MAPTILER_MAP_API_KEY`                            | No       | Separate MapTiler key for map styles, if you use one                                                                                        |
+| `WEB_ORIGIN`                                      | Yes      | Allowed web origin(s) for CORS, comma-separated. List the production URL first: the first entry is also used to build password reset links. |
+| `ADMIN_ORIGIN`                                    | No       | Allowed admin origin(s) for CORS                                                                                                            |
+| `PASSWORD_RESET_EXPIRES_IN`                       | No       | Reset token lifetime (default `1h`)                                                                                                         |
+| `API_PORT`                                        | No       | Local API port (default `3000`). Hosts that set `PORT` take precedence.                                                                     |
 
 **`apps/web/.env.local`**:
 
@@ -182,7 +182,7 @@ The demo runs on free tiers: **Vercel** (web), **Render** (API), **Neon** (Postg
 
 - Set the root `.env` variables from the table above, plus `NODE_VERSION=22`. Do not set `PORT`; Render provides it.
 - Migrations run at the end of every build, so each deploy applies new migrations.
-- Set `WEB_ORIGIN` to the Vercel production URL once it exists. Vercel preview URLs need to be added (comma-separated) to call the API.
+- Set `WEB_ORIGIN` to the Vercel production URL once it exists. To call the API from Vercel preview URLs, append them after the production URL (comma-separated). The first entry is used for password reset links, so the production URL must stay first.
 - On the free instance, the service sleeps after 15 minutes idle. `ApiWarmup` in the web app calls `/health` on page load to wake it.
 
 ### Web (Vercel)
