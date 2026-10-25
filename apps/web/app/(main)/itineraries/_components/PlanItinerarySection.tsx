@@ -182,9 +182,9 @@ const PlanItinerarySection = () => {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-225 flex-col items-center pt-20 pb-40">
+    <div className="mx-auto flex w-full max-w-225 flex-col items-center pb-40">
       <div
-        className={`flex w-full flex-col items-center gap-14 ${
+        className={`flex w-full flex-col items-center gap-10 ${
           isFormExiting ? 'form-exit pointer-events-none' : ''
         }`}
       >
