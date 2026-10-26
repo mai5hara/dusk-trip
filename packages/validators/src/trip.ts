@@ -33,26 +33,22 @@ export const listTripsQuerySchema = z.object({
 });
 
 // Messages are user-facing: the web forms show them as-is.
-const _travelPeriodError = {
-  errorMap: () => ({ message: 'Select a travel period' }),
-};
+const _travelPeriodError = { error: 'Select a travel period' };
 
 const tripBodyFieldsSchema = z.object({
   title: z
-    .string({ required_error: 'Enter an album name' })
+    .string({ error: 'Enter an album name' })
     .min(1, 'Enter an album name'),
   thumbnailUrl: z
-    .string({ required_error: 'Add a cover photo' })
+    .string({ error: 'Add a cover photo' })
     .url('Add a cover photo'),
   description: z
     .string()
     .max(500, 'Keep the description to 500 characters or fewer')
     .optional(),
-  location: z
-    .string({ required_error: 'Enter a location' })
-    .min(1, 'Enter a location'),
-  startDate: z.coerce.date(_travelPeriodError),
-  endDate: z.coerce.date(_travelPeriodError),
+  location: z.string({ error: 'Enter a location' }).min(1, 'Enter a location'),
+  startDate: z.coerce.date<Date>(_travelPeriodError),
+  endDate: z.coerce.date<Date>(_travelPeriodError),
 });
 
 function _endDateOnOrAfterStartDate(data: {
@@ -85,8 +81,8 @@ export const updateTripBodySchema = tripBodyFieldsSchema
 export type UpdateTripBody = z.infer<typeof updateTripBodySchema>;
 
 export const adminTripsQuerySchema = z.object({
-  page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(100).default(10),
+  page: z.coerce.number<number>().min(1).default(1),
+  limit: z.coerce.number<number>().min(1).max(100).default(10),
   search: z.string().trim().min(2).max(120).optional(),
 });
 

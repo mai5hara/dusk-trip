@@ -1,3 +1,18 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+# pnpm 10 blocks dependency install scripts by default; neither of these is needed
+# (@nestjs/core only prints a funding notice, Prisma Client is built by `db:generate`).
+ignoredBuiltDependencies:
+  - '@nestjs/core'
+  - prisma
+
+# Security fixes for transitive deps whose parents still pin a vulnerable range.
+overrides:
+  # @nestjs/platform-express 11.x pins multer 2.4.0 (GHSA-q7qp-rjg7-q26m)
+  multer: ^2.5.0
+  # vitest 4 accepts vite ^8.0.0; 8.0.x–8.1.5 has dev-server advisories
+  vite: ^8.1.6
+  # accepts zod ^4; 3.x has no fix for GHSA-mrhx-c7xc-m3w5
+  eslint-plugin-react-hooks>zod: ^4.6.6
