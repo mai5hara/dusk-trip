@@ -196,7 +196,7 @@ The demo runs on free tiers: **Vercel** (web), **Render** (API), **Neon** (Postg
 | Start Command     | `pnpm --filter @mood-trip/api start`                                                                                                                                                                                                                                                               |
 | Health Check Path | `/health`                                                                                                                                                                                                                                                                                          |
 
-- Set the root `.env` variables from the table above, plus `NODE_VERSION=24.22.1`. Do not set `PORT`; Render provides it.
+- Set the root `.env` variables from the table above, plus `NODE_VERSION=24.22.1` and `NODE_ENV=production`. Do not set `PORT`; Render provides it.
 - Migrations run at the end of every build, so each deploy applies new migrations.
 - Set `WEB_ORIGIN` to the Vercel production URL once it exists. To call the API from Vercel preview URLs, append them after the production URL (comma-separated). The first entry is used for password reset links, so the production URL must stay first.
 - On the free instance, the service sleeps after 15 minutes idle. `ApiWarmup` in the web app calls `/health` on page load to wake it.

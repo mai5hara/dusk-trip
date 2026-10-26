@@ -52,8 +52,11 @@ export class ResetPasswordService {
     if (!webOrigin) {
       throw new BadRequestException('WEB_ORIGIN is not configured');
     }
-    const resetUrl = `${webOrigin}/reset-password?token=${rawToken}`;
-    console.log('[dev] password reset link:', resetUrl);
+    // No mailer yet: the link is only logged locally, since logs would leak the token in production.
+    if (process.env.NODE_ENV !== 'production') {
+      const resetUrl = `${webOrigin}/reset-password?token=${rawToken}`;
+      console.log('[dev] password reset link:', resetUrl);
+    }
 
     return { message: SUCCESS_MESSAGE };
   }
