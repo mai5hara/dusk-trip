@@ -8,6 +8,9 @@ on:
       - main
       - develop
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -15,28 +18,24 @@ concurrency:
 jobs:
   format:
     uses: ./.github/workflows/ci-job.yml
-    secrets: inherit
     with:
       name: format
       command: pnpm format:check
 
   lint:
     uses: ./.github/workflows/ci-job.yml
-    secrets: inherit
     with:
       name: lint
       command: pnpm lint
 
   test:
     uses: ./.github/workflows/ci-job.yml
-    secrets: inherit
     with:
       name: test
       command: pnpm test:ci
 
   build-web:
     uses: ./.github/workflows/ci-job.yml
-    secrets: inherit
     with:
       name: build-web
       command: pnpm --filter @mood-trip/validators build && pnpm --filter @mood-trip/web build
@@ -51,7 +50,7 @@ jobs:
       id-token: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
