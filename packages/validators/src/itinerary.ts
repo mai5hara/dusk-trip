@@ -21,10 +21,10 @@ export const generateItineraryBodySchema = z
     destinationPlace: destinationPlaceSchema.optional(),
     mood: moodSchema,
     pace: paceSchema,
-    startDate: z.coerce.date(),
-    endDate: z.coerce.date(),
+    startDate: z.coerce.date<Date>(),
+    endDate: z.coerce.date<Date>(),
     budget: budgetSchema,
-    travelers: z.coerce.number().int().min(1).max(12),
+    travelers: z.coerce.number<number>().int().min(1).max(12),
     interests: z.array(z.string().min(1).max(60)).min(1).max(8),
     constraints: z.string().max(500).optional(),
   })
@@ -39,19 +39,19 @@ const itineraryPlanBaseSchema = z.object({
   title: z.string().min(1).max(120),
   location: z.string().min(1).max(120),
   summary: z.string().min(1).max(700),
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date(),
+  startDate: z.coerce.date<Date>(),
+  endDate: z.coerce.date<Date>(),
 });
 
-const withValidItineraryDates = <T extends z.ZodTypeAny>(schema: T) =>
-  schema.refine(
-    (data: z.infer<typeof itineraryPlanBaseSchema>) =>
-      data.endDate >= data.startDate,
-    {
-      message: 'End date must be on or after the start date',
-      path: ['endDate'],
-    },
-  );
+const withValidItineraryDates = <
+  T extends z.ZodType<{ startDate: Date; endDate: Date }>,
+>(
+  schema: T,
+) =>
+  schema.refine((data) => data.endDate >= data.startDate, {
+    message: 'End date must be on or after the start date',
+    path: ['endDate'],
+  });
 
 export const itineraryPlanItemDraftSchema = z.object({
   timeOfDay: z.enum(['morning', 'afternoon', 'evening']),
@@ -122,8 +122,8 @@ export type ItineraryPlan = z.infer<typeof itineraryPlanSchema>;
 export const itineraryMapStyleSchema = z
   .object({
     version: z.number(),
-    sources: z.record(z.unknown()),
-    layers: z.array(z.record(z.unknown())),
+    sources: z.record(z.string(), z.unknown()),
+    layers: z.array(z.record(z.string(), z.unknown())),
     glyphs: z.string().optional(),
     sprite: z.string().optional(),
   })
@@ -148,12 +148,12 @@ export const itineraryListItemSchema = z.object({
   location: z.string(),
   summary: z.string(),
   thumbnailUrl: z.string().url().nullable(),
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date(),
+  startDate: z.coerce.date<Date>(),
+  endDate: z.coerce.date<Date>(),
   mood: moodSchema,
   dayCount: z.number().int().min(1),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
+  createdAt: z.coerce.date<Date>(),
+  updatedAt: z.coerce.date<Date>(),
 });
 
 export type ItineraryListItem = z.infer<typeof itineraryListItemSchema>;

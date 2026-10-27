@@ -9,9 +9,6 @@ on:
       command:
         required: true
         type: string
-    secrets:
-      TOKONOMA_UI_DEPLOY_KEY_B64:
-        required: true
 
 jobs:
   run:
@@ -19,28 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup SSH for private dependencies
-        env:
-          DEPLOY_KEY_B64: ${{ secrets.TOKONOMA_UI_DEPLOY_KEY_B64 }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$DEPLOY_KEY_B64" | base64 --decode > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_ed25519
-          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.5.0
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: .nvmrc
           cache: pnpm
 
       - name: Install dependencies

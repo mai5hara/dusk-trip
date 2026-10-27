@@ -160,8 +160,7 @@ function _PhotoField({
   errors,
 }: FieldProps & { control: Control<FieldValues> }) {
   const fieldErrors = errors.entries as
-    | FieldErrors<DayEntryFormValue>[]
-    | undefined;
+    FieldErrors<DayEntryFormValue>[] | undefined;
 
   return (
     <Controller
@@ -191,8 +190,7 @@ function _CaptionFields({
   control: Control<FieldValues>;
 }) {
   const fieldErrors = errors.entries as
-    | FieldErrors<DayEntryFormValue>[]
-    | undefined;
+    FieldErrors<DayEntryFormValue>[] | undefined;
 
   return (
     <div className="flex flex-col gap-4">

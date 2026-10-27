@@ -40,8 +40,8 @@ export const adminUsersSchema = z.object({
 export type AdminUsers = z.infer<typeof adminUsersSchema>;
 
 export const adminUsersQuerySchema = z.object({
-  page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(100).default(10),
+  page: z.coerce.number<number>().min(1).default(1),
+  limit: z.coerce.number<number>().min(1).max(100).default(10),
   search: z.string().trim().min(2).max(120).optional(),
 });
 

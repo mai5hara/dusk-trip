@@ -89,8 +89,8 @@ The web app is responsive down to ~375px wide.
 
 ### Requirements
 
-- Node.js 20+ (Prisma 7 needs 20.19+)
-- pnpm 9 (`corepack enable` picks up the version in `package.json`)
+- Node.js 24 LTS (24.22.1+, pinned in `.nvmrc`; run `nvm use` or `fnm use`)
+- pnpm 10 (`corepack enable` picks up the version in `package.json`)
 - Docker (for local PostgreSQL)
 
 ### Setup
@@ -189,14 +189,16 @@ The demo runs on free tiers: **Vercel** (web), **Render** (API), **Neon** (Postg
 
 ### API (Render Web Service)
 
-| Setting           | Value                                                                                                                                                                                                                                                                                              |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Root Directory    | _(empty: repo root)_                                                                                                                                                                                                                                                                               |
-| Build Command     | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter @mood-trip/database db:generate && pnpm --filter @mood-trip/database build && pnpm --filter @mood-trip/validators build && pnpm --filter @mood-trip/api build && pnpm --filter @mood-trip/database exec prisma migrate deploy` |
-| Start Command     | `pnpm --filter @mood-trip/api start`                                                                                                                                                                                                                                                               |
-| Health Check Path | `/health`                                                                                                                                                                                                                                                                                          |
+| Setting           | Value                                                                                                                                                                                                                                                                                                                                              |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root Directory    | _(empty: repo root)_                                                                                                                                                                                                                                                                                                                               |
+| Build Command     | `corepack pnpm install --frozen-lockfile --prod=false && corepack pnpm --filter @mood-trip/database db:generate && corepack pnpm --filter @mood-trip/database build && corepack pnpm --filter @mood-trip/validators build && corepack pnpm --filter @mood-trip/api build && corepack pnpm --filter @mood-trip/database exec prisma migrate deploy` |
+| Start Command     | `corepack pnpm --filter @mood-trip/api start`                                                                                                                                                                                                                                                                                                      |
+| Health Check Path | `/health`                                                                                                                                                                                                                                                                                                                                          |
 
-- Set the root `.env` variables from the table above, plus `NODE_VERSION=22`. Do not set `PORT`; Render provides it.
+- Set the root `.env` variables from the table above, plus `NODE_VERSION=24.22.1`, `NODE_ENV=production`, and `COREPACK_ENABLE_DOWNLOAD_PROMPT=0`. Do not set `PORT`; Render provides it.
+- Commands call `corepack pnpm` instead of running `corepack enable` first: `corepack enable` writes shims to `/usr/bin`, which is read-only on Render (`EROFS`).
+- `--prod=false` keeps devDependencies (Prisma CLI, Nest CLI, TypeScript) installed for the build even though `NODE_ENV=production`.
 - Migrations run at the end of every build, so each deploy applies new migrations.
 - Set `WEB_ORIGIN` to the Vercel production URL once it exists. To call the API from Vercel preview URLs, append them after the production URL (comma-separated). The first entry is used for password reset links, so the production URL must stay first.
 - On the free instance, the service sleeps after 15 minutes idle. `ApiWarmup` in the web app calls `/health` on page load to wake it.
@@ -208,6 +210,7 @@ The demo runs on free tiers: **Vercel** (web), **Render** (API), **Neon** (Postg
 | Root Directory | `apps/web`                                                                                    |
 | Build Command  | `cd ../.. && pnpm --filter @mood-trip/validators build && pnpm --filter @mood-trip/web build` |
 
+- Node.js 24.x is picked from `engines` in `apps/web/package.json`.
 - Set the `apps/web/.env.local` variables from the table above, pointing `NEXT_PUBLIC_API_URL` at the Render URL.
 - Environment variable changes need a redeploy to take effect.
 

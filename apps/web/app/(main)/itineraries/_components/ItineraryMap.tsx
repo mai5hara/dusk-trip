@@ -7,10 +7,16 @@ import Map, {
   NavigationControl,
 } from 'react-map-gl/maplibre';
 import type { MapRef } from 'react-map-gl/maplibre';
-import type { StyleSpecification } from 'maplibre-gl';
+import { setWorkerUrl, type StyleSpecification } from 'maplibre-gl';
 import type { ItineraryMapStyle } from '@mood-trip/validators';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { findItineraryStop, type ItineraryStop } from '../_lib/itinerary-utils';
+
+// maplibre-gl 6 derives its worker URL from its own import.meta.url, which no
+// longer points at node_modules once bundled. Let the bundler emit the worker.
+setWorkerUrl(
+  new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href,
+);
 
 type ItineraryMapProps = {
   mapStyle: ItineraryMapStyle | null;

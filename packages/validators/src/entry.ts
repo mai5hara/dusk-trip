@@ -38,7 +38,7 @@ export const entrySchema = z.object({
 export type Entry = z.infer<typeof entrySchema>;
 
 export const createEntryBodySchema = z.object({
-  photoUrl: z.string({ required_error: 'Add a photo' }).url('Add a photo'),
+  photoUrl: z.string({ error: 'Add a photo' }).url('Add a photo'),
   caption: z
     .string()
     .max(300, 'Keep the caption to 300 characters or fewer')
